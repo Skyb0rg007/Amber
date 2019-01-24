@@ -1,0 +1,20 @@
+
+add_library(graphics
+    src/graphics_system.c)
+target_link_libraries(graphics
+    PRIVATE Amber::ECS Amber::util SDL2::SDL2 glad::glad OpenGL::OpenGL)
+target_include_directories(graphics
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
+target_compile_features(graphics
+    PRIVATE c_std_99)
+
+add_library(Amber::graphics ALIAS graphics)
+
+install(TARGETS graphics EXPORT amber-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development
+    FILES_MATCHING PATTERN "*.h")
