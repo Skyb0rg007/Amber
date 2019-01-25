@@ -22,11 +22,13 @@ endif()
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL 3.3 MODULE COMPONENTS OpenGL REQUIRED) # OpenGL::OpenGL
 find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
+find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot)
 
 # Internal dependencies
 add_subdirectory(thirdparty/nuklear/)   # nk::nuklear
 add_subdirectory(thirdparty/glad/)      # glad::glad
 add_subdirectory(thirdparty/stb_image/) # stb::stb_image
+add_subdirectory(thirdparty/klib/)      # klib::khash
 
 # Testing
 include(CTest)
@@ -37,6 +39,15 @@ add_subdirectory(Amber/ECS/      ECS/)      # Amber::ECS
 add_subdirectory(Amber/graphics/ graphics/) # Amber::graphics
 add_subdirectory(Amber/ui/       ui/)       # Amber::ui
 add_subdirectory(Amber/driver/   driver/)   # Amber::driver
+
+# Docs
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_GENERATE_HTML ON)
+    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/)
+    doxygen_add_docs(docs
+        Amber/util/
+        COMMENT "Generating documentation")
+endif()
 
 # Installation
 install(EXPORT amber-targets

@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define MESSAGEQUEUE_MAX 128
+
 /* struct ECS_ComponentConfig { */
     /* size_t size; */
     /* int mask; */
@@ -27,11 +29,12 @@ struct ECS_System {
     int system_mask; /* Your message id */
     enum ECS_System_thread_order thread_order;
     const char *name;
+    size_t message_size;
 };
 
 struct ECS_SystemState;
 
-struct ECS_SystemState *ECS_initialize_systems(const struct ECS_System *systems, int count);
+struct ECS_SystemState *ECS_initialize_systems(const struct ECS_System *systems, size_t count);
 int ECS_run_systems(const struct ECS_System *systems, struct ECS_SystemState *state);
 int ECS_cleanup_systems(const struct ECS_System *systems, struct ECS_SystemState *state);
 

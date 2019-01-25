@@ -1,0 +1,6 @@
+#ifndef AMBER_UTIL_HASHTABLE_H
+#define AMBER_UTIL_HASHTABLE_H
+
+
+
+#endif /* AMBER_UTIL_HASHTABLE_H */

@@ -31,3 +31,33 @@ if(NOT DISABLE_ASAN)
         PUBLIC -fsanitize=thread)
 endif()
 add_test(Amber.util.minimal-race-stdatomic minimal-race-stdatomic)
+
+add_executable(hashtable-test
+    hashtable-test.c)
+target_link_libraries(hashtable-test
+    PRIVATE SDL2::SDL2 Amber::util klib::khash)
+target_compile_features(hashtable-test
+    PRIVATE c_std_99)
+# if(NOT DISABLE_ASAN)
+    # target_compile_options(hashtable-test
+        # PUBLIC -fsanitize=thread)
+    # target_link_options(hashtable-test
+        # PUBLIC -fsanitize=thread)
+# endif()
+add_test(Amber.util.hashtable-test hashtable-test)
+
+add_executable(vector-test
+    vector-test.c)
+target_link_libraries(vector-test
+    PRIVATE SDL2::SDL2 Amber::util)
+target_compile_features(vector-test
+    PRIVATE c_std_99)
+target_compile_options(vector-test
+    PRIVATE -Wall -Wextra)
+# if(NOT DISABLE_ASAN)
+    # target_compile_options(vector-test
+        # PUBLIC -fsanitize=thread)
+    # target_link_options(vector-test
+        # PUBLIC -fsanitize=thread)
+# endif()
+add_test(Amber.util.vector-test vector-test)

@@ -56,26 +56,23 @@ static int producer(void *data)
         }
     }
 
+    AB_RING_ENQUEUE_MPMC(int64_t, &ring, rb, &(int64_t){-1}, NULL);
+
     (void)data;
     return 0;
 }
 
 static int consumer(void *data)
 {
-    int i = 0;
     SDL_threadID id = SDL_GetThreadID(NULL);
     id &= 0xffff;
-    while (1) {
-        int64_t entry;
+    int64_t entry;
+    do {
         bool res = AB_RING_DEQUEUE_MPMC(int64_t, &ring, rb, &entry);
-        if (!res) {
-            i++;
-            if (i > 20000)
-                break;
-        } else {
+        if (res) {
             fprintf(stderr, "[%lu] Got item %"PRIi64"\n", id, entry);
         }
-    }
+    } while (entry != -1);
 
     (void)data;
     return 0;
