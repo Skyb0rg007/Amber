@@ -1,6 +1,7 @@
 
 add_library(util
-    src/ring.c)
+    src/ring.c
+    src/noise.c)
 target_link_libraries(util
     PUBLIC SDL2::SDL2)
 target_include_directories(util

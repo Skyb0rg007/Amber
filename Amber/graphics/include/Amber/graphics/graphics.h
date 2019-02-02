@@ -12,10 +12,10 @@ static const struct ECS_System graphics_system = {
     .init            = graphics_system_init,
     .run             = graphics_system_run,
     .cleanup         = graphics_system_cleanup,
-    .message_handler = NULL,
-    .system_mask     = 0,
-    .thread_order    = ECS_THREAD_ORDER_MAIN_THREAD,
-    .name            = "graphics"
+    /* .message_handler = NULL, */
+    /* .system_mask     = 0, */
+    /* .thread_order    = ECS_THREAD_ORDER_MAIN_THREAD, */
+    /* .name            = "graphics" */
 };
 
 #endif

@@ -11,6 +11,9 @@
 #define PI 3.14159265359
 #define DEGREES(X) ((X) * 180.0 / PI)
 #define RADIANS(X) ((X) * PI / 180.0)
+#define MAX(X, Y) (X > Y ? X : Y)
+#define MIN(X, Y) (X > Y ? Y : X)
+#define CLAMP(X, Y, Z) MIN(MAX(X, Y), Z)
 
 /************************************************
  * Logging and Assertion Macros

@@ -18,3 +18,7 @@ install(TARGETS ECS EXPORT amber-targets
 install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development
     FILES_MATCHING PATTERN "*.h")
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

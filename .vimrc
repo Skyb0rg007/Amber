@@ -11,13 +11,14 @@ function! AddToInclude(dir)
 endfunction
 
 let &path = '.,/usr/include'
-let ale_c_gcc_options = '-Wall -std=c11 -pedantic -Wvla -Winline -Wconversion'
+let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline -Wconversion'
 
 call AddToInclude('/usr/include/SDL2/')
 call AddToInclude('thirdparty/nuklear/include/')
 call AddToInclude('thirdparty/glad/include/')
 call AddToInclude('thirdparty/stb_image/include/')
 call AddToInclude('thirdparty/klib/include/')
+call AddToInclude('thirdparty/cmocka/include/')
 call AddToInclude('Amber/driver/include/')
 call AddToInclude('Amber/ECS/include/')
 call AddToInclude('Amber/graphics/include/')

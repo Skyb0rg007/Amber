@@ -38,11 +38,13 @@ target_link_libraries(hashtable-test
     PRIVATE SDL2::SDL2 Amber::util klib::khash)
 target_compile_features(hashtable-test
     PRIVATE c_std_99)
+target_compile_options(hashtable-test
+    PRIVATE -Wall -Wextra -pedantic -Wconversion)
 # if(NOT DISABLE_ASAN)
     # target_compile_options(hashtable-test
-        # PUBLIC -fsanitize=thread)
+        # PUBLIC -fsanitize=address)
     # target_link_options(hashtable-test
-        # PUBLIC -fsanitize=thread)
+        # PUBLIC -fsanitize=address)
 # endif()
 add_test(Amber.util.hashtable-test hashtable-test)
 
@@ -61,3 +63,28 @@ target_compile_options(vector-test
         # PUBLIC -fsanitize=thread)
 # endif()
 add_test(Amber.util.vector-test vector-test)
+
+# add_executable(noise-test
+    # noise-test.c)
+# target_link_libraries(noise-test
+    # PRIVATE SDL2::SDL2 Amber::util)
+# target_compile_features(noise-test
+    # PRIVATE c_std_99)
+# target_compile_options(noise-test
+    # PRIVATE -Wall -Wextra)
+# if(NOT DISABLE_ASAN)
+    # target_compile_options(noise-test
+        # PUBLIC -fsanitize=thread)
+    # target_link_options(noise-test
+        # PUBLIC -fsanitize=thread)
+# endif()
+# add_test(Amber.util.noise-test noise-test)
+
+
+add_executable(mocking-test
+    mocking-test.c)
+target_link_libraries(mocking-test
+    PRIVATE cmocka Amber::util)
+target_compile_features(mocking-test
+    PRIVATE c_std_99)
+add_test(Amber.util.mocking mocking-test)

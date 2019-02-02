@@ -31,7 +31,13 @@ add_subdirectory(thirdparty/stb_image/) # stb::stb_image
 add_subdirectory(thirdparty/klib/)      # klib::khash
 
 # Testing
+if(NOT DEFINED BUILD_TESTING)
+    set(BUILD_TESTING OFF CACHE BOOL "Enable testing" FORCE)
+endif()
 include(CTest)
+if(BUILD_TESTING)
+    find_package(cmocka CONFIG REQUIRED) # cmocka
+endif()
 
 # Libraries and executables
 add_subdirectory(Amber/util/     util/)     # Amber::util
@@ -44,9 +50,10 @@ add_subdirectory(Amber/driver/   driver/)   # Amber::driver
 if(DOXYGEN_FOUND)
     set(DOXYGEN_GENERATE_HTML ON)
     set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/)
+    set(DOXYGEN_PREDEFINED "__DOXYGEN__")
     doxygen_add_docs(docs
         Amber/util/
-        COMMENT "Generating documentation")
+        COMMENT "Generating Doxygen documentation")
 endif()
 
 # Installation

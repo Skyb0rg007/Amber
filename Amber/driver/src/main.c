@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     struct ECS_SystemState *state;
-    state = ECS_initialize_systems(&graphics_system, 1);
+    state = ECS_initialize_systems(&graphics_system, 1, NULL, 0);
     assert(state != NULL);
 
     while (!ECS_run_systems(&graphics_system, state))
