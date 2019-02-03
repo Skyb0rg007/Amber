@@ -21,6 +21,7 @@ Download the project from [here](https://cmocka.org/files/1.1/)
 
 
 Building:
+
     $ mkdir build && cd build
     $ ###### Unix ########
     $ # For normal Makefiles, however using Ninja may improve compile-time though
@@ -37,19 +38,26 @@ Building:
     $ cmake --build . --config Release
 
 Building docs:
+
     $ cmake --build . --target docs # For C documentation
     $ cmake --build . --target ldoc # For Lua documentation
 
 Installation:
+
     $ cmake .. -DCMAKE_INSTALL_PREFIX=... # Where to install
     $ # For a blanket install (dev + runtime)
     $ cmake --build . --target install
     $ # For just Runtime tools
     $ cmake -DCMAKE_INSTALL_COMPONENT=Runtime -P cmake_install.cmake
 
-Testing:
-    $ 
+Testing: (ensure you have [cmocka](https://cmocka.org/) installed)
+
+    $ cmake .. -DBUILD_TESTING=ON      # Testing defaults to OFF
+    $ ctest --output-on-failure                     # Run all tests
+    $ ctest --output-on-failure -R Amber.util       # Run the Amber::util tests
+    $ ctest --output-on-failure -L basic            # Run basic tests
 
 Packaging:
+
     $ cpack -G "..."   # The desired package to create
 
