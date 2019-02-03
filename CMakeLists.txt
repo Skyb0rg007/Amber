@@ -28,8 +28,8 @@ endif()
 
 ## Dependencies
 # External dependencies
-set(OpenGL_GL_PREFERENCE "GLVND")
-find_package(OpenGL 3.3 MODULE COMPONENTS OpenGL REQUIRED) # OpenGL::OpenGL
+set(OpenGL_GL_PREFERENCE "LEGACY")
+find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2 2.0.8 MODULE REQUIRED)                   # SDL2::SDL2
 find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot)
 if(AB_GETTEXT_SUPPORT)

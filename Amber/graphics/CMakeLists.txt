@@ -2,7 +2,7 @@
 add_library(graphics
     src/graphics_system.c)
 target_link_libraries(graphics
-    PRIVATE Amber::ECS Amber::util SDL2::SDL2 glad::glad OpenGL::OpenGL)
+    PRIVATE Amber::ECS Amber::util SDL2::SDL2 glad::glad OpenGL::GL)
 target_include_directories(graphics
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(graphics

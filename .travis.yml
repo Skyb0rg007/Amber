@@ -21,6 +21,7 @@ addons:
       - libsdl2-dev
       - libcmocka-dev
   homebrew:
+    update: true
     packages:
       - sdl2
       - cmocka

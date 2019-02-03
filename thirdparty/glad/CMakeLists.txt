@@ -5,15 +5,15 @@ project(glad
     HOMEPAGE_URL "https://github.com/Dav1dde/glad"
     LANGUAGES C)
 
-set(OpenGL_GL_PREFERENCE "GLVND")
-find_package(OpenGL 3.3 MODULE COMPONENTS OpenGL REQUIRED) # OpenGL::OpenGL
+set(OpenGL_GL_PREFERENCE "LEGACY")
+find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 
 add_library(glad
     src/glad.c)
 target_include_directories(glad
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_link_libraries(glad
-    PRIVATE OpenGL::OpenGL ${CMAKE_DL_LIBS})
+    PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 target_compile_features(glad
     PRIVATE c_std_90)
 set_target_properties(glad PROPERTIES
