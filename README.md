@@ -2,7 +2,9 @@
 ## A rendering engine with unrealistic goals
 
 The project was named after [The Cherno Project](https://www.youtube.com/user/TheChernoProject)'s
-Game Engine series
+Game Engine series. He definitely has a good idea on how to design a game engine,
+but I think focusing on working with C and Lua would lend for a better intro to
+game engine design. Also SDL2 > GLFW don't @me.
 
 # Building
 When this library is functional, I'll provide binary releases for simplicity.
