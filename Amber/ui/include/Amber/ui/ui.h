@@ -11,10 +11,10 @@ static const struct ECS_System ui_subsystem = {
     .init = ui_subsystem_init,
     .run  = ui_subsystem_run,
     .cleanup = ui_subsystem_cleanup,
-    .message_handler = NULL,
-    .system_mask     = 0,
-    .thread_order    = ECS_THREAD_ORDER_MAIN_THREAD,
-    .name = "ui"
+    /* .message_handler = NULL, */
+    /* .system_mask     = 0, */
+    /* .thread_order    = ECS_THREAD_ORDER_MAIN_THREAD, */
+    /* .name = "ui" */
 };
 
 #endif /* AMBER_UI_UI_H */

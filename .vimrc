@@ -11,7 +11,7 @@ function! AddToInclude(dir)
 endfunction
 
 let &path = '.,/usr/include'
-let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline -Wconversion'
+let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline'
 
 call AddToInclude('/usr/include/SDL2/')
 call AddToInclude('thirdparty/nuklear/include/')
@@ -24,6 +24,7 @@ call AddToInclude('Amber/ECS/include/')
 call AddToInclude('Amber/graphics/include/')
 call AddToInclude('Amber/ui/include/')
 call AddToInclude('Amber/util/include/')
+call AddToInclude('build/util/include/')
 
 augroup project
     autocmd!

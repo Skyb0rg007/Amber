@@ -1,0 +1,77 @@
+#ifndef AMBER_UTIL_COMPAT_H
+#define AMBER_UTIL_COMPAT_H
+
+/* TODO */
+#define AB_INLINE inline
+
+#cmakedefine AB_HAS_STRDUP
+#if defined(AB_HAS_STRDUP)
+/* glibc - strdup */
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <string.h>
+# define AB_STRDUP(str) strdup(str)
+#elif defined(AB_HAS__STRDUP)
+/* Windows - _strdup */
+# include <string.h>
+# define AB_STRDUP(str) _strdup(str)
+#else
+/* Fallback - own implementation */
+char *AB_strdup(const char *str);
+# define AB_STRDUP(str) AB_strdup(str)
+# define AB_NEED_STRDUP
+#endif
+
+#cmakedefine AB_HAS_ASPRINTF
+#if defined(AB_HAS_ASPRINTF)
+/* glibc - asprintf */
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <stdio.h>
+# define AB_ASPRINTF(...) asprintf(__VA_ARGS__)
+#else
+/* Fallback - own implementation */
+int AB_asprintf(char **strp, const char *fmt, ...);
+# define AB_ASPRINTF(...) AB_asprintf(__VA_ARGS__)
+# define AB_NEED_ASPRINTF
+#endif
+
+#cmakedefine AB_HAS_VASPRINTF
+#if defined(AB_HAS_VASPRINTF)
+/* glibc - vasprintf */
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <stdarg.h>
+# include <stdio.h>
+# define AB_VASPRINTF(...) vasprintf(__VA_ARGS__)
+#else
+/* Fallback - own implementation */
+# include <stdarg.h>
+int AB_vasprintf(char **strp, const char *fmt, va_list va);
+# define AB_VASPRINTF(...) AB_vasprintf(__VA_ARGS__)
+# define AB_NEED_VASPRINTF
+#endif
+
+#cmakedefine AB_HAS_STRTOK_R
+#if defined(AB_HAS_STRTOK_R)
+/* POSIX - strtok_r */
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <string.h>
+# define AB_STRTOK_R(str, delim, ctx) strtok_r(str, delim, ctx)
+#elif defined(AB_HAS_STRTOK_S)
+/* Windows - strtok_s */
+# include <string.h>
+# define AB_STRTOK_R(str, delim, ctx) strtok_s(str, delim, ctx)
+#else
+/* Fallback - own implementation */
+char *AB_strtok_r(char *str, const char *delim, char **saveptr);
+# define AB_STRTOK_R(str, delim, ctx) AB_strtok_r(str, delim, ctx)
+# define AB_NEED_STRTOK_R
+#endif
+
+#endif /* AMBER_UTIL_COMPAT_H */
