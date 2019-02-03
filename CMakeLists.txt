@@ -44,7 +44,12 @@ add_subdirectory(thirdparty/stb_image/) # stb::stb_image
 add_subdirectory(thirdparty/klib/)      # klib::khash
 add_subdirectory(thirdparty/inih/)      # inih::inih
 add_subdirectory(thirdparty/sqlite3/)   # sqlite3::sqlite3
-add_subdirectory(thirdparty/lua-5.3.5/) # lua::lualib
+add_subdirectory(thirdparty/lua-5.3/)   # lua::lua,luac,lualib,lualib-static
+add_subdirectory(thirdparty/ldoc/)      # ldoc_add_docs() (lua::luafilesystem)
+
+ldoc_add_docs(ldoc
+    Amber/scripting/
+    )
 
 ## Testing
 if(NOT DEFINED BUILD_TESTING)

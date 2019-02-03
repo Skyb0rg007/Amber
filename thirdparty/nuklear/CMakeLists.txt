@@ -5,20 +5,24 @@ project(nuklear
     DESCRIPTION "an immediate mode GUI toolkit written in ANSI C"
     LANGUAGES C)
 
-include(LibmLibrary)
+include(CheckLibraryExists)
 
 add_library(nuklear
     src/nuklear-implementation.c)
 target_include_directories(nuklear
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
-target_link_libraries(nuklear
-    PRIVATE ${LIBM_LIBRARY})
 target_compile_features(nuklear
     PRIVATE c_std_90)
 set_target_properties(nuklear PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION}
     WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+check_library_exists("m" "pow" "" HAVE_LIBM)
+if(HAVE_LIBM)
+    target_link_libraries(nuklear
+        PRIVATE "m")
+endif()
 
 add_library(nk::nuklear ALIAS nuklear)
 
