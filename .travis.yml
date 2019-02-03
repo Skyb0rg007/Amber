@@ -1,13 +1,13 @@
 os:
   - linux
   - osx
+  - windows
 dist: xenial
 sudo: false
 
 language: c
 compiler:
-  - gcc-8
-  - clang-3.9
+  - gcc
   - clang
 
 # Add Ubuntu deps
@@ -31,12 +31,9 @@ addons:
 
 matrix:
   exclude:
+    # Only test MacOS with clang
     - os: osx
-      compiler: gcc-8
-    - os: osx
-      compiler: clang-3.9
-    - os: linux
-      compiler: clang
+      compiler: gcc
 
 env:
   - CONFIG=Release
@@ -45,12 +42,18 @@ install:
   - if [[ $TRAVIS_OS_NAME = osx ]]; then
       export CMAKE=cmake;
       export CTEST=ctest;
+      export CC=clang;
     fi
   - if [[ $TRAVIS_OS_NAME = linux ]]; then
       wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.tar.gz;
       tar -xzf cmake-3.13.3-Linux-x86_64.tar.gz cmake-3.13.3-Linux-x86_64/;
       export CMAKE=$PWD/cmake-3.13.3-Linux-x86_64/bin/cmake;
       export CTEST=$PWD/cmake-3.13.3-Linux-x86_64/bin/ctest;
+      if [[ $CC_FOR_BUILD = clang ]]; then
+        export CC=clang-3.9;
+      else
+        export CC=gcc-8;
+      fi
     fi
 
 script:
