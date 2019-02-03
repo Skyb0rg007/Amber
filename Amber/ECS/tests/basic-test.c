@@ -45,9 +45,11 @@ struct ECS_System print_system = {
 
 int main(void)
 {
-    struct ECS_SystemState *s = ECS_initialize_systems(&print_system, 1, comp_data, 2);
-    ECS_run_systems(&print_system, s);
-    ECS_run_systems(&print_system, s);
-    ECS_run_systems(&print_system, s);
-    ECS_cleanup_systems(&print_system, s);
+    /* struct ECS_SystemState *s = ECS_initialize_systems(&print_system, 1, comp_data, 2); */
+    /* ECS_run_systems(&print_system, s); */
+    /* ECS_run_systems(&print_system, s); */
+    /* ECS_run_systems(&print_system, s); */
+    /* ECS_cleanup_systems(&print_system, s); */
+    puts("TODO");
+    return 0;
 }

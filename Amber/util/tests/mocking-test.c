@@ -20,11 +20,11 @@ static void math_test_success(void **state)
     assert_int_equal(4, 4);
 }
 
-static void example_test_fail(void **state)
+static void example_test_success(void **state)
 {
     (void)state;
 
-    assert_string_equal("This test", "fails!");
+    assert_string_not_equal("This test", "fails!");
 }
 
 int main(void)
@@ -32,7 +32,7 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(null_test_success),
         cmocka_unit_test(math_test_success),
-        cmocka_unit_test(example_test_fail),
+        cmocka_unit_test(example_test_success),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

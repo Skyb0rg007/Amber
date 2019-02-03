@@ -1,0 +1,49 @@
+os:
+  - linux
+  - osx
+dist: xenial
+sudo: false
+
+language: c
+compiler:
+  - gcc-8
+  - clang-3.9
+  - clang
+
+# Add Ubuntu deps
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-8
+      - clang-3.9
+      - libsdl2-dev
+      - libcmocka-dev
+
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc-8
+    - os: osx
+      compiler: clang-3.9
+    - os: linux
+      compiler: clang
+
+env:
+  - CONFIG=Release
+
+before_install:
+  - if [[ $TRAVIS_OS_NAME = osx ]]; then brew update; fi
+  - if [[ $TRAVIS_OS_NAME = osx ]]; then brew install sdl2 cmocka; fi
+
+script:
+  - echo "Starting build process"
+  - uname -a
+  - cmake --version
+  - $CC --version
+  - mkdir build && cd build
+  - cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON
+  - cmake --build . --parallel
+  - echo "===== BUILD SUCCESSFULLY BUILT ======"
+  - ctest --output-on-failure
