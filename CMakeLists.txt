@@ -1,5 +1,5 @@
 ## Setup
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(Amber
     DESCRIPTION "A Game Engine written in C"
     VERSION 0.1
