@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(luafilesystem
     VERSION 1.7.0
     DESCRIPTION "Filesystem support for Lua"

@@ -11,4 +11,5 @@ target_compile_features(driver
 add_executable(Amber::driver ALIAS driver)
 
 install(TARGETS driver EXPORT amber-targets
+    BUNDLE DESTINATION . COMPONENT Runtime
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime)

@@ -20,12 +20,14 @@ addons:
       - clang-3.9
       - libsdl2-dev
       - libcmocka-dev
+      - doxygen
   homebrew:
     update: true
     packages:
       - sdl2
       - cmocka
       - cmake
+      - doxygen
 
 matrix:
   exclude:
@@ -60,3 +62,5 @@ script:
   - $CMAKE .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON
   - $CMAKE --build . --parallel
   - $CTEST --output-on-failure
+  - $CMAKE --build . --target docs --parallel
+  - $CMAKE --build . --target ldoc --parallel

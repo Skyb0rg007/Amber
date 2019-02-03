@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(klib
     HOMEPAGE_URL "https://github.com/attractivechaos/klib"
     DESCRIPTION "a standalone and lightweight C library")

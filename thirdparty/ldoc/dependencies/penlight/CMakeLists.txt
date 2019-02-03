@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(penlight
     VERSION 1.5.4
     DESCRIPTION "Generally useful pure Lua modules, inspired by Python stdlib"

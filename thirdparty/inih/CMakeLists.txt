@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(inih
     DESCRIPTION "Simple .INI file parser written in C"
     HOMEPAGE_URL "https://github.com/benhoyt/inih"

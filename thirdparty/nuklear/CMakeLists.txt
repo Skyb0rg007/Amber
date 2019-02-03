@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(nuklear
     VERSION 1.0
     HOMEPAGE_URL "https://github.com/vurtun/nuklear"
