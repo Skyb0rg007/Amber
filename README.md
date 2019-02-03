@@ -24,7 +24,7 @@ Building:
 
     $ mkdir build && cd build
     $ ###### Unix ########
-    $ # For normal Makefiles, however using Ninja may improve compile-time though
+    $ # For normal Makefiles, however using Ninja may improve compile-time
     $ cmake .. -DCMAKE_BUILD_TYPE=Release
     $ cmake --build .
     $ ###### Windows - MinGW #######
