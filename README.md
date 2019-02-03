@@ -39,8 +39,8 @@ Building:
 
 Building docs:
 
-    $ cmake --build . --target docs # For C documentation
-    $ cmake --build . --target ldoc # For Lua documentation
+    $ cmake --build . --target docs # For C documentation - build/docs/html/index.html
+    $ cmake --build . --target ldoc # For Lua documentation - build/ldoc/index.html
 
 Installation:
 
