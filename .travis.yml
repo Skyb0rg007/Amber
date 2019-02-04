@@ -1,7 +1,6 @@
 os:
   - linux
   - osx
-  - windows
 dist: xenial
 sudo: false
 
@@ -34,8 +33,6 @@ matrix:
     # Only test MacOS with clang
     - os: osx
       compiler: gcc
-    - os: windows
-      compiler: clang
 
 env:
   - CONFIG=Release
@@ -44,26 +41,25 @@ install:
   - if [[ $TRAVIS_OS_NAME = osx ]]; then
       export CMAKE=cmake;
       export CTEST=ctest;
+      export CPACK=cpack;
       export CC=clang;
+      export CMAKE_OPTS=("-G" "Unix Makefiles");
     fi
   - if [[ $TRAVIS_OS_NAME = linux ]]; then
+      mkdir /tmp/cmake/ && pushd /tmp/cmake/;
+      cd /tmp/cmake/;
       wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.tar.gz;
       tar -xzf cmake-3.13.3-Linux-x86_64.tar.gz cmake-3.13.3-Linux-x86_64/;
       export CMAKE=$PWD/cmake-3.13.3-Linux-x86_64/bin/cmake;
       export CTEST=$PWD/cmake-3.13.3-Linux-x86_64/bin/ctest;
+      export CPACK=$PWD/cmake-3.13.3-Linux-x86_64/bin/cpack;
       if [[ $CC_FOR_BUILD = clang ]]; then
         export CC=clang-3.9;
       else
         export CC=gcc-8;
       fi
-      export CMAKE_OPTS="-G 'Unix Makefiles'";
-    fi
-  - if [[ $TRAVIS_OS_NAME = windows ]]; then
-      wget https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz;
-      tar -xzf SDL2-devel-2.0.9-mingw.tar.gz;
-      export CMAKE_OPTS="-DCMAKE_PREFIX_PATH=$PWD/SDL2-devel-2.0.9-mingw/";
-      CMAKE_OPTS="$CMAKE_OPTS -G 'MinGW Makefiles' -DCMAKE_SH=CMAKE_SH-NOTFOUND";
-      export CC=gcc;
+      export CMAKE_OPTS=("-G" "Unix Makefiles");
+      popd;
     fi
 
 script:
@@ -72,7 +68,7 @@ script:
   - $CMAKE --version
   - $CC --version
   - mkdir build && cd build
-  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON $CMAKE_OPTS
+  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON "${CMAKE_OPTS[@]}"
   - $CMAKE --build . --parallel
   - $CTEST --output-on-failure
   - $CMAKE --build . --target docs --parallel
