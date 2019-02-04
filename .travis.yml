@@ -34,6 +34,8 @@ matrix:
     # Only test MacOS with clang
     - os: osx
       compiler: gcc
+    - os: windows
+      compiler: clang
 
 env:
   - CONFIG=Release
@@ -54,6 +56,14 @@ install:
       else
         export CC=gcc-8;
       fi
+      export CMAKE_OPTS="-G 'Unix Makefiles'";
+    fi
+  - if [[ $TRAVIS_OS_NAME = windows ]]; then
+      wget https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz;
+      tar -xzf SDL2-devel-2.0.9-mingw.tar.gz;
+      export CMAKE_OPTS="-DCMAKE_PREFIX_PATH=$PWD/SDL2-devel-2.0.9-mingw/";
+      CMAKE_OPTS+=" -G 'MinGW Makefiles' -DCMAKE_SH=CMAKE_SH-NOTFOUND";
+      export CC=gcc;
     fi
 
 script:
@@ -62,7 +72,7 @@ script:
   - $CMAKE --version
   - $CC --version
   - mkdir build && cd build
-  - $CMAKE .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON
+  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON $CMAKE_OPTS
   - $CMAKE --build . --parallel
   - $CTEST --output-on-failure
   - $CMAKE --build . --target docs --parallel
