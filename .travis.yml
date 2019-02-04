@@ -62,7 +62,7 @@ install:
       wget https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz;
       tar -xzf SDL2-devel-2.0.9-mingw.tar.gz;
       export CMAKE_OPTS="-DCMAKE_PREFIX_PATH=$PWD/SDL2-devel-2.0.9-mingw/";
-      CMAKE_OPTS+=" -G 'MinGW Makefiles' -DCMAKE_SH=CMAKE_SH-NOTFOUND";
+      CMAKE_OPTS="$CMAKE_OPTS -G 'MinGW Makefiles' -DCMAKE_SH=CMAKE_SH-NOTFOUND";
       export CC=gcc;
     fi
 
