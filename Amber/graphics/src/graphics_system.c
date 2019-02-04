@@ -14,10 +14,10 @@ int graphics_system_init(SystemCtx *_ctx, void **userdata)
     int status;
 
     struct graphics_data *data = malloc(sizeof *data);
-    ASSERT(data != NULL);
+    AB_ASSERT(data != NULL);
 
     status = SDL_Init(SDL_INIT_VIDEO);
-    ASSERT(status == 0);
+    AB_ASSERT(status == 0);
 
     data->win = SDL_CreateWindow(
             "Amber Engine",

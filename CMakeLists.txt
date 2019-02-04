@@ -73,6 +73,7 @@ endif()
 add_subdirectory(Amber/util/     util/)     # Amber::util
 add_subdirectory(Amber/ECS/      ECS/)      # Amber::ECS
 add_subdirectory(Amber/graphics/ graphics/) # Amber::graphics
+add_subdirectory(Amber/scripting/ scripting/) # Amber::scripting
 add_subdirectory(Amber/ui/       ui/)       # Amber::ui
 add_subdirectory(Amber/driver/   driver/)   # Amber::driver
 

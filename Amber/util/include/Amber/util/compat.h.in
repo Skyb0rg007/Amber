@@ -1,9 +1,42 @@
+/* @file compat.h
+ * @brief compatibility definitions
+ */
 #ifndef AMBER_UTIL_COMPAT_H
 #define AMBER_UTIL_COMPAT_H
 
-/* TODO */
-#define AB_INLINE inline
+/* AB_RESTRICT */
+#include <Amber/util/AB_compiler_detection.h>
 
+/* AB_INLINE */
+/* c99 - inline */
+#if __STDC_VERSION__ >= 199901L
+# define AB_INLINE inline
+/* glibc/MSVC - __inline */
+#elif defined(__GNUC__) || defined(_MSVC_VER)
+# define AB_INLINE __inline
+#else
+# define AB_INLINE
+#endif
+
+/* AB_EXPORT - visible to library users */
+/* AB_LIB - visible within library, not outside of it */
+#if defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
+    defined(__ELF__)
+# define AB_EXPORT extern
+# define AB_LIB    __attribute__((__visibility__("hidden"))) extern
+#elif _WIN32
+# if defined(AB_BUILDING_LIB)
+#  define AB_EXPORT __declspec(dllexport)
+# else
+#  define AB_EXPORT __declspec(dllimport)
+# endif
+# define AB_LIB extern
+#else
+# define AB_EXPORT extern
+# define AB_LIB extern
+#endif
+
+/* strdup - duplicate a string */
 #cmakedefine AB_HAS_STRDUP
 #if defined(AB_HAS_STRDUP)
 /* glibc - strdup */
@@ -23,6 +56,7 @@ char *AB_strdup(const char *str);
 # define AB_NEED_STRDUP
 #endif
 
+/* asprintf - dynamically format a string */
 #cmakedefine AB_HAS_ASPRINTF
 #if defined(AB_HAS_ASPRINTF)
 /* glibc - asprintf */
@@ -38,6 +72,7 @@ int AB_asprintf(char **strp, const char *fmt, ...);
 # define AB_NEED_ASPRINTF
 #endif
 
+/* vasprintf - dynamically format a string */
 #cmakedefine AB_HAS_VASPRINTF
 #if defined(AB_HAS_VASPRINTF)
 /* glibc - vasprintf */
@@ -55,6 +90,7 @@ int AB_vasprintf(char **strp, const char *fmt, va_list va);
 # define AB_NEED_VASPRINTF
 #endif
 
+/* strtok_r - threadsafe tokenization of a string */
 #cmakedefine AB_HAS_STRTOK_R
 #if defined(AB_HAS_STRTOK_R)
 /* POSIX - strtok_r */

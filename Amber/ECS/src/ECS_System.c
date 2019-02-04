@@ -42,22 +42,22 @@ ECS_initialize_systems(const struct ECS_System *systems, size_t system_count,
         const struct ECS_ComponentData *components, size_t component_count)
 {
     struct ECS_SystemState *state = malloc(sizeof *state);
-    ASSERT(state != NULL);
+    AB_ASSERT(state != NULL);
     state->num_systems = system_count;
     state->userdata = calloc(system_count, sizeof(void *));
-    ASSERT(state->userdata != NULL);
+    AB_ASSERT(state->userdata != NULL);
     /* state->inboxes = calloc(count, sizeof(struct MessageQueue)); */
 
     /* Components / World */
     state->world.num_entities = 0;
     state->world.max_entities = ENTITY_COUNT;
     state->world.components = calloc(component_count, sizeof(void *));
-    ASSERT(state->world.components != NULL);
+    AB_ASSERT(state->world.components != NULL);
     for (int i = 0; i < component_count; i++) {
         state->world.components[i] = calloc(1,
                 sizeof(struct Component) +
                 ENTITY_COUNT * components[i].component_size);
-        ASSERT(state->world.components[i] != NULL);
+        AB_ASSERT(state->world.components[i] != NULL);
         state->world.components[i]->size = components[i].component_size;
     }
 
@@ -76,7 +76,7 @@ ECS_initialize_systems(const struct ECS_System *systems, size_t system_count,
             struct MessageQueue *inbox = &state->inboxes[i];
             inbox->elem_size = systems[i].message_size;
             inbox->elems = calloc(MESSAGEQUEUE_MAX, inbox->elem_size);
-            ASSERT(inbox->elems != NULL);
+            AB_ASSERT(inbox->elems != NULL);
             AB_ring_init(&inbox->inbox, MESSAGEQUEUE_MAX);
         } */
     }
@@ -152,7 +152,7 @@ unsigned ECS_entity_new(SystemCtx *ctx, unsigned comp_id)
     unsigned comp_mask = 1u << comp_id;
 
     unsigned entity = (unsigned)ctx->world->num_entities++;
-    ASSERT(entity < ctx->world->max_entities);
+    AB_ASSERT(entity < ctx->world->max_entities);
 
     ctx->world->component_mask[entity] = comp_mask;
     return entity;

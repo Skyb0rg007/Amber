@@ -20,7 +20,7 @@ int main(void)
 {
     AB_ring_init(&ring, RING_SIZE);
     rb = calloc(sizeof(int64_t), RING_SIZE);
-    ASSERT(rb);
+    AB_ASSERT(rb);
 
     SDL_Thread *t1 = SDL_CreateThread(producer, "p1", NULL);
     SDL_Thread *t2 = SDL_CreateThread(producer, "p2", NULL);

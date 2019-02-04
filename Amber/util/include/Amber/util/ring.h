@@ -52,8 +52,8 @@ static inline unsigned AB_ring_capacity(const struct AB_ring *ring)
 
 static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
 {
-    ASSERT(size >= 2);
-    ASSERT((size & (size - 1)) == 0); /* size is a power of 2 */
+    AB_ASSERT(size >= 2);
+    AB_ASSERT((size & (size - 1)) == 0); /* size is a power of 2 */
 
     ring->mask = size - 1;
     SDL_AtomicSet(&ring->p_tail, 0);

@@ -296,7 +296,7 @@ enum {
         int32_t *new_flags = NULL;                                                                \
         size_t new_flags_size;                                                                    \
         {                                                                                         \
-            new_n_buckets = MAX(4, AB_ht_roundup32(new_n_buckets));                               \
+            new_n_buckets = AB_MAX(4, AB_ht_roundup32(new_n_buckets));                               \
                                                                                                   \
             if (ht->size >= new_n_buckets * AB_HT_HASH_UPPER + 0.5)                               \
                 return AB_HT_ENOCHANGE; /* Requested size is too small */                         \

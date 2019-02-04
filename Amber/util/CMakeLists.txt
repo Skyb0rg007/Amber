@@ -7,20 +7,19 @@ write_compiler_detection_header(
     FILE ${CMAKE_CURRENT_BINARY_DIR}/include/Amber/util/AB_compiler_detection.h
     PREFIX AB
     PROLOG "/* Amber::util - compiler detection header */"
-    BARE_FEATURES c_restrict
     FEATURES c_restrict
     COMPILERS GNU Clang AppleClang MSVC Intel)
 
 # Detect the availability of functions that may be in libc
 set(CMAKE_REQUIRED_QUIET FALSE)
-set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE")
+set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE") # Enable use of glibc stuff
 set(CMAKE_REQUIRED_INCLUDES  "")
-check_symbol_exists("asprintf" "stdio.h" AB_HAS_ASPRINTF)
-check_symbol_exists("vasprintf" "stdio.h" AB_HAS_VASPRINTF)
-check_symbol_exists("strdup" "string.h" AB_HAS_STRDUP)
-check_symbol_exists("_strdup" "string.h" AB_HAS__STRDUP)
-check_symbol_exists("strtok_r" "string.h" AB_HAS_STRTOK_R)
-check_symbol_exists("strtok_s" "string.h" AB_HAS_STRTOK_S)
+check_symbol_exists("asprintf"   "stdio.h"   AB_HAS_ASPRINTF)
+check_symbol_exists("vasprintf"  "stdio.h"   AB_HAS_VASPRINTF)
+check_symbol_exists("strdup"     "string.h"  AB_HAS_STRDUP)
+check_symbol_exists("_strdup"    "string.h"  AB_HAS__STRDUP)
+check_symbol_exists("strtok_r"   "string.h"  AB_HAS_STRTOK_R)
+check_symbol_exists("strtok_s"   "string.h"  AB_HAS_STRTOK_S)
 configure_file(include/Amber/util/compat.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/include/Amber/util/compat.h
     @ONLY)
@@ -28,8 +27,8 @@ configure_file(include/Amber/util/compat.h.in
 # Amber::util
 add_library(util
     ${CMAKE_CURRENT_BINARY_DIR}/include/Amber/util/AB_compiler_detection.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Amber/util/compat.h
     include/Amber/util/common.h
-    include/Amber/util/compat.h
     include/Amber/util/ring.h
     include/Amber/util/vector.h
     src/ring.c
