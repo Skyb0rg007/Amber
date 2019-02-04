@@ -38,13 +38,9 @@ if(NOT TARGET SDL2::SDL2)
         IMPORTED_LOCATION "${SDL2_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}")
     if(MINGW)
-        set_target_properties(SDL2::SDL2 PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "-mwindows")
-        # target_compile_options(SDL2::SDL2 INTERFACE "-mwindows")
+        target_compile_options(SDL2::SDL2 INTERFACE "-mwindows")
     elseif(APPLE)
-        set_target_properties(SDL2::SDL2 PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "-framework Cocoa")
-        # target_compile_options(SDL2::SDL2 INTERFACE "-framework Cocoa")
+        target_compile_options(SDL2::SDL2 INTERFACE "-framework Cocoa")
     endif()
 
     if(SDL2_MAIN_LIBARARY)

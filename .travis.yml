@@ -1,13 +1,14 @@
 os:
   - linux
   - osx
+  - windows
 dist: xenial
 sudo: false
 
 language: c
-compiler:
-  - gcc
-  - clang
+# compiler:
+  # - gcc
+  # - clang
 
 # Add Ubuntu deps
 addons:
@@ -29,37 +30,83 @@ addons:
       - doxygen
 
 matrix:
-  exclude:
-    # Only test MacOS with clang
+  include:
     - os: osx
-      compiler: gcc
+      compiler: clang
+      env:
+        - CONFIG=Release
+        - CMAKE_OPTS=("-G" "Unix Makefiles")
+
+    - os: linux
+      compiler: clang-3.9
+      env:
+        - CONFIG=Release
+        - CMAKE_OPTS=("-G" "Unix Makefiles")
+
+    - os: linux
+      compiler: gcc-8
+      env:
+        - CONFIG=Release
+        - CMAKE_OPTS=("-G" "Unix Makefiles")
+
+    - os: windows
+      compiler: mingw
+      env:
+        - CONFIG=Release
+        - CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")
 
 env:
   - CONFIG=Release
 
+before_install:
+  - bash --version
+
+# installing dependencies and setting up environment
 install:
   - if [[ $TRAVIS_OS_NAME = osx ]]; then
       export CMAKE=cmake;
       export CTEST=ctest;
       export CPACK=cpack;
-      export CC=clang;
-      export CMAKE_OPTS=("-G" "Unix Makefiles");
     fi
   - if [[ $TRAVIS_OS_NAME = linux ]]; then
-      mkdir /tmp/cmake/ && pushd /tmp/cmake/;
-      cd /tmp/cmake/;
+      mkdir /tmp/cmake/ || exit 1;
+      pushd /tmp/cmake/ || exit 1;
+      echo "Installing CMake 3.13";
       wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.tar.gz;
       tar -xzf cmake-3.13.3-Linux-x86_64.tar.gz cmake-3.13.3-Linux-x86_64/;
-      export CMAKE=$PWD/cmake-3.13.3-Linux-x86_64/bin/cmake;
-      export CTEST=$PWD/cmake-3.13.3-Linux-x86_64/bin/ctest;
-      export CPACK=$PWD/cmake-3.13.3-Linux-x86_64/bin/cpack;
-      if [[ $CC_FOR_BUILD = clang ]]; then
-        export CC=clang-3.9;
-      else
-        export CC=gcc-8;
-      fi;
-      export CMAKE_OPTS=("-G" "Unix Makefiles");
+      export CMAKE=/tmp/cmake/cmake-3.13.3-Linux-x86_64/bin/cmake;
+      export CTEST=/tmp/cmake/cmake-3.13.3-Linux-x86_64/bin/ctest;
+      export CPACK=/tmp/cmake/cmake-3.13.3-Linux-x86_64/bin/cpack;
+      popd || exit 1;
+    fi
+  - if [[ $TRAVIS_OS_NAME = windows ]]; then
+      echo "Installing SDL2";
+      mkdir /tmp/sdl2/ || exit 1;
+      pushd /tmp/sdl2/ || exit 1;
+      wget https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz;
+      tar -xzf SDL2-devel-2.0.9-mingw.tar.gz SDL2-2.0.9/;
+      SDL2_ROOT="/tmp/sdl2/SDL2-2.0.9/";
       popd;
+      echo "Exporting CMake variables";
+      export CMAKE=cmake;
+      export CTEST=ctest;
+      export CPACK=cpack;
+      echo "Installing cmocka";
+      mkdir /tmp/cmocka/ || exit 1;
+      pushd /tmp/cmocka/ || exit 1;
+      wget https://cmocka.org/files/1.1/cmocka-1.1.3.tar.xz;
+      tar -xf cmocka-1.1.3.tar.xz cmocka-1.1.3/;
+      cd cmocka-1.1.3/ || exit 1;
+      mkdir build || exit 1;
+      cd build || exit 1;
+      $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG
+                -DCMAKE_INSTALL_PREFIX=/tmp/cmocka/install/
+                "${CMAKE_OPTS[@]}";
+      $CMAKE --build . --parallel;
+      $CMAKE --build . --target install --parallel;
+      CMOCKA_ROOT="/tmp/cmocka/install/"
+      popd;
+      CMAKE_OPTS+=("-DCMAKE_PREFIX_PATH=$SDL2_ROOT;$CMOCKA_ROOT");
     fi
 
 script:
