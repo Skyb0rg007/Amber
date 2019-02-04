@@ -57,7 +57,7 @@ install:
         export CC=clang-3.9;
       else
         export CC=gcc-8;
-      fi
+      fi;
       export CMAKE_OPTS=("-G" "Unix Makefiles");
       popd;
     fi
