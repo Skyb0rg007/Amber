@@ -34,25 +34,25 @@ matrix:
       compiler: clang
       env:
         - CONFIG=Release
-        - CMAKE_OPTS=("-G" "Unix Makefiles")
+        - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
     - os: linux
       compiler: clang-3.9
       env:
         - CONFIG=Release
-        - CMAKE_OPTS=("-G" "Unix Makefiles")
+        - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
     - os: linux
       compiler: gcc-8
       env:
         - CONFIG=Release
-        - CMAKE_OPTS=("-G" "Unix Makefiles")
+        - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
     - os: windows
       compiler: mingw
       env:
         - CONFIG=Release
-        - CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")
+        - 'CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")'
   exclude:
     env: REMOVE=1
 
