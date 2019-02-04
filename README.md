@@ -1,6 +1,8 @@
 # Amber
 ## A rendering engine with unrealistic goals
 
+[![Build Status](https://travis-ci.org/Skyb0rg007/Amber.svg?branch=master)](https://travis-ci.org/Skyb0rg007/Amber)
+
 The project was named after [The Cherno Project](https://www.youtube.com/user/TheChernoProject)'s
 Game Engine series. He definitely has a good idea on how to design a game engine,
 but I think focusing on working with C and Lua would lend for a better intro to
