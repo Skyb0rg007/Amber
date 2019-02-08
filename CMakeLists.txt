@@ -11,6 +11,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(CheckIPOSupported)
+include(AddAmberTest)
 
 # Enable LTO for release builds
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_reason LANGUAGES C)
@@ -22,6 +23,7 @@ endif()
 
 ## Configuration
 option(AB_GETTEXT_SUPPORT "Enable i18n through GNU gettext" OFF) # TODO
+option(AB_ENABLE_ASAN "Enable asan on tests" OFF)
 
 # Rpath support
 if(UNIX AND NOT APPLE)
