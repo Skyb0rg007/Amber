@@ -32,7 +32,7 @@ struct ECS_System {
     /* int system_mask; [> Your message id <] */
     /* enum ECS_System_thread_order thread_order; */
     /* const char *name; */
-    /* size_t message_size; */
+    size_t message_size;
 };
 
 struct ECS_SystemState;
@@ -51,6 +51,9 @@ int ECS_component_end(SystemCtx *ctx, unsigned comp_id, const void *current);
     for (comp = ECS_component_begin(ctx, comp_id); \
             !ECS_component_end(ctx, comp_id, comp); \
             comp = ECS_component_next(ctx, comp_id, comp))
+
+int ECS_msg_queue_pop(SystemCtx *ctx, void *elem);
+int ECS_msg_queue_push(SystemCtx *ctx, void *elem);
 
 unsigned ECS_entity_new(SystemCtx *ctx, unsigned comp_id);
 void *ECS_entity_get(SystemCtx *ctx, unsigned entity, unsigned comp_id);

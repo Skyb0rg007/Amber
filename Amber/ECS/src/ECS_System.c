@@ -1,16 +1,16 @@
 #include <Amber/ECS/ECS.h>
 #include <Amber/util/common.h>
 /* #include <Amber/util/vector.h> */
-/* #include <Amber/util/ring.h> */
+#include <Amber/util/ring.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <limits.h>
 
-/* struct MessageQueue {
+struct MessageQueue {
     struct AB_ring inbox;
     size_t elem_size;
     void *elems;
-}; */
+};
 
 #define ENTITY_COUNT 128
 
@@ -23,6 +23,7 @@ struct World {
 
 struct SystemCtx {
     struct World *world;
+    struct MessageQueue *msg_queue;
 };
 
 struct Component {
@@ -33,12 +34,12 @@ struct Component {
 struct ECS_SystemState {
     size_t num_systems;
     void **userdata;
+    struct MessageQueue *msg_queues;
     struct World world;
-    /* struct MessageQueue *inboxes; */
 };
 
-struct ECS_SystemState *
-ECS_initialize_systems(const struct ECS_System *systems, size_t system_count,
+struct ECS_SystemState * ECS_initialize_systems(
+        const struct ECS_System *systems, size_t system_count,
         const struct ECS_ComponentData *components, size_t component_count)
 {
     struct ECS_SystemState *state = malloc(sizeof *state);
@@ -46,7 +47,6 @@ ECS_initialize_systems(const struct ECS_System *systems, size_t system_count,
     state->num_systems = system_count;
     state->userdata = calloc(system_count, sizeof(void *));
     AB_ASSERT(state->userdata != NULL);
-    /* state->inboxes = calloc(count, sizeof(struct MessageQueue)); */
 
     /* Components / World */
     state->world.num_entities = 0;
@@ -66,19 +66,21 @@ ECS_initialize_systems(const struct ECS_System *systems, size_t system_count,
     ctx.world = &state->world;
 
     int status;
+    state->msg_queues = calloc(sizeof *state->msg_queues, system_count);
+    AB_ASSERT(state->msg_queues != NULL);
     for (int i = 0; i < system_count; i++) {
         status = systems[i].init(&ctx, &state->userdata[i]);
         if (status != 0)
             abort();
         
         /* message system */
-        /* if (systems[i].message_size > 0) {
-            struct MessageQueue *inbox = &state->inboxes[i];
+        if (systems[i].message_size > 0) {
+            struct MessageQueue *inbox = &state->msg_queues[i];
             inbox->elem_size = systems[i].message_size;
             inbox->elems = calloc(MESSAGEQUEUE_MAX, inbox->elem_size);
             AB_ASSERT(inbox->elems != NULL);
             AB_ring_init(&inbox->inbox, MESSAGEQUEUE_MAX);
-        } */
+        }
     }
 
     return state;
@@ -92,6 +94,7 @@ int ECS_run_systems(const struct ECS_System *systems, struct ECS_SystemState *st
 
     int status;
     for (int i = 0; i < num_systems; i++) {
+        ctx.msg_queue = &state->msg_queues[i];
         status = systems[i].run(&ctx, state->userdata[i]);
         if (status != 0)
             return 1;
@@ -100,7 +103,8 @@ int ECS_run_systems(const struct ECS_System *systems, struct ECS_SystemState *st
     return 0;
 }
 
-int ECS_cleanup_systems(const struct ECS_System *systems, struct ECS_SystemState *state)
+int ECS_cleanup_systems(const struct ECS_System *systems,
+        struct ECS_SystemState *state)
 {
     size_t num_systems = state->num_systems;
     int status;
@@ -108,12 +112,27 @@ int ECS_cleanup_systems(const struct ECS_System *systems, struct ECS_SystemState
         status = systems[i].cleanup(NULL, state->userdata[i]);
         if (status != 0)
             abort();
+
+        free(state->msg_queues[i].elems);
     }
 
+    free(state->msg_queues);
     free(state->userdata);
     free(state);
 
     return 0;
+}
+
+int ECS_msg_queue_push(SystemCtx *ctx, void *elem)
+{
+    return AB_ring_enqueue_sp(&ctx->msg_queue->inbox,
+            ctx->msg_queue->elems, elem, ctx->msg_queue->elem_size, NULL);
+}
+
+int ECS_msg_queue_pop(SystemCtx *ctx, void *elem)
+{
+    return AB_ring_dequeue_sc(&ctx->msg_queue->inbox,
+            ctx->msg_queue->elems, elem, ctx->msg_queue->elem_size);
 }
 
 void *ECS_component_begin(SystemCtx *ctx, unsigned comp_id)

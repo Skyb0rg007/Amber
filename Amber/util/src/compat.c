@@ -24,7 +24,7 @@ int AB_vasprintf(char **strp, const char *fmt, va_list args)
     int size = 0;
     va_list temp;
 
-    va_copy(temp, args); /* requires c99 */
+    AB_VA_COPY(temp, args); /* requires c99 */
 
     size = vsnprintf(NULL, 0, fmt, temp);
 

@@ -10,7 +10,7 @@ function! AddToInclude(dir)
     let &path .= ',' . a:true_dir
 endfunction
 
-let &path = '.,/usr/include'
+let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/'
 let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline'
 
 call AddToInclude('/usr/include/SDL2/')

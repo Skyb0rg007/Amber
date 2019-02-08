@@ -1,4 +1,5 @@
 #include <Amber/graphics/graphics.h>
+#include <Amber/ECS/ECS.h>
 #include <SDL.h>
 #include <assert.h>
 

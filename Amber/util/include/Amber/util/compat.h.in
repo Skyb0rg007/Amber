@@ -38,6 +38,7 @@
 
 /* strdup - duplicate a string */
 #cmakedefine AB_HAS_STRDUP
+#cmakedefine AB_HAS__STRDUP
 #if defined(AB_HAS_STRDUP)
 /* glibc - strdup */
 # ifndef _GNU_SOURCE
@@ -108,6 +109,34 @@ int AB_vasprintf(char **strp, const char *fmt, va_list va);
 char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 # define AB_STRTOK_R(str, delim, ctx) AB_strtok_r(str, delim, ctx)
 # define AB_NEED_STRTOK_R
+#endif
+
+/* va_copy - copy a va_list */
+#cmakedefine AB_HAS_VA_COPY
+#cmakedefine AB_HAS___VA_COPY
+#if defined(AB_HAS_VA_COPY)
+# include <stdarg.h>
+# define AB_VA_COPY(dest, src) va_copy(dest, src)
+#elif defined(AB_HAS___VA_COPY)
+# include <stdarg.h>
+# define AB_VA_COPY(dest, src) __va_copy(dest, src)
+#else
+/* Assume we can just do pointer assignment */
+# define AB_VA_COPY(dest, src) ((dest) = (src))
+#endif
+
+/* printf - printf with positional arguments */
+#cmakedefine AB_PRINTF_POSITIONAL
+#cmakedefine AB_HAS__PRINTF_P
+#if defined(AB_HAS__PRINTF_P)
+/* Windows has a separate function for positional printf */
+# include <stdio.h>
+# define AB_PRINTF(...) _printf_p(__VA_ARGS__)
+#elif defined(AB_PRINTF_POSITIONAL)
+# include <stdio.h>
+# define AB_PRINTF(...) printf(__VA_ARGS__)
+#else
+# error "No positional printf!"
 #endif
 
 #endif /* AMBER_UTIL_COMPAT_H */
