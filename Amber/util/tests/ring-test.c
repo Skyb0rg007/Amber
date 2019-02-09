@@ -23,8 +23,8 @@ int main(void)
     AB_ASSERT(rb);
 
     SDL_Thread *t1 = SDL_CreateThread(producer, "p1", NULL);
-    SDL_Thread *t2 = SDL_CreateThread(producer, "p2", NULL);
     SDL_Thread *t3 = SDL_CreateThread(consumer, "c1", NULL);
+    SDL_Thread *t2 = SDL_CreateThread(producer, "p2", NULL);
     SDL_Thread *t4 = SDL_CreateThread(consumer, "c2", NULL);
 
     SDL_WaitThread(t1, NULL);
@@ -39,6 +39,7 @@ int main(void)
         if (!res) break;
     }
 
+    free(rb);
     return 0;
 }
 

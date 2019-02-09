@@ -146,7 +146,3 @@ install(FILES src/lua.h src/luaconf.h src/lualib.h src/lauxlib.h lua.hpp
 install(TARGETS lua luac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Development)
 
-# Testing
-if(BUILD_TESTING)
-    add_subdirectory(tests)
-endif()

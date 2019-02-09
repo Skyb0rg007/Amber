@@ -77,6 +77,7 @@ int graphics_system_run(SystemCtx *ctx, void *userdata)
                     "xdg-open", "http://google.com");
             system(cmd);
             free(cmd);
+            AB_LOG_INFO("Finished opening up google!");
         }
 
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_i) {

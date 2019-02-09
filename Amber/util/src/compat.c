@@ -94,3 +94,57 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr)
     return str;
 }
 #endif
+
+#if defined(AB_NEED_GETLINE) || 1
+#include <stdlib.h>
+long AB_getline(char **lineptr, size_t *n, FILE *stream)
+{
+    char *ptr, *eptr;
+
+    if (lineptr == NULL || n == NULL || stream == NULL)
+        return -1;
+
+    if (*lineptr == NULL || *n == 0) {
+        *n = BUFSIZ;
+        *lineptr = malloc(*n);
+        if (*lineptr == NULL)
+            return -1;
+    }
+
+    ptr = *lineptr;
+    eptr = *lineptr + *n;
+    for (;;) {
+        int c = fgetc(stream);
+        if (c == EOF) {
+            if (feof(stream)) {
+                long diff = ptr - *lineptr;
+                if (diff != 0) {
+                    *ptr = '\0';
+                    return diff;
+                }
+            }
+            return -1;
+        }
+
+        *ptr++ = c;
+        if (c == '\n') {
+            *ptr = '\0';
+            return ptr - *lineptr;
+        }
+        if (ptr + 2 >= eptr) {
+            char *tmp;
+            size_t new_size = *n * 2;
+            long diff = ptr - *lineptr;
+
+            tmp = realloc(*lineptr, new_size);
+            if (tmp == NULL)
+                return -1;
+
+            *lineptr = tmp;
+            *n = new_size;
+            eptr = *lineptr + *n;
+            ptr = *lineptr + diff;
+        }
+    }
+}
+#endif

@@ -23,6 +23,7 @@ check_symbol_exists("strtok_s"   "string.h"  AB_HAS_STRTOK_S)  # Windows
 check_symbol_exists("va_copy"    "stdarg.h"  AB_HAS_VA_COPY)   # C99
 check_symbol_exists("__va_copy"  "stdarg.h"  AB_HAS___VA_COPY) # old systems
 check_symbol_exists("_printf_p"  "stdio.h"   AB_HAS__PRINTF_P) # Windows
+check_symbol_exists("getline"    "stdio.h"   AB_HAS_GETLINE)   # Posix
 if(NOT AB_HAS__PRINTF_P)
     try_run(test_ran test_compiled
         ${CMAKE_CURRENT_BINARY_DIR}/dev/printf_positional

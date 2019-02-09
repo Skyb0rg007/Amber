@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(Amber
     DESCRIPTION "A Game Engine written in C"
     VERSION 0.1
-    HOMEPAGE_URL "www.github.com"
+    HOMEPAGE_URL "https://github.com/Skyb0rg007/Amber"
     LANGUAGES C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -41,8 +41,8 @@ endif()
 # External dependencies
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
-find_package(SDL2 2.0.8 MODULE REQUIRED)                   # SDL2::SDL2
-find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot)
+find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
+find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
 if(AB_GETTEXT_SUPPORT)
     find_package(Intl MODULE REQUIRED) # gettext::intl
     include(Gettext_helpers) # configure_gettext()
@@ -56,7 +56,7 @@ add_subdirectory(thirdparty/klib/)      # klib::khash
 add_subdirectory(thirdparty/inih/)      # inih::inih
 add_subdirectory(thirdparty/sqlite3/)   # sqlite3::sqlite3
 add_subdirectory(thirdparty/lua-5.3/)   # lua::lua,luac,lualib,lualib-static
-add_subdirectory(thirdparty/ldoc/)      # ldoc_add_docs() (lua::luafilesystem)
+add_subdirectory(thirdparty/ldoc/)      # ldoc_add_docs()
 
 ldoc_add_docs(ldoc
     Amber/scripting/
@@ -68,16 +68,16 @@ if(NOT DEFINED BUILD_TESTING)
 endif()
 include(CTest)
 if(BUILD_TESTING)
-    find_package(cmocka CONFIG REQUIRED) # cmocka
+    find_package(cmocka 1.1.3 CONFIG REQUIRED) # cmocka
 endif()
 
 ## Libraries and executables
-add_subdirectory(Amber/util/     util/)     # Amber::util
-add_subdirectory(Amber/ECS/      ECS/)      # Amber::ECS
-add_subdirectory(Amber/graphics/ graphics/) # Amber::graphics
+add_subdirectory(Amber/util/      util/)      # Amber::util
+add_subdirectory(Amber/ECS/       ECS/)       # Amber::ECS
+add_subdirectory(Amber/graphics/  graphics/)  # Amber::graphics
 add_subdirectory(Amber/scripting/ scripting/) # Amber::scripting
-add_subdirectory(Amber/ui/       ui/)       # Amber::ui
-add_subdirectory(Amber/driver/   driver/)   # Amber::driver
+add_subdirectory(Amber/ui/        ui/)        # Amber::ui
+add_subdirectory(Amber/driver/    driver/)    # Amber::driver
 
 ## Documentation
 if(DOXYGEN_FOUND)

@@ -139,4 +139,22 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 # error "No positional printf!"
 #endif
 
+/* getline - read a dynamically-allocated line from a FILE */
+#cmakedefine AB_HAS_GETLINE
+#if defined(AB_HAS_GETLINE)
+/* Posix returns a 'ssize_t', cast to long because ssize_t isn't portable */
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <stdio.h>
+# define AB_GETLINE(lineptr, n, stream) (long)getline(lineptr, n, stream)
+#else
+/* Fallback - own implementation */
+# include <stdio.h>
+# include <stddef.h>
+long AB_getline(char **lineptr, size_t *n, FILE *stream);
+# define AB_GETLINE(lineptr, n, stream) AB_getline(lineptr, n, stream)
+# define AB_NEED_GETLINE
+#endif
+
 #endif /* AMBER_UTIL_COMPAT_H */

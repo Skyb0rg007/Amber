@@ -16,20 +16,17 @@ add_amber_test(Amber.util.minimal-race-stdatomic
     SOURCES minimal-ring-race-stdatomic.c
     LINK_LIBRARIES SDL2::SDL2
     COMPILE_FEATURES c_std_11
-    COMPILE_OPTIONS -fsanitize=thread
-    LINK_OPTIONS -fsanitize=thread)
+    SANITIZER thread)
 
 add_amber_test(Amber.util.hashtable-test
     SOURCES hashtable-test.c
     LINK_LIBRARIES SDL2::SDL2 Amber::util klib::khash
-    COMPILE_FEATURES c_std_99
-    COMPILE_OPTIONS -Wall -Wextra -pedantic -Wconversion)
+    COMPILE_FEATURES c_std_99)
 
 add_amber_test(Amber.util.vector-test
     SOURCES vector-test.c
     LINK_LIBRARIES SDL2::SDL2 Amber::util
-    COMPILE_FEATURES c_std_99
-    COMPILE_OPTIONS -Wall -Wextra asd asd)
+    COMPILE_FEATURES c_std_99)
 
 # add_amber_test(Amber.util.noise-test
     # SOURCES noise-test.c
@@ -54,5 +51,5 @@ add_amber_test(Amber.util.vector-test
 
 add_amber_test(Amber.util.mocking
     SOURCES mocking-test.c
-    LINK_LIBRARIES cmocka Amber::util
+    LINK_LIBRARIES Amber::util
     COMPILE_FEATURES c_std_99)

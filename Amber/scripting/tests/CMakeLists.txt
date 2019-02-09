@@ -1,7 +1,7 @@
 
-add_executable(script-config-test
-    config-test.c)
-target_link_libraries(script-config-test
-    PRIVATE Amber::scripting Amber::util)
-add_test(Amber.scripting.config 
-    script-config-test ${CMAKE_CURRENT_SOURCE_DIR}/config-test.lua)
+add_amber_test(Amber.scripting.config-test
+    SOURCES config-test.c
+    LINK_LIBRARIES Amber::scripting Amber::util
+    COMPILE_FEATURES c_std_99
+    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/config-test.lua)
+
