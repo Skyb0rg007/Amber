@@ -68,7 +68,7 @@ if(NOT DEFINED BUILD_TESTING)
 endif()
 include(CTest)
 if(BUILD_TESTING)
-    find_package(cmocka 1.1.3 CONFIG REQUIRED) # cmocka
+    find_package(cmocka CONFIG REQUIRED) # cmocka
 endif()
 
 ## Libraries and executables

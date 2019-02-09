@@ -58,6 +58,7 @@ Testing: (ensure you have [cmocka](https://cmocka.org/) installed)
     $ ctest --output-on-failure                     # Run all tests
     $ ctest --output-on-failure -R Amber.util       # Run the Amber::util tests
     $ ctest --output-on-failure -L basic            # Run basic tests
+    $ ctest --output-on-failure -T MemCheck         # Run tests through Valgrind
 
 Packaging:
 
