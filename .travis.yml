@@ -49,7 +49,7 @@ matrix:
         - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
     - os: windows
-      compiler: mingw
+      compiler: gcc
       env:
         - CONFIG=Release
         - 'CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")'
