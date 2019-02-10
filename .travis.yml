@@ -78,7 +78,7 @@ install:
       popd || exit 1;
     fi
   - if [[ $TRAVIS_OS_NAME = windows ]]; then
-      . ./dev/ci_win_deps.sh
+      . ./dev/ci_win_deps.sh;
     fi
 
 script:
