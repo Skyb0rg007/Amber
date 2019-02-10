@@ -84,13 +84,12 @@ install:
       echo "Installing CMake";
       mkdir /tmp/cmake/;
       pushd /tmp/cmake/ || exit 1;
-      wget https://github.com/Kitware/CMake/releases/download/v3.13.4/cmake-3.13.4-win64-x64.zip;
-      7z e -y cmake-3.13.4-win64-x64.zip;
+      wget https://github.com/Kitware/CMake/releases/download/v3.14.0-rc1/cmake-3.14.0-rc1-win64-x64.zip;
+      7z e -y cmake-3.14.0-rc1-win64-x64;
       ls -lt;
-      ls ./cmake-*/bin/;
-      export CMAKE="$PWD/cmake-3.13.4-win64-x64/bin/cmake.exe";
-      export CTEST="$PWD/cmake-3.13.4-win64-x64/bin/ctest.exe";
-      export CPACK="$PWD/cmake-3.13.4-win64-x64/bin/cpack.exe";
+      export CMAKE="$PWD/cmake-3.14.0-rc1-win64-x64/bin/cmake.exe";
+      export CTEST="$PWD/cmake-3.14.0-rc1-win64-x64/bin/ctest.exe";
+      export CPACK="$PWD/cmake-3.14.0-rc1-win64-x64/bin/cpack.exe";
       popd;
 
       echo "Installing SDL2";
