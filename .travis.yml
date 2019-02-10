@@ -85,7 +85,7 @@ install:
       mkdir /tmp/cmake/;
       pushd /tmp/cmake/ || exit 1;
       wget https://github.com/Kitware/CMake/releases/download/v3.13.4/cmake-3.13.4-win64-x64.zip;
-      7z e cmake-3.13.4-win64-x64.zip;
+      7z e -y cmake-3.13.4-win64-x64.zip;
       export CMAKE="$PWD/cmake-3.13.4-win64-x64/bin/cmake.exe";
       export CTEST="$PWD/cmake-3.13.4-win64-x64/bin/ctest.exe";
       export CPACK="$PWD/cmake-3.13.4-win64-x64/bin/cpack.exe";
@@ -105,7 +105,7 @@ install:
       pushd /tmp/cmocka/ || exit 1;
       wget https://cmocka.org/files/1.1/cmocka-1.1.3.tar.xz;
       ls -lt;
-      7z e cmocka-1.1.3.tar.xz && 7z x cmocka-1.1.3.tar;
+      7z e -y cmocka-1.1.3.tar.xz && 7z x -y cmocka-1.1.3.tar;
       ls -lt;
       cd cmocka-1.1.3/ || exit 1;
       mkdir build || exit 1;
