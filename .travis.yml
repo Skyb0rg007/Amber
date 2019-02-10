@@ -122,7 +122,7 @@ script:
   - $CMAKE --version
   - $CC --version
   - mkdir build && cd build
-  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON "${CMAKE_OPTS[@]}"
+  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON -G "MinGW Makefiles" -DCMAKE_SH=CMAKE_SH-NOTFOUND
   - $CMAKE --build . --parallel
   - $CTEST --output-on-failure
   - $CMAKE --build . --target docs --parallel

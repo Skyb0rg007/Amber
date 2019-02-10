@@ -11,7 +11,7 @@ struct person {
     struct AB_hlist_node node;
 };
 
-static AB_HASHTABLE_DEFINE(my_ht, 8);
+static AB_HASHTABLE_DEFINE(my_ht, 4);
 
 static void insert_delete(void **data)
 {
@@ -23,12 +23,20 @@ static void insert_delete(void **data)
         person->id = i;
         AB_hlist_node_init(&person->node);
 
-        AB_hash_add(my_ht, &person->node, person->id);
+        uint32_t hash = AB_fnv_hash_str(person->name);
+
+        AB_hash_add(my_ht, &person->node, hash);
     }
 
     unsigned bkt;
     struct person *p;
     AB_hash_foreach(my_ht, bkt, p, struct person, node) {
+        fprintf(stderr, "%s: %d\n", p->name, p->id);
+    }
+
+    fprintf(stderr, "Searching for 'Person #4'\n");
+    uint32_t hash = AB_fnv_hash_str("Person #4");
+    AB_hash_foreach_possible(my_ht, p, struct person, node, hash) {
         fprintf(stderr, "%s: %d\n", p->name, p->id);
     }
 

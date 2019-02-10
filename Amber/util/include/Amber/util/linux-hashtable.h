@@ -4,7 +4,7 @@
 #include <Amber/util/common.h>
 #include <Amber/util/hlist.h>
 #include <stddef.h>
-
+#include <stdint.h>
 
 /* Fixed-size hashtable with chaining */
 
@@ -38,6 +38,11 @@ static inline void AB_hash_del(struct AB_hlist_node *node);
 
 #define AB_hash_foreach_possible(ht, obj, type, member, hash)
 #define AB_hash_foreach_possible_safe(ht, obj, tmp, type, member, hash)
+
+/* Hashing functions */
+static inline uint32_t AB_fnv_hash_str(const char *str);
+static inline uint32_t AB_hash32(uint32_t val);
+static inline uint32_t AB_hash64(uint64_t val);
 
 /***************************
  * Implementation
@@ -96,5 +101,25 @@ static inline void AB_hash_del(struct AB_hlist_node *node) {
 #undef AB_hash_foreach_possible_safe
 #define AB_hash_foreach_possible_safe(ht, obj, tmp, type, member, hash) \
     AB_hlist_foreach_entry_safe(obj, tmp, &(ht)[(hash) % AB_HASH_SIZE(ht)], type, member)
+
+static inline uint32_t AB_fnv_hash_str(const char *str) {
+    const uint32_t FNV_PRIME = 16777619u;
+    const uint32_t FNV_OFFSET_BASIS = 2166136261u;
+
+    uint32_t hash = FNV_OFFSET_BASIS;
+    while (*str) {
+        hash ^= *str++;
+        hash *= FNV_PRIME;
+    }
+    return hash;
+}
+static inline uint32_t AB_hash32(uint32_t val) {
+    const uint32_t GOLDEN_RATIO_32 = 0x61C88647;
+    return val * GOLDEN_RATIO_32;
+}
+static inline uint32_t AB_hash64(uint64_t val) {
+    const uint64_t GOLDEN_RATIO_64 = 0x61C8864680B583EB;
+    return val * GOLDEN_RATIO_64;
+}
 
 #endif /* AMBER_UTIL_LINUX_HASHTABLE_H */
