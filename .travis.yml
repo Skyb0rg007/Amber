@@ -94,7 +94,7 @@ install:
       export CMAKE=cmake;
       export CTEST=ctest;
       export CPACK=cpack;
-      echo "CMAKE_OPTS: ${#CMAKE_OPTS} - ${CMAKE_OPTS[*]}";
+      echo "CMAKE_OPTS ${#CMAKE_OPTS}  ${CMAKE_OPTS[*]}";
 
       echo "Installing cmocka";
       mkdir /tmp/cmocka/;
