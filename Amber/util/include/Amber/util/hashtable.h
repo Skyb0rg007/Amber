@@ -430,20 +430,6 @@ enum {
 /** @cond false */
 #define AB_ht_begin(ht)       ((int32_t)0)
 #define AB_ht_end(ht)         ((ht)->n_buckets)
-static AB_HT_INLINE int32_t AB_ht_next(void *ht_void, int32_t k) {
-    struct {
-        int32_t n_buckets, size, n_occupied, upper_bound;
-        int32_t *flags;
-        void *keys;
-        void *vals;
-    } *ht = ht_void;
-
-    do {
-        k++;
-    } while (k != AB_ht_end(ht) && !AB_ht_exists(ht, k));
-
-    return k;
-}
 /** @endcond */
 
 /** @brief Iterate over valid hashtable indexes
@@ -451,12 +437,11 @@ static AB_HT_INLINE int32_t AB_ht_next(void *ht_void, int32_t k) {
  * @param ht The hashtable
  */
 #define AB_ht_foreach(k, ht) \
-    for ((k) = AB_ht_begin(ht); (k) != AB_ht_end(ht); (k) = AB_ht_next(ht, k))
-
-/* #define test_hashfn(x) x */
-/* #define test_hasheq(x,y) (x == y) */
-/* AB_HT_DECLARE_TYPE(test, int, unsigned long) */
-/* AB_HT_DECLARE_PROTOTYPES(test, int, unsigned long) */
-/* AB_HT_DECLARE_IMPLEMENTATION(test, extern, int, unsigned long, 1, test_hashfn, test_hasheq) */
+    for ((k) = AB_ht_begin(ht); \
+            (k) != AB_ht_end(ht); \
+            (k)++) \
+        if (!AB_ht_exists(ht, k)) \
+            (void)0; \
+        else
 
 #endif /* AMBER_UTIL_HASHTABLE_H */

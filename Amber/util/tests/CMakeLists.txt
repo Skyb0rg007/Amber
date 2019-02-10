@@ -53,3 +53,8 @@ add_amber_test(Amber.util.mocking
     SOURCES mocking-test.c
     LINK_LIBRARIES Amber::util
     COMPILE_FEATURES c_std_99)
+
+add_amber_test(Amber.util.linux-hashtable
+    SOURCES linux-hashtable-test.c
+    LINK_LIBRARIES Amber::util
+    COMPILE_FEATURES c_std_99)

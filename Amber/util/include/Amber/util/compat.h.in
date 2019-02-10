@@ -157,4 +157,21 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream);
 # define AB_NEED_GETLINE
 #endif
 
+#cmakedefine AB_HAS_POPEN
+#cmakedefine AB_HAS__POPEN
+#if defined(AB_HAS_POPEN)
+# ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
+# include <stdio.h>
+# define AB_POPEN(cmd, mode) popen(cmd, mode)
+# define AB_PCLOSE(fd)       pclose(fp)
+#elif defined(AB_HAS__POPEN)
+# include <stdio.h>
+# define AB_POPEN(cmd, mode) _popen(cmd, mode)
+# define AB_PCLOSE(fd)       _pclose(fp)
+#else
+# error "Neither popen() nor _popen() are available!"
+#endif
+
 #endif /* AMBER_UTIL_COMPAT_H */

@@ -9,7 +9,15 @@
 /************************************************
  * Convenience Macros
  ************************************************/
-#define AB_ARRAY_SIZE(arr) (sizeof (arr) / sizeof ((arr)[0]))
+#if AB_COMPILER_IS_GNU || AB_COMPILER_IS_Clang || AB_COMPILER_IS_AppleClang
+/* Type-safe ARRAY_SIZE macro */
+# define AB_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + \
+        sizeof(__typeof__(int[1 - 2 * \
+                __builtin_types_compatible_p(__typeof__(arr), \
+                    __typeof__(&arr[0]))])) * 0)
+#else
+# define AB_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#endif
 #define AB_DEGREES(X) ((X) * 180.0 / PI)
 #define AB_RADIANS(X) ((X) * PI / 180.0)
 #define AB_MAX(X, Y) (X > Y ? X : Y)
