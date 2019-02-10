@@ -85,7 +85,7 @@ install:
       mkdir /tmp/cmake/;
       pushd /tmp/cmake/ || exit 1;
       wget https://github.com/Kitware/CMake/releases/download/v3.14.0-rc1/cmake-3.14.0-rc1-win64-x64.zip;
-      7z e -y cmake-3.14.0-rc1-win64-x64;
+      7z e -y cmake-3.14.0-rc1-win64-x64.zip;
       ls -lt;
       export CMAKE="$PWD/cmake-3.14.0-rc1-win64-x64/bin/cmake.exe";
       export CTEST="$PWD/cmake-3.14.0-rc1-win64-x64/bin/ctest.exe";
