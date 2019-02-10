@@ -94,6 +94,7 @@ install:
       export CMAKE=cmake;
       export CTEST=ctest;
       export CPACK=cpack;
+      echo "CMAKE_OPTS: ${#CMAKE_OPTS} - ${CMAKE_OPTS[*]}";
 
       echo "Installing cmocka";
       mkdir /tmp/cmocka/;
@@ -107,7 +108,7 @@ install:
       cd build || exit 1;
       $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG
                 -DCMAKE_INSTALL_PREFIX=/tmp/cmocka/install/
-                "${CMAKE_OPTS[@]}";
+                -G "MinGW Makefiles" -DCMAKE_SH=CMAKE_SH-NOTFOUND;
       $CMAKE --build . --parallel;
       $CMAKE --build . --target install;
       CMOCKA_ROOT="/tmp/cmocka/install/";
