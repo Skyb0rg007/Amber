@@ -49,7 +49,7 @@ matrix:
         - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
     - os: windows
-      compiler: gcc
+      compiler: mingw
       env:
         - CONFIG=Release
         - 'CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")'
@@ -78,9 +78,41 @@ install:
       popd || exit 1;
     fi
   - if [[ $TRAVIS_OS_NAME = windows ]]; then
+      echo "Installing 7zip";
+      choco install 7zip.portable;
+
+      echo "Installing SDL2";
+      mkdir /tmp/sdl2/;
+      pushd /tmp/sdl2/ || exit 1;
+      wget https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz;
+      tar -xzf SDL2-devel-2.0.9-mingw.tar.gz SDL2-2.0.9/;
+      SDL2_ROOT="/tmp/sdl2/SDL2-2.0.9/";
       ls -lt;
-      . ./dev/ci_win_deps.sh;
-      sh ./dev/ci_win_deps.sh;
+      popd;
+
+      echo "Exporting CMake variables";
+      export CMAKE=cmake;
+      export CTEST=ctest;
+      export CPACK=cpack;
+
+      echo "Installing cmocka";
+      mkdir /tmp/cmocka/;
+      pushd /tmp/cmocka/ || exit 1;
+      wget https://cmocka.org/files/1.1/cmocka-1.1.3.tar.xz;
+      ls -lt;
+      7z e cmocka-1.1.3.tar.xz && 7z x cmocka-1.1.3.tar;
+      ls -lt;
+      cd cmocka-1.1.3/ || exit 1;
+      mkdir build || exit 1;
+      cd build || exit 1;
+      $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG
+                -DCMAKE_INSTALL_PREFIX=/tmp/cmocka/install/
+                "${CMAKE_OPTS[@]}";
+      $CMAKE --build . --parallel;
+      $CMAKE --build . --target install;
+      CMOCKA_ROOT="/tmp/cmocka/install/";
+      popd;
+      CMAKE_OPTS+=("-DCMAKE_PREFIX_PATH=$SDL2_ROOT;$CMOCKA_ROOT");
     fi
 
 script:
