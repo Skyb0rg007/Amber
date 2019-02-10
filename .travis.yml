@@ -81,11 +81,15 @@ install:
       echo "Installing 7zip";
       choco install 7zip.portable;
 
+      echo "Installing CMake";
+      mkdir /tmp/cmake/;
+      pushd /tmp/cmake/ || exit 1;
       wget https://github.com/Kitware/CMake/releases/download/v3.13.4/cmake-3.13.4-win64-x64.zip;
       7z e cmake-3.13.4-win64-x64.zip;
       export CMAKE="$PWD/cmake-3.13.4-win64-x64/bin/cmake.exe";
       export CTEST="$PWD/cmake-3.13.4-win64-x64/bin/ctest.exe";
       export CPACK="$PWD/cmake-3.13.4-win64-x64/bin/cpack.exe";
+      popd;
 
       echo "Installing SDL2";
       mkdir /tmp/sdl2/;
@@ -95,12 +99,6 @@ install:
       SDL2_ROOT="/tmp/sdl2/SDL2-2.0.9/";
       ls -lt;
       popd;
-
-      echo "Exporting CMake variables";
-      export CMAKE=cmake;
-      export CTEST=ctest;
-      export CPACK=cpack;
-      echo "CMAKE_OPTS ${#CMAKE_OPTS}  ${CMAKE_OPTS[*]}";
 
       echo "Installing cmocka";
       mkdir /tmp/cmocka/;
