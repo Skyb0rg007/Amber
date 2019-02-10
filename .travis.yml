@@ -81,6 +81,12 @@ install:
       echo "Installing 7zip";
       choco install 7zip.portable;
 
+      wget https://github.com/Kitware/CMake/releases/download/v3.13.4/cmake-3.13.4-win64-x64.zip;
+      7z e cmake-3.13.4-win64-x64.zip;
+      export CMAKE="$PWD/cmake-3.13.4-win64-x64/bin/cmake.exe";
+      export CTEST="$PWD/cmake-3.13.4-win64-x64/bin/ctest.exe";
+      export CPACK="$PWD/cmake-3.13.4-win64-x64/bin/cpack.exe";
+
       echo "Installing SDL2";
       mkdir /tmp/sdl2/;
       pushd /tmp/sdl2/ || exit 1;
