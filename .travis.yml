@@ -48,11 +48,11 @@ matrix:
         - CONFIG=Release
         - 'CMAKE_OPTS=("-G" "Unix Makefiles")'
 
-    - os: windows
-      compiler: gcc
-      env:
-        - CONFIG=Release
-        - 'CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")'
+ #    - os: windows
+ #      compiler: gcc
+ #      env:
+ #        - CONFIG=Release
+ #        - 'CMAKE_OPTS=("-G" "MinGW Makefiles" "-DCMAKE_SH=CMAKE_SH-NOTFOUND")'
   exclude:
     env: REMOVE=1
 
@@ -90,6 +90,7 @@ install:
       export CMAKE="$PWD/cmake-3.14.0-rc1-win64-x64/bin/cmake.exe";
       export CTEST="$PWD/cmake-3.14.0-rc1-win64-x64/bin/ctest.exe";
       export CPACK="$PWD/cmake-3.14.0-rc1-win64-x64/bin/cpack.exe";
+      echo "CMAKE = ${CMAKE}";
       popd;
 
       echo "Installing SDL2";
