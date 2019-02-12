@@ -4,7 +4,7 @@
 
 int main(void)
 {
-    AB_vec(int) my_vec = AB_VEC_INIT;
+    AB_vec(int) my_vec = AB_VEC_INITIALIZER;
 
     for (int i = 0; i < 20; i++) {
         int ret = AB_vec_push(&my_vec, i);
@@ -21,14 +21,16 @@ int main(void)
         *a = i * 2;
     }
 
-    printf("vec: { .size = %zu, .capacity = %zu }\n",
-            AB_vec_size(&my_vec), AB_vec_max(&my_vec));
+    printf("vec: { .size = %u, .capacity = %u }\n",
+            AB_vec_size(&my_vec), AB_vec_capacity(&my_vec));
 
     while (AB_vec_size(&my_vec) > 0) {
-        printf("pop -> %d\n", AB_vec_pop(&my_vec));
+        int val;
+        AB_vec_pop(&my_vec, &val);
+        printf("pop -> %d\n", val);
     }
 
-    AB_vec(unsigned) another_vec = AB_VEC_INIT;
+    AB_vec(unsigned) another_vec = AB_VEC_INITIALIZER;
     AB_vec_copy(&another_vec, &my_vec);
 
     AB_vec_destroy(&my_vec);

@@ -45,10 +45,6 @@
 
 #define AB_LOG_SETLEVEL(X) SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, X)
 
-#ifdef static_assert
-    #define AB_STATIC_ASSERT(cond, msg) static_assert(cond, msg)
-#else
-    #define AB_STATIC_ASSERT(cond, msg) typedef char static_assert_##__LINE__[(cond)?1:-1]
-#endif
+#define AB_STATIC_ASSERT(cond) (sizeof(char[1 - 2 * !(cond)]) * 0)
 
 #endif /* AMBER_UTIL_COMMON_H */

@@ -36,10 +36,10 @@ function(add_amber_test target_name)
     endif()
 
     # Add additional warnings
-    if(C_COMPILER_ID MATCHES "(GNU|AppleClang|Clang)")
+    if(CMAKE_C_COMPILER_ID MATCHES "(GNU|AppleClang|Clang)")
         target_compile_options("${target_name}"
             PRIVATE "-Wall" "-Wextra" "-pedantic")
-    elseif(C_COMPILER_ID STREQUAL MSVC)
+    elseif(CMAKE_C_COMPILER_ID STREQUAL MSVC)
         target_compile_options("${target_name}"
             PRIVATE "/W3")
     endif()

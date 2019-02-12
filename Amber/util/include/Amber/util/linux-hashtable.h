@@ -92,7 +92,7 @@ static inline void AB_hash_del(struct AB_hlist_node *node) {
     for ((bkt) = 0, (obj) = NULL; \
             (obj) == NULL && (bkt) < AB_HASH_SIZE(ht); \
             (bkt)++) \
-        AB_hlist_foreach_entry_safe(obj, tmp, &ht[bkt], type, member)
+        AB_hlist_foreach_entry_safe(obj, tmp, &(ht)[bkt], type, member)
 
 #undef AB_hash_foreach_possible
 #define AB_hash_foreach_possible(ht, obj, type, member, hash) \

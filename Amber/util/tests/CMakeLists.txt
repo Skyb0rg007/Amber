@@ -58,3 +58,8 @@ add_amber_test(Amber.util.linux-hashtable
     SOURCES linux-hashtable-test.c
     LINK_LIBRARIES Amber::util
     COMPILE_FEATURES c_std_99)
+
+add_amber_test(Amber.util.linux-hashtable-concurrent
+    SOURCES linux-hashtable-concurrent.c
+    LINK_LIBRARIES Amber::util SDL2::SDL2
+    COMPILE_FEATURES c_std_99)

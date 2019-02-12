@@ -10,6 +10,9 @@ function! AddToInclude(dir)
     let &path .= ',' . a:true_dir
 endfunction
 
+let c_gnu = 1
+let c_no_c11 = 1
+
 let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/'
 let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline'
 
@@ -19,6 +22,7 @@ call AddToInclude('thirdparty/glad/include/')
 call AddToInclude('thirdparty/stb_image/include/')
 call AddToInclude('thirdparty/klib/include/')
 call AddToInclude('thirdparty/cmocka/include/')
+call AddToInclude('thirdparty/cglm/include/')
 call AddToInclude('Amber/driver/include/')
 call AddToInclude('Amber/ECS/include/')
 call AddToInclude('Amber/graphics/include/')
@@ -34,5 +38,7 @@ augroup project
 
     autocmd BufRead,BufNewFile *.h.in ALEDisableBuffer
     autocmd BufRead,BufNewFile *.h.in set filetype=c.doxygen
+
+    autocmd BufRead,BufNewFile *.y set filetype=lemon
 augroup END
 
