@@ -20,7 +20,7 @@ add_amber_test(Amber.util.minimal-race-stdatomic
 
 add_amber_test(Amber.util.hashtable-test
     SOURCES hashtable-test.c
-    LINK_LIBRARIES SDL2::SDL2 Amber::util klib::khash
+    LINK_LIBRARIES SDL2::SDL2 Amber::util 
     COMPILE_FEATURES c_std_99)
 
 add_amber_test(Amber.util.vector-test

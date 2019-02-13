@@ -38,22 +38,21 @@ if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 endif()
 
 ## Dependencies
-# External dependencies
+# External dependencies (not in source tree)
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
+find_package(ZLIB 1.2 MODULE REQUIRED)   # ZLIB::ZLIB
 find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
 if(AB_GETTEXT_SUPPORT)
     find_package(Intl MODULE REQUIRED) # gettext::intl
     include(Gettext_helpers) # configure_gettext()
 endif()
 
-# Internal dependencies
+# Internal dependencies (in source tree)
 add_subdirectory(thirdparty/nuklear/)   # nk::nuklear
 add_subdirectory(thirdparty/glad/)      # glad::glad
-add_subdirectory(thirdparty/stb_image/) # stb::stb_image
-add_subdirectory(thirdparty/klib/)      # klib::khash
-add_subdirectory(thirdparty/inih/)      # inih::inih
+add_subdirectory(thirdparty/stb/)       # stb::stb_image
 add_subdirectory(thirdparty/sqlite3/)   # sqlite3::sqlite3
 add_subdirectory(thirdparty/lua-5.3/)   # lua::lua,luac,lualib,lualib-static
 add_subdirectory(thirdparty/ldoc/)      # ldoc_add_docs()

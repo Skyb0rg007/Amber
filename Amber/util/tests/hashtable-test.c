@@ -1,7 +1,6 @@
 #include <Amber/util/common.h>
 #include <Amber/util/hashtable.h>
 #include <SDL_thread.h>
-/* #include <khash.h> */
 #include <inttypes.h>
 #include <stddef.h>
 #include <setjmp.h>
