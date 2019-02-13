@@ -9,8 +9,14 @@
 int main(int argc, char *argv[])
 {
     FILE *infile = argc > 1 ? fopen(argv[1], "rt") : stdin;
+    if (!infile)
+        return 1;
     struct AB_mesh_info info;
-    AB_load_obj(infile, &info);
+    int ret = AB_load_obj(infile, &info);
+    if (ret != 0) {
+        fclose(infile);
+        return 1;
+    }
 
     printf("info: { .name = %s, #vertices = %u, #tex_coords = %u, #normals = %u }\n",
             info.name,

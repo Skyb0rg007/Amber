@@ -42,8 +42,6 @@ endif()
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
-find_package(Lemon 1.0 MODULE REQUIRED)  # LEMON_EXECUTABLE, LEMON_TEMPLATE
-find_package(FLEX 2.6 MODULE REQUIRED)   # FLEX_EXECUTABLE
 find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
 if(AB_GETTEXT_SUPPORT)
     find_package(Intl MODULE REQUIRED) # gettext::intl

@@ -1,45 +1,8 @@
 
-add_custom_command(
-    OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/objparse.c
-        ${CMAKE_CURRENT_BINARY_DIR}/objparse.h
-    COMMAND
-        ${LEMON_EXECUTABLE}
-            -d${CMAKE_CURRENT_BINARY_DIR}
-            -T${LEMON_TEMPLATE}
-            src/objparse.y
-    WORKING_DIRECTORY
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    MAIN_DEPENDENCY
-        src/objparse.y
-    BYPRODUCTS
-        ${CMAKE_CURRENT_BINARY_DIR}/objparse.out
-    )
-
-add_custom_command(
-    OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/objlex.c
-        ${CMAKE_CURRENT_BINARY_DIR}/objlex.h
-    COMMAND
-        ${FLEX_EXECUTABLE}
-            --outfile=${CMAKE_CURRENT_BINARY_DIR}/objlex.c
-            --header-file=${CMAKE_CURRENT_BINARY_DIR}/objlex.h
-            src/objlex.l
-    WORKING_DIRECTORY
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    DEPENDS
-        ${CMAKE_CURRENT_BINARY_DIR}/objparse.c
-    MAIN_DEPENDENCY
-        src/objlex.l
-    )
-
 add_library(objloader
-    ${CMAKE_CURRENT_BINARY_DIR}/objlex.c
-    ${CMAKE_CURRENT_BINARY_DIR}/objparse.c)
+    src/objloader.c)
 target_include_directories(objloader
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(objloader
     PRIVATE c_std_99)
 target_link_libraries(objloader
