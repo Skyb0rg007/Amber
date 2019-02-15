@@ -1,5 +1,6 @@
 #include <Amber/util/common.h>
-#include <Amber/ECS/ECS.h>
+#include <Amber/ECS/world.h>
+#include <Amber/ECS/inbox.h>
 #include <Amber/graphics/graphics.h>
 #include <SDL.h>
 #include <stdlib.h>
@@ -16,9 +17,8 @@ struct graphics_data {
     char *pref_path;
 };
 
-int graphics_system_init(SystemCtx *_ctx, void **userdata)
+int graphics_system_init(struct AB_ECS_system *self)
 {
-    (void)_ctx;
     int status;
 
     struct graphics_data *data = malloc(sizeof *data);
@@ -38,30 +38,39 @@ int graphics_system_init(SystemCtx *_ctx, void **userdata)
     data->base_path = SDL_GetBasePath();
     data->pref_path = SDL_GetPrefPath(AMBER_ORG, AMBER_APP);
 
-    *userdata = data;
+    self->userdata = data;
     return 0;
 }
 
-int graphics_system_cleanup(SystemCtx *_ctx, void *userdata)
+int graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *self)
 {
-    (void)_ctx;
-    struct graphics_data *data = userdata;
+    (void)world;
+    struct graphics_data *data = self->userdata;
 
     SDL_DestroyRenderer(data->renderer);
     SDL_DestroyWindow(data->win);
+    free(data);
     SDL_Quit();
 
     return 0;
 }
 
-int graphics_system_run(SystemCtx *ctx, void *userdata)
+int graphics_system_message_handler(struct AB_ECS_world *world, 
+        void *message, struct AB_ECS_system *self)
 {
-    struct graphics_data *data = userdata;
-    (void)data;
+    (void)world; (void)self;
+    struct graphics_msg *msg = message;
+    fprintf(stderr, "Got sync message { .a = %d }\n", msg->a);
+    return 0;
+}
+
+int graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
+{
+    struct graphics_data *data = self->userdata;
 
     struct graphics_msg msg;
-    if (ECS_msg_queue_pop(ctx, &msg)) {
-        fprintf(stderr, "Got message: %d\n", msg.a);
+    AB_ECS_foreach_message(&msg, self) {
+        fprintf(stderr, "Got async message { .a = %d }\n", msg.a);
     }
 
     SDL_Event e;
@@ -80,9 +89,14 @@ int graphics_system_run(SystemCtx *ctx, void *userdata)
             AB_LOG_INFO("Finished opening up google!");
         }
 
-        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_i) {
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_a) {
             msg.a = time(NULL);
-            ECS_msg_queue_push(ctx, &msg);
+            AB_ECS_send_message_async(world, AB_GRAPHICS_SYSTEM_ID, &msg, sizeof msg);
+        }
+
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_s) {
+            msg.a = time(NULL);
+            AB_ECS_send_message_sync(world, AB_GRAPHICS_SYSTEM_ID, &msg, sizeof msg);
         }
     }
 

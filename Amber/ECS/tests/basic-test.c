@@ -1,7 +1,8 @@
-#include <Amber/ECS/ECS.h>
+#include <Amber/ECS/world.h>
 #include <stdio.h>
 #include <limits.h>
 
+#if 0
 struct Position {
     int x, y;
 };
@@ -42,6 +43,8 @@ struct ECS_System print_system = {
     .cleanup = print_cleanup,
     .run = print_run
 };
+
+#endif
 
 int main(void)
 {

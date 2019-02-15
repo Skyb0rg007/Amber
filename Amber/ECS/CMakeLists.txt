@@ -1,12 +1,13 @@
 
 add_library(ECS
-    src/ECS_System.c)
+    src/world.c
+    )
 target_include_directories(ECS
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(ECS
     PRIVATE c_std_99)
 target_link_libraries(ECS
-    PRIVATE Amber::util)
+    PUBLIC Amber::util)
 
 add_library(Amber::ECS ALIAS ECS)
 

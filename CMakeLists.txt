@@ -1,4 +1,8 @@
+#############################################################################
+##
 ## Setup
+##
+#############################################################################
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(Amber
     DESCRIPTION "A Game Engine written in C"
@@ -8,22 +12,19 @@ project(Amber
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-include(CheckIPOSupported)
-include(AddAmberTest)
+include(GNUInstallDirs)            # CMAKE_INSTALL_*
+include(CMakePackageConfigHelpers) # write_basic_package_version_file()
+include(CheckIPOSupported)         # check_ipo_supported()
+include(AddAmberTest)              # add_amber_test()
 
-# Enable LTO for release builds
-check_ipo_supported(RESULT ipo_supported OUTPUT ipo_reason LANGUAGES C)
-if(ipo_supported)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
-else()
-    message(STATUS "IPO not supported: ${ipo_reason}")
-endif()
-
-## Configuration
+#############################################################################
+##
+## Configuration Options
+##
+#############################################################################
 option(AB_GETTEXT_SUPPORT "Enable i18n through GNU gettext" OFF) # TODO
 option(AB_ENABLE_ASAN "Enable asan on tests" OFF)
+option(AB_BUILD_DOCUMENTATION "Build the library documentation" OFF)
 
 # Rpath support
 if(UNIX AND NOT APPLE)
@@ -34,35 +35,55 @@ endif()
 
 # Enable warnings
 if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    list(APPEND COMPILE_OPTIONS -Wall -Wextra -Wvla -pedantic -Wconversion)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Wvla -pedantic")
 endif()
 
+if(AB_ENABLE_ASAN)
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
+endif()
+
+# Enable LTO for release builds
+check_ipo_supported(RESULT ipo_supported OUTPUT ipo_reason LANGUAGES C)
+if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+else()
+    message(STATUS "IPO not supported: ${ipo_reason}")
+endif()
+
+#############################################################################
+##
 ## Dependencies
+##
+#############################################################################
+
 # External dependencies (not in source tree)
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
 find_package(ZLIB 1.2 MODULE REQUIRED)   # ZLIB::ZLIB
-find_package(Doxygen MODULE QUIET OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
 if(AB_GETTEXT_SUPPORT)
     find_package(Intl MODULE REQUIRED) # gettext::intl
-    include(Gettext_helpers) # configure_gettext()
+    include(Gettext_helpers)           # configure_gettext()
+endif()
+if(AB_BUILD_DOCUMENTATION)
+    find_package(Doxygen MODULE OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
 endif()
 
 # Internal dependencies (in source tree)
-add_subdirectory(thirdparty/nuklear/)   # nk::nuklear
-add_subdirectory(thirdparty/glad/)      # glad::glad
-add_subdirectory(thirdparty/stb/)       # stb::stb_image
-add_subdirectory(thirdparty/sqlite3/)   # sqlite3::sqlite3
-add_subdirectory(thirdparty/lua-5.3/)   # lua::lua,luac,lualib,lualib-static
-add_subdirectory(thirdparty/ldoc/)      # ldoc_add_docs()
-add_subdirectory(thirdparty/cglm/)      # cglm::cglm
+add_subdirectory(thirdparty/nuklear/)  # nk::nuklear
+add_subdirectory(thirdparty/glad/   )  # glad::glad
+add_subdirectory(thirdparty/stb/    )  # stb::stb_image
+add_subdirectory(thirdparty/sqlite3/)  # sqlite3::sqlite3
+add_subdirectory(thirdparty/lua-5.3/)  # lua::lua,luac,lualib,lualib-static
+add_subdirectory(thirdparty/ldoc/   )  # ldoc_add_docs()
+add_subdirectory(thirdparty/cglm/   )  # cglm::cglm
 
-ldoc_add_docs(ldoc
-    Amber/scripting/
-    )
-
+#############################################################################
+##
 ## Testing
+##
+#############################################################################
 if(NOT DEFINED BUILD_TESTING)
     set(BUILD_TESTING OFF CACHE BOOL "Enable testing" FORCE)
 endif()
@@ -71,25 +92,48 @@ if(BUILD_TESTING)
     find_package(cmocka CONFIG REQUIRED) # cmocka
 endif()
 
+#############################################################################
+##
 ## Libraries and executables
-add_subdirectory(Amber/util/      util/)      # Amber::util
-add_subdirectory(Amber/ECS/       ECS/)       # Amber::ECS
-add_subdirectory(Amber/graphics/  graphics/)  # Amber::graphics
-add_subdirectory(Amber/scripting/ scripting/) # Amber::scripting
-add_subdirectory(Amber/ui/        ui/)        # Amber::ui
-add_subdirectory(Amber/driver/    driver/)    # Amber::driver
+##
+#############################################################################
+add_subdirectory(Amber/util/      util/     )  # Amber::util
+add_subdirectory(Amber/ECS/       ECS/      )  # Amber::ECS
+add_subdirectory(Amber/graphics/  graphics/ )  # Amber::graphics
+add_subdirectory(Amber/scripting/ scripting/)  # Amber::scripting
+add_subdirectory(Amber/ui/        ui/       )  # Amber::ui
+add_subdirectory(Amber/driver/    driver/   )  # Amber::driver
 
+#############################################################################
+##
 ## Documentation
-if(DOXYGEN_FOUND)
-    set(DOXYGEN_GENERATE_HTML ON)
-    set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/)
-    set(DOXYGEN_PREDEFINED "__DOXYGEN__")
-    doxygen_add_docs(docs
-        Amber/util/
-        COMMENT "Generating Doxygen documentation")
+##
+#############################################################################
+
+if(AB_BUILD_DOCUMENTATION)
+
+    ldoc_add_docs(ldoc
+        Amber/scripting/
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ldoc/"
+        COMMENT "Generating LDoc documentation")
+
+    if(DOXYGEN_FOUND)
+        set(DOXYGEN_GENERATE_HTML ON)
+        set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/)
+        set(DOXYGEN_PREDEFINED "__DOXYGEN__")
+        doxygen_add_docs(docs
+            Amber/util/
+            COMMENT "Generating Doxygen documentation")
+    endif()
+
 endif()
 
+#############################################################################
+##
 ## Installation of exported CMake targets
+##
+#############################################################################
 install(EXPORT amber-targets
     NAMESPACE Amber::
     FILE Amber-targets.cmake
@@ -107,5 +151,9 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/Amber-config.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/ COMPONENT Development)
 
+#############################################################################
+##
 ## Packaging
+##
+#############################################################################
 include(CPack)
