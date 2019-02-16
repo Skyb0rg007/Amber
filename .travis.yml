@@ -128,7 +128,7 @@ script:
   - $CMAKE --version
   - $CC --version
   - mkdir build && cd build
-  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON -DAB_BUILD_DOCUMENTATION "${CMAKE_OPTS[@]}"
+  - $CMAKE .. -DCMAKE_BUILD_TYPE=$CONFIG -DBUILD_TESTING=ON -DAB_BUILD_DOCUMENTATION=ON "${CMAKE_OPTS[@]}"
   - $CMAKE --build . --parallel
   - $CTEST --output-on-failure
   - $CMAKE --build . --target docs --parallel
