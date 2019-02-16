@@ -12,7 +12,7 @@ add_library(nuklear
 target_include_directories(nuklear
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(nuklear
-    PRIVATE c_std_90)
+    PRIVATE c_std_99) # vsnprintf
 set_target_properties(nuklear PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION}
@@ -23,6 +23,8 @@ if(HAVE_LIBM)
     target_link_libraries(nuklear
         PRIVATE "m")
 endif()
+
+enable_warnings(nuklear "-Wall -Wextra -pedantic -Wconversion")
 
 add_library(nk::nuklear ALIAS nuklear)
 

@@ -9,11 +9,13 @@ add_library(stb_image
 target_include_directories(stb_image
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_compile_features(stb_image
-    PRIVATE c_std_90)
+    PRIVATE c_std_99) # // comments
 set_target_properties(stb_image PROPERTIES
     VERSION 2.19
     SOVERSION 2.19
     WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+enable_warnings(stb_image "-Wall -pedantic /W3")
+
 add_library(stb::stb_image ALIAS stb_image)
 
 install(TARGETS stb_image EXPORT amber-targets

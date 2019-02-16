@@ -5,9 +5,6 @@ project(glad
     HOMEPAGE_URL "https://github.com/Dav1dde/glad"
     LANGUAGES C)
 
-set(OpenGL_GL_PREFERENCE "LEGACY")
-find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
-
 add_library(glad
     src/glad.c)
 target_include_directories(glad
@@ -21,8 +18,9 @@ set_target_properties(glad PROPERTIES
     SOVERSION ${PROJECT_VERSION}
     WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 
-get_target_property(GLAD_LIB_TYPE glad TYPE)
-if(GLAD_LIB_TYPE STREQUAL "SHARED_LIBRARY")
+enable_warnings(glad "-Wall -Wextra /W3")
+
+if($<TARGET_PROPERTY:glad,TYPE> STREQUAL "SHARED_LIBRARY")
     target_compile_definitions(glad
         PUBLIC "GLAD_GLAPI_EXPORT"
         PRIVATE "GLAD_GLAPI_EXPORT_BUILD")
@@ -31,8 +29,8 @@ endif()
 add_library(glad::glad ALIAS glad)
 
 install(TARGETS glad EXPORT amber-targets
-    RUNTIME DESTINATION bin COMPONENT Runtime
-    LIBRARY DESTINATION lib64 COMPONENT Runtime NAMELINK_COMPONENT Development
-    ARCHIVE DESTINATION lib64 COMPONENT Development
-    INCLUDES DESTINATION include)
-install(DIRECTORY include/ DESTINATION include COMPONENT Development)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development)

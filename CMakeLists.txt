@@ -12,10 +12,11 @@ project(Amber
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
-include(GNUInstallDirs)            # CMAKE_INSTALL_*
+include(GNUInstallDirs)            # ${CMAKE_INSTALL_*}
 include(CMakePackageConfigHelpers) # write_basic_package_version_file()
 include(CheckIPOSupported)         # check_ipo_supported()
 include(AddAmberTest)              # add_amber_test()
+include(EnableWarnings)            # enable_warnings()
 
 #############################################################################
 ##
@@ -33,11 +34,7 @@ elseif(APPLE)
     set(CMAKE_INSTALL_RPATH "@rpath/../${CMAKE_INSTALL_LIBDIR}")
 endif()
 
-# Enable warnings
-if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Wvla -pedantic")
-endif()
-
+# Address Sanitizer support for Debug builds
 if(AB_ENABLE_ASAN)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
@@ -61,13 +58,17 @@ endif()
 set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL 3.3 MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2 2.0.8 MODULE REQUIRED) # SDL2::SDL2
-find_package(ZLIB 1.2 MODULE REQUIRED)   # ZLIB::ZLIB
+# find_package(ZLIB 1.2 MODULE REQUIRED)   # ZLIB::ZLIB
+# find_package(Freetype 2.9.1 MODULE REQUIRED) # Freetype::Freetype
 if(AB_GETTEXT_SUPPORT)
     find_package(Intl MODULE REQUIRED) # gettext::intl
     include(Gettext_helpers)           # configure_gettext()
 endif()
 if(AB_BUILD_DOCUMENTATION)
     find_package(Doxygen MODULE OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
+    if(NOT DOXYGEN_FOUND)
+        message(WARNING "Doxygen not found - can only build LDoc documentation")
+    endif()
 endif()
 
 # Internal dependencies (in source tree)

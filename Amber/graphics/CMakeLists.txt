@@ -9,7 +9,11 @@ target_link_libraries(objloader
     PUBLIC Amber::util cglm::cglm)
 
 add_library(graphics
-    src/graphics_system.c)
+    src/graphics_system_init.c
+    src/graphics_system_cleanup.c
+    src/graphics_system_message_handler.c
+    src/graphics_system_run.c
+    )
 target_link_libraries(graphics
     PRIVATE Amber::ECS Amber::util SDL2::SDL2 glad::glad OpenGL::GL)
 target_include_directories(graphics
@@ -18,7 +22,7 @@ target_compile_features(graphics
     PRIVATE c_std_99)
 add_library(Amber::graphics ALIAS graphics)
 
-install(TARGETS graphics EXPORT amber-targets
+install(TARGETS objloader graphics EXPORT amber-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development

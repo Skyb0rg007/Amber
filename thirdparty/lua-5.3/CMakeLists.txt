@@ -136,6 +136,11 @@ elseif(UNIX AND CMAKE_SYSTEM_NAME MATCHES "*BSD*")
     target_link_options(luac PRIVATE "LINKER:-E")
 endif()
 
+enable_warnings(lua "-Wall -Wextra /W3")
+enable_warnings(luac "-Wall -Wextra /W3")
+enable_warnings(lualib "-Wall -Wextra /W3")
+enable_warnings(lualib-static "-Wall -Wextra /W3")
+
 install(TARGETS lualib lualib-static
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development

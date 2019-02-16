@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 project(cglm
     DESCRIPTION "optimized 3D math library written in C99"
+    VERSION 0.5.1
     HOMEPAGE_URL "https://github.com/recp/cglm"
     LANGUAGES C)
 
@@ -11,7 +12,7 @@ add_library(cglm
     src/cam.c
     src/config.h
     src/curve.c
-    # src/dllmain.c
+    # src/dllmain.c # No clue why this is included - it does nothing
     src/ease.c
     src/euler.c
     src/frustum.c
@@ -29,10 +30,6 @@ target_include_directories(cglm
 # cglm uses restrict and inline
 target_compile_features(cglm
     PUBLIC c_std_99)
-if(CMAKE_C_COMPILER_ID MATCHES "(GNU|Clang|AppleClang)")
-    target_compile_options(cglm
-        PRIVATE -Wstrict-aliasing=2 -fstrict-aliasing)
-endif()
 if(WIN32 AND $<TARGET_PROPERTY:cglm,TYPE> STREQUAL "SHARED_LIBRARY")
     target_compile_definitions(cglm PRIVATE CGLM_DLL)
 endif()
@@ -41,6 +38,21 @@ if(HAVE_LIBM)
     # Link PUBLIC because cglm has inline functions
     target_link_libraries(cglm PUBLIC m)
 endif()
+set_target_properties(cglm PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION}
+    WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+
+enable_warnings(cglm 
+    "-Wall -Wextra -pedantic -Wstrict-aliasing -fstrict-aliasing -Wconversion /W4")
 
 add_library(cglm::cglm ALIAS cglm)
 
+install(TARGETS cglm EXPORT amber-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    COMPONENT Development)
