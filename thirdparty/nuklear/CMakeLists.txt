@@ -24,7 +24,7 @@ if(HAVE_LIBM)
         PRIVATE "m")
 endif()
 
-enable_warnings(nuklear "-Wall -Wextra -pedantic -Wconversion")
+enable_warnings(nuklear "-Wall -Wextra -Wno-unused-function -Wno-unused-but-set-variable -pedantic")
 
 add_library(nk::nuklear ALIAS nuklear)
 

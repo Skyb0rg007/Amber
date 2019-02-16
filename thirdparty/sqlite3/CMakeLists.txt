@@ -49,8 +49,6 @@ if(WIN32 AND sqlite_lib STREQUAL "STATIC_LIBRARY")
         INTERFACE "SQLITE_API=__declspec(dllimport)")
 endif()
 
-enable_warnings(sqlite3 "-Wall -Wextra -pedantic -Wconversion /W4")
-
 # The sqlite3 shell
 add_executable(sqlite3-shell
     src/shell.c)
