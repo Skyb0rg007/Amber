@@ -121,11 +121,14 @@ if(AB_BUILD_DOCUMENTATION)
         COMMENT "Generating LDoc documentation")
 
     if(DOXYGEN_FOUND)
-        set(DOXYGEN_GENERATE_HTML ON)
+        set(DOXYGEN_GENERATE_HTML TRUE)
         set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/docs/)
+        # set(DOXYGEN_FULL_PATH_NAMES OFF)
+        set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_CURRENT_BINARY_DIR},Amber")
         set(DOXYGEN_PREDEFINED "__DOXYGEN__")
         doxygen_add_docs(docs
-            Amber/util/
+            Amber/util/include/
+            ${CMAKE_CURRENT_BINARY_DIR}/util/include/
             COMMENT "Generating Doxygen documentation")
     endif()
 

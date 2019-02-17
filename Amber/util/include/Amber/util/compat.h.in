@@ -1,13 +1,20 @@
-/* @file compat.h
+/**
+ * @file compat.h
  * @brief compatibility definitions
  */
 #ifndef AMBER_UTIL_COMPAT_H
 #define AMBER_UTIL_COMPAT_H
 
-/* AB_RESTRICT */
+/** @def AB_RESTRICT 
+ * @brief Specifier for non-aliased pointers
+ * @hideinitializer
+ */
 #include <Amber/util/AB_compiler_detection.h>
 
-/* AB_INLINE */
+/** @def AB_INLINE
+ * @brief Specifier for inline functions
+ * @hideinitializer
+ */
 /* c99 - inline */
 #if __STDC_VERSION__ >= 199901L
 # define AB_INLINE inline
@@ -18,8 +25,14 @@
 # define AB_INLINE
 #endif
 
-/* AB_EXPORT - visible to library users */
-/* AB_LIB - visible within library, not outside of it */
+/** @def AB_EXPORT
+ * @brief Specifier for exported symbols 
+ * @hideinitializer
+ */
+/** @def AB_LIB
+ * @brief Specifier for hidden/internal symbols 
+ * @hideinitializer
+ */
 #if defined(__GNUC__) && ((__GNUC__*100 + __GNUC_MINOR__) >= 302) && \
     defined(__ELF__)
 # define AB_EXPORT extern
@@ -36,7 +49,13 @@
 # define AB_LIB extern
 #endif
 
-/* strdup - duplicate a string */
+#if __DOXYGEN__
+/** @brief Dynamically duplicate a string
+ * @param str The string to duplicate
+ * The caller must free memory to the string with @c free
+ */
+char *AB_STRDUP(const char *str);
+#else
 #cmakedefine AB_HAS_STRDUP
 #cmakedefine AB_HAS__STRDUP
 #if defined(AB_HAS_STRDUP)
@@ -55,9 +74,18 @@
 char *AB_strdup(const char *str);
 # define AB_STRDUP(str) AB_strdup(str)
 # define AB_NEED_STRDUP
-#endif
+#endif /* AB_HAS_STRDUP */
+#endif /* __DOXYGEN__ */
 
-/* asprintf - dynamically format a string */
+#if __DOXYGEN__
+/** @brief Dynamically create a formatted string
+ * @param strp Where to return the newly allocated string
+ * @param fmt The format string
+ * @return Number of bytes printed, or -1 on error
+ * The caller must free allocated memory through @c free
+ */
+int AB_ASPRINTF(char **strp, const char *fmt, ...);
+#else
 #cmakedefine AB_HAS_ASPRINTF
 #if defined(AB_HAS_ASPRINTF)
 /* glibc - asprintf */
@@ -71,9 +99,19 @@ char *AB_strdup(const char *str);
 int AB_asprintf(char **strp, const char *fmt, ...);
 # define AB_ASPRINTF(...) AB_asprintf(__VA_ARGS__)
 # define AB_NEED_ASPRINTF
-#endif
+#endif /* AB_HAS_ASPRINTF */
+#endif /* __DOXYGEN__ */
 
-/* vasprintf - dynamically format a string */
+#if __DOXYGEN__
+/** @brief Dynamically format a string 
+ * @param strp Where to return the newly allocated string
+ * @param fmt The format string
+ * @param ap The arguments
+ * @return Number of bytes printed, or -1 on error
+ * The caller must free allocated memory through @c free
+ */
+int AB_VASPRINTF(char **strp, const char *fmt, va_list ap);
+#else
 #cmakedefine AB_HAS_VASPRINTF
 #if defined(AB_HAS_VASPRINTF)
 /* glibc - vasprintf */
@@ -89,9 +127,18 @@ int AB_asprintf(char **strp, const char *fmt, ...);
 int AB_vasprintf(char **strp, const char *fmt, va_list va);
 # define AB_VASPRINTF(...) AB_vasprintf(__VA_ARGS__)
 # define AB_NEED_VASPRINTF
-#endif
+#endif /* AB_HAS_VASPRINTF */
+#endif /* __DOXYGEN__ */
 
-/* strtok_r - threadsafe tokenization of a string */
+#if __DOXYGEN__
+/** @brief Threadsafe tokenization of a string 
+ * @param str The string to tokenize
+ * @param delim List of delimeters to search for
+ * @param saveptr The saved state of the function
+ * See the C standard function strtok
+ */
+char *AB_STRTOK_R(char *str, const char *delim, char **saveptr);
+#else
 #cmakedefine AB_HAS_STRTOK_R
 #if defined(AB_HAS_STRTOK_R)
 /* POSIX - strtok_r */
@@ -109,9 +156,17 @@ int AB_vasprintf(char **strp, const char *fmt, va_list va);
 char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 # define AB_STRTOK_R(str, delim, ctx) AB_strtok_r(str, delim, ctx)
 # define AB_NEED_STRTOK_R
-#endif
+#endif /* AB_HAS_STRTOK_R */
+#endif /* __DOXYGEN__ */
 
-/* va_copy - copy a va_list */
+#if __DOXYGEN__
+/** @brief Copy a va_list 
+ * @param dest The destination va_list
+ * @param src The source va_list
+ * @hideinitializer
+ */
+void AB_VA_COPY(va_list dest, va_list src);
+#else
 #cmakedefine AB_HAS_VA_COPY
 #cmakedefine AB_HAS___VA_COPY
 #if defined(AB_HAS_VA_COPY)
@@ -123,9 +178,15 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 #else
 /* Assume we can just do pointer assignment */
 # define AB_VA_COPY(dest, src) ((dest) = (src))
-#endif
+#endif /* AB_HAS_VA_COPY */
+#endif /* __DOXYGEN__ */
 
-/* printf - printf with positional arguments */
+#if __DOXYGEN__
+/** @brief printf with positional arguments 
+ * Non-standard, but needed for i18n
+ */
+int AB_PRINTF(const char *fmt, ...);
+#else
 #cmakedefine AB_PRINTF_POSITIONAL
 #cmakedefine AB_HAS__PRINTF_P
 #if defined(AB_HAS__PRINTF_P)
@@ -137,9 +198,21 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 # define AB_PRINTF(...) printf(__VA_ARGS__)
 #else
 # error "No positional printf!"
-#endif
+#endif /* AB_PRINTF_POSITIONAL */
+#endif /* __DOXYGEN__ */
 
-/* getline - read a dynamically-allocated line from a FILE */
+#if __DOXYGEN__
+/** @brief Read a dynamically-allocated line from a FILE 
+ * @param lineptr Where to return the newly allocated line
+ * @param n Where to return the allocated size
+ * @param stream The file stream to read from
+ * @return The number of characters read, or -1 on error/EOF
+ *
+ * @p lineptr and @p n must start as @c NULL and @c 0 respectively.
+ * The caller must call @c free after the use of AB_GETLINE is done.
+ */
+long AB_GETLINE(char **lineptr, size_t *n, FILE *stream);
+#else
 #cmakedefine AB_HAS_GETLINE
 #if defined(AB_HAS_GETLINE)
 /* Posix returns a 'ssize_t', cast to long because ssize_t isn't portable */
@@ -155,8 +228,21 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr);
 long AB_getline(char **lineptr, size_t *n, FILE *stream);
 # define AB_GETLINE(lineptr, n, stream) AB_getline(lineptr, n, stream)
 # define AB_NEED_GETLINE
-#endif
+#endif /* AB_HAS_GETLINE */
+#endif /* __DOXYGEN__ */
 
+#if __DOXYGEN__
+/** @brief Pipe stream to or from a process
+ * @param command The command to run
+ * @param type The type of stream to open
+ * @return a valid @c FILE, or @c NULL on error
+ */
+FILE *AB_POPEN(const char *command, const char *type);
+/** @brief Close a @c FILE opened by AB_POPEN
+ * @param stream The @c FILE to close
+ */
+int AB_PCLOSE(FILE *stream);
+#else
 #cmakedefine AB_HAS_POPEN
 #cmakedefine AB_HAS__POPEN
 #if defined(AB_HAS_POPEN)
@@ -172,6 +258,7 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream);
 # define AB_PCLOSE(fd)       _pclose(fp)
 #else
 # error "Neither popen() nor _popen() are available!"
-#endif
+#endif /* AB_HAS_POPEN */
+#endif /* __DOXYGEN__ */
 
 #endif /* AMBER_UTIL_COMPAT_H */

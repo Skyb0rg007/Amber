@@ -16,19 +16,22 @@ let c_no_c11 = 1
 let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/'
 let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline'
 
+" External Deps
 call AddToInclude('/usr/include/SDL2/')
-call AddToInclude('thirdparty/nuklear/include/')
-call AddToInclude('thirdparty/glad/include/')
-call AddToInclude('thirdparty/stb_image/include/')
-call AddToInclude('thirdparty/klib/include/')
-call AddToInclude('thirdparty/cmocka/include/')
+" Internal Deps
 call AddToInclude('thirdparty/cglm/include/')
+call AddToInclude('thirdparty/glad/include/')
+call AddToInclude('thirdparty/lua-5.3/src/')
+call AddToInclude('thirdparty/nuklear/include/')
+call AddToInclude('thirdparty/sqlite3/include/')
+call AddToInclude('thirdparty/stb/include/')
+" Amber modules
 call AddToInclude('Amber/driver/include/')
 call AddToInclude('Amber/ECS/include/')
 call AddToInclude('Amber/graphics/include/')
+call AddToInclude('Amber/scripting/include/')
 call AddToInclude('Amber/ui/include/')
 call AddToInclude('Amber/util/include/')
-call AddToInclude('Amber/scripting/include/')
 call AddToInclude('build/util/include/')
 
 augroup project
@@ -38,7 +41,5 @@ augroup project
 
     autocmd BufRead,BufNewFile *.h.in ALEDisableBuffer
     autocmd BufRead,BufNewFile *.h.in set filetype=c.doxygen
-
-    autocmd BufRead,BufNewFile *.y set filetype=lemon
 augroup END
 
