@@ -76,28 +76,66 @@ static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
 unsigned AB_ring_size(struct AB_ring *ring);
 
 /* Single producer / single consumer */
+/** @brief Single producer - enqueue an item
+ * @param ring The ring object
+ * @param buffer The ring buffer
+ * @param[in] entry The entry to enqueue
+ * @param entry_size The size of the entry
+ * @param[out] size The number of elements in the ring buffer
+ * @return true on success, false on error (max size reached)
+ */
 bool AB_ring_enqueue_sp(struct AB_ring *ring,
         void *restrict buffer,
         const void *restrict entry,
         unsigned entry_size, unsigned *size);
+/** @brief Single consumer - dequeue an item
+ * @param ring The ring object
+ * @param buffer The ring buffer
+ * @param[out] entry The entry to dequeue into
+ * @param entry_size The size of the entry
+ * @return true on success, false on error (size == 0)
+ */
 bool AB_ring_dequeue_sc(struct AB_ring *ring,
         const void *restrict buffer,
         void *restrict entry,
         unsigned entry_size);
 
 /* Multiple producer / multiple consumer */
+/** @brief Multiple producers - enqueue an item
+ * @param ring The ring object
+ * @param buffer The ring buffer
+ * @param[in] entry The entry to enqueue
+ * @param entry_size The size of the entry
+ * @param[out] size Optional - number of items enqueued
+ * @return true on success, false on error
+ */
 bool AB_ring_enqueue_mp(struct AB_ring *ring,
         void *buffer,
         const void *entry,
         unsigned entry_size,
         unsigned *size);
+/** @brief Multiple consumers - dequeue an item
+ * @param ring The ring object
+ * @param buffer The ring buffer
+ * @param[out] entry The entry to enqueue
+ * @param entry_size The size of the entry
+ * @return true on success, false on error
+ */
 bool AB_ring_dequeue_mc(struct AB_ring *ring,
         const void *buffer,
         void *data,
         unsigned entry_size);
+
+/** @brief Multiple consumers - trydequeue
+ * @param ring The ring object
+ * @param buffer The ring buffer
+ * @param[out] entry The entry to dequeue into
+ * @param entry_size The entry size
+ * @return true on dequeue, false on error / not dequeue
+ */
 bool AB_ring_trydequeue_mc(struct AB_ring *ring,
         const void *buffer,
-        void *data,
+        void *entry,
         unsigned entry_size);
 
 /** @brief Define type-safe prototypes for a given datatype
@@ -132,6 +170,7 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
         AB_ring_trydequeue_mc(ring, buf, entry, sizeof(type));              \
     }
 
+/** @cond false */
 #define AB_RING_DEQUEUE_SPSC(name, ring, buf, entry) \
     AB_ring_dequeue_spsc_##name(ring, buf, entry)
 #define AB_RING_ENQUEUE_SPSC(name, ring, buf, entry, size) \
@@ -143,6 +182,7 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
     AB_ring_trydequeue_mpmc_##name(ring, buf, entry)
 #define AB_RING_ENQUEUE_MPMC(name, ring, buf, entry, size) \
     AB_ring_enqueue_mpmc_##name(ring, buf, entry, size)
+/** @endcond */
 
 
 #endif /* AMBER_UTIL_RING_H */

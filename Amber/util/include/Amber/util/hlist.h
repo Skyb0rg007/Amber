@@ -3,7 +3,7 @@
  * @brief Doubly-linked lists with singly-linked heads
  *
  * This specific data structure is mainly used for implementing
- * chained hashtables, see @ref linux-hashtable.h
+ * chained hashtables, see linux-hashtable.h
  *
  */
 #ifndef AMBER_UTIL_HLIST_H

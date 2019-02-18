@@ -18,8 +18,8 @@
 /* c99 - inline */
 #if __STDC_VERSION__ >= 199901L
 # define AB_INLINE inline
-/* glibc/MSVC - __inline */
-#elif defined(__GNUC__) || defined(_MSVC_VER)
+/* gcc/clang/MSVC - __inline */
+#elif AB_COMPILER_IS_MSVC || AB_COMPILER_IS_Clang || AB_COMPILER_IS_GNU
 # define AB_INLINE __inline
 #else
 # define AB_INLINE
@@ -50,7 +50,10 @@
 #endif
 
 /** @brief The number of bytes in a cache line */
-#define AB_CACHELINE_SIZE 64
+#cmakedefine AB_CACHELINE_SIZE @AB_CACHELINE_SIZE@
+#ifndef AB_CACHELINE_SIZE
+# define AB_CACHELINE_SIZE 64
+#endif
 
 #if __DOXYGEN__
 /** @brief Dynamically duplicate a string

@@ -26,6 +26,25 @@ check_symbol_exists("_printf_p"  "stdio.h"   AB_HAS__PRINTF_P) # Windows
 check_symbol_exists("getline"    "stdio.h"   AB_HAS_GETLINE)   # Posix
 check_symbol_exists("popen"      "stdio.h"   AB_HAS_POPEN)     # Posix
 check_symbol_exists("_popen"      "stdio.h"  AB_HAS__POPEN)    # Windows
+
+# Get cache-size
+if(APPLE)
+    execute_process(
+        COMMAND sysctl -n hw.cachelinesize
+        OUTPUT_VARIABLE AB_CACHELINE_SIZE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    execute_process(
+        COMMAND getconf LEVEL1_DCACHE_LINESIZE
+        OUTPUT_VARIABLE AB_CACHELINE_SIZE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(WIN32)
+    execute_process(
+        COMMAND wmic cpu get L1CacheSize
+        OUTPUT_VARIABLE AB_CACHELINE_SIZE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
 if(NOT AB_HAS__PRINTF_P)
     try_run(test_ran test_compiled
         ${CMAKE_CURRENT_BINARY_DIR}/dev/printf_positional

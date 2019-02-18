@@ -129,6 +129,7 @@ if(AB_BUILD_DOCUMENTATION)
         set(DOXYGEN_PREDEFINED "__DOXYGEN__")
         doxygen_add_docs(docs
             Amber/util/include/
+            Amber/ECS/include/
             ${CMAKE_CURRENT_BINARY_DIR}/util/include/
             COMMENT "Generating Doxygen documentation")
     endif()
