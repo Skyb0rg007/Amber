@@ -1,3 +1,9 @@
+/**
+ * @file ring.h
+ * @brief A concurrent ring-buffer implementation
+ *
+ * This implementation was taken from ConcurrencyKit
+ */
 #ifndef AMBER_UTIL_RING_H
 #define AMBER_UTIL_RING_H
 
@@ -5,17 +11,18 @@
 #include <SDL_atomic.h>
 #include <stdbool.h>
 
-#define AB_CACHELINE_SIZE 64
-
+/** @brief The ring buffer tracker.
+ * @note Don't access these fields directly
+ */
 struct AB_ring {
-    SDL_atomic_t c_head; /* dequeue from here */
-    char pad1[AB_CACHELINE_SIZE - sizeof(unsigned)];
+    SDL_atomic_t c_head; /**< Where to dequeue from */
+    char pad1[AB_CACHELINE_SIZE - sizeof(unsigned)]; /**< padding */
 
-    SDL_atomic_t p_tail; /* enqueue from here */
-    SDL_atomic_t p_head; /* mpmc -  */
-    char pad2[AB_CACHELINE_SIZE - sizeof(unsigned) * 2];
+    SDL_atomic_t p_tail; /**< Where to enqueue from */
+    SDL_atomic_t p_head; /**< mpmc - synchronize writers */
+    char pad2[AB_CACHELINE_SIZE - sizeof(unsigned) * 2]; /**< padding */
 
-    unsigned mask;
+    unsigned mask; /**< The ring buffer size - 1, used as bitmask */
 };
 
 #if 0
@@ -45,11 +52,13 @@ do {
 
 #endif
 
+/** @brief Determine the ring buffer capacity */
 static inline unsigned AB_ring_capacity(const struct AB_ring *ring)
 {
     return ring->mask + 1;
 }
 
+/** @brief Initialize a ring buffer object */
 static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
 {
     AB_ASSERT(size >= 2);
@@ -61,6 +70,9 @@ static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
     SDL_AtomicSet(&ring->c_head, 0);
 }
 
+/** @brief Determine the number of elements in the ring buffer 
+ * @note @p ring is not const because atomic access is necessary
+ */
 unsigned AB_ring_size(struct AB_ring *ring);
 
 /* Single producer / single consumer */
@@ -88,9 +100,10 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
         void *data,
         unsigned entry_size);
 
-/** @brief Make type-safe prototypes for a datatype
+/** @brief Define type-safe prototypes for a given datatype
  * @param name the postfix of the function prototypes
  * @param type the type of data in the ring-buffer
+ * @hideinitializer
  */
 #define AB_RING_PROTOTYPE(name, type)                                       \
     static inline bool AB_ring_enqueue_spsc_##name(struct AB_ring *ring,    \

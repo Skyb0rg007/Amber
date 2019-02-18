@@ -4,7 +4,7 @@
 #include <Amber/util/common.h>
 #include <Amber/util/vector.h>
 #include <Amber/util/ring.h>
-#include <Amber/util/linux-hashtable.h>
+#include <Amber/util/hashtable.h>
 
 struct AB_ECS_world;
 

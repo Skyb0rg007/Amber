@@ -1,5 +1,5 @@
 #include <Amber/util/common.h>
-#include <Amber/util/hashtable.h>
+#include <Amber/util/hashtable-khash.h>
 #include <SDL_thread.h>
 #include <inttypes.h>
 #include <stddef.h>

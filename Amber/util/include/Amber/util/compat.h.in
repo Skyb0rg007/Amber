@@ -49,10 +49,14 @@
 # define AB_LIB extern
 #endif
 
+/** @brief The number of bytes in a cache line */
+#define AB_CACHELINE_SIZE 64
+
 #if __DOXYGEN__
 /** @brief Dynamically duplicate a string
  * @param str The string to duplicate
- * The caller must free memory to the string with @c free
+ *
+ * The caller must free memory to the string with free().
  */
 char *AB_STRDUP(const char *str);
 #else
@@ -82,7 +86,8 @@ char *AB_strdup(const char *str);
  * @param strp Where to return the newly allocated string
  * @param fmt The format string
  * @return Number of bytes printed, or -1 on error
- * The caller must free allocated memory through @c free
+ *
+ * The caller must free allocated memory through free().
  */
 int AB_ASPRINTF(char **strp, const char *fmt, ...);
 #else
@@ -108,7 +113,8 @@ int AB_asprintf(char **strp, const char *fmt, ...);
  * @param fmt The format string
  * @param ap The arguments
  * @return Number of bytes printed, or -1 on error
- * The caller must free allocated memory through @c free
+ *
+ * The caller must free allocated memory through free().
  */
 int AB_VASPRINTF(char **strp, const char *fmt, va_list ap);
 #else
@@ -135,7 +141,8 @@ int AB_vasprintf(char **strp, const char *fmt, va_list va);
  * @param str The string to tokenize
  * @param delim List of delimeters to search for
  * @param saveptr The saved state of the function
- * See the C standard function strtok
+ *
+ * See the C standard function strtok().
  */
 char *AB_STRTOK_R(char *str, const char *delim, char **saveptr);
 #else
@@ -164,6 +171,8 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr);
  * @param dest The destination va_list
  * @param src The source va_list
  * @hideinitializer
+ *
+ * This macro is needed for defining AB_ASPRINTF() in C89 mode
  */
 void AB_VA_COPY(va_list dest, va_list src);
 #else
@@ -182,8 +191,9 @@ void AB_VA_COPY(va_list dest, va_list src);
 #endif /* __DOXYGEN__ */
 
 #if __DOXYGEN__
-/** @brief printf with positional arguments 
- * Non-standard, but needed for i18n
+/** @brief printf() with positional arguments 
+ *
+ * Non-standard, but needed for i18n. Supported by MSVC and POSIX.
  */
 int AB_PRINTF(const char *fmt, ...);
 #else
@@ -202,14 +212,14 @@ int AB_PRINTF(const char *fmt, ...);
 #endif /* __DOXYGEN__ */
 
 #if __DOXYGEN__
-/** @brief Read a dynamically-allocated line from a FILE 
+/** @brief Read a dynamically-allocated line from a @c FILE 
  * @param lineptr Where to return the newly allocated line
  * @param n Where to return the allocated size
  * @param stream The file stream to read from
  * @return The number of characters read, or -1 on error/EOF
  *
  * @p lineptr and @p n must start as @c NULL and @c 0 respectively.
- * The caller must call @c free after the use of AB_GETLINE is done.
+ * The caller must call free() after the use of AB_GETLINE() is done.
  */
 long AB_GETLINE(char **lineptr, size_t *n, FILE *stream);
 #else
@@ -234,12 +244,16 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream);
 #if __DOXYGEN__
 /** @brief Pipe stream to or from a process
  * @param command The command to run
- * @param type The type of stream to open
+ * @param type The type of stream to open, "r" or "w"
  * @return a valid @c FILE, or @c NULL on error
+ *
+ * The returned stream must be closed by @ref AB_PCLOSE.
  */
 FILE *AB_POPEN(const char *command, const char *type);
-/** @brief Close a @c FILE opened by AB_POPEN
+
+/** @brief Close a @c FILE opened by AB_POPEN()
  * @param stream The @c FILE to close
+ * @return The return status of the command, or -1 on error
  */
 int AB_PCLOSE(FILE *stream);
 #else

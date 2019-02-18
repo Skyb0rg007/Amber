@@ -1,5 +1,5 @@
 #include <Amber/util/common.h>
-#include <Amber/util/linux-hashtable.h>
+#include <Amber/util/hashtable.h>
 #include <SDL_atomic.h>
 #include <stddef.h>
 #include <setjmp.h>

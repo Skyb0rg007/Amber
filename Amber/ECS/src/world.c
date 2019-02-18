@@ -3,7 +3,7 @@
 #include <Amber/util/common.h>
 #include <Amber/util/vector.h>
 #include <Amber/util/ring.h>
-#include <Amber/util/linux-hashtable.h>
+#include <Amber/util/hashtable.h>
 
 int AB_ECS_init_world(struct AB_ECS_world *world)
 {

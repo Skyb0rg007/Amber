@@ -1,5 +1,5 @@
 #include <Amber/util/common.h>
-#include <Amber/util/linux-hashtable.h>
+#include <Amber/util/hashtable.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <stdio.h>
@@ -11,7 +11,7 @@ struct person {
     struct AB_hlist_node node;
 };
 
-static AB_HASHTABLE_DEFINE(my_ht, 4);
+static AB_HASHTABLE_DECLARE(my_ht, 4) = AB_HASHTABLE_INITIALIZER;
 
 static void insert_delete(void **data)
 {

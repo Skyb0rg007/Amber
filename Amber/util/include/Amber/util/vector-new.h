@@ -1,4 +1,4 @@
-/** @file vector.h
+/* @file vector.h
  * @brief Generic resizable vector
  */
 #ifndef AMBER_UTIL_VECTOR_H
