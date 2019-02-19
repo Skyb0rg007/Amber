@@ -17,7 +17,7 @@
  * The default AB_ASSERT() macro is not an expression
  */
 #if NDEBUG
-# define AB_VEC_ASSERT(cond, msg) /* Ignore */
+# define AB_VEC_ASSERT(cond, msg) (void)0 /* Ignore */
 #else
 static AB_INLINE void AB_VEC_ASSERT(int cond, const char *msg) {
     if (!cond) {
