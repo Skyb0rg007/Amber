@@ -19,11 +19,4 @@ set_target_properties(luafilesystem PROPERTIES
     PREFIX ""
     OUTPUT_NAME lfs # produces 'lfs.so' or 'lfs.dll'
     WINDOWS_EXPORT_ALL_SYMBOLS OFF) # Supplies .def file
-if(C_COMPILER_ID MATCHES "(GNU|Clang|AppleClang)")
-    # Enable extra warnings
-    target_compile_options(luafilesystem
-        PRIVATE
-        -Wall -W -Waggregate-return -Wcast-align -Wmissing-prototypes
-        -Wnested-externs -Wshadow -Wwrite-strings -pedantic)
-endif()
 add_library(lua::luafilesystem ALIAS luafilesystem)

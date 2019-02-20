@@ -6,7 +6,8 @@ project(LDoc
     LANGUAGES NONE)
 
 # The LDoc script itself
-set(LDOC_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldoc.lua" CACHE INTERNAL "")
+set(LDOC_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/bin/ldoc.lua" CACHE INTERNAL "")
+set(LDOC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/?.lua" CACHE INTERNAL "")
 
 if(NOT TARGET lua::lua)
     message(FATAL_ERROR "LDoc needs the lua::lua imported target!")
@@ -77,8 +78,8 @@ function(ldoc_add_docs target_name)
     # Setup package.(c)path to find luafilesystem and penlight, then call ldoc
     add_custom_target("${target_name}"
         COMMAND lua::lua -E
-        -e "package.cpath = '$<TARGET_FILE_DIR:lua::luafilesystem>/?.so;' .. package.cpath"
-        -e "package.path = '${LUA_PENLIGHT_PATH};' .. package.path"
+        -e "package.cpath = '$<TARGET_FILE_DIR:lua::luafilesystem>/?.so;'"
+        -e "package.path = '${LUA_PENLIGHT_PATH};${LDOC_PATH}'"
         "${LDOC_SCRIPT}" --not_luadoc .
 
         VERBATIM

@@ -56,7 +56,6 @@ target_link_libraries(sqlite3-shell
     PRIVATE sqlite3::sqlite3 Threads::Threads ${CMAKE_DL_LIBS})
 set_target_properties(sqlite3-shell PROPERTIES
     RUNTIME_OUTPUT_NAME "sqlite3")
-enable_warnings(sqlite3-shell "-Wall -Wextra -pedantic -Wconversion /W4")
 add_executable(sqlite3::shell ALIAS sqlite3-shell)
 
 # Installation

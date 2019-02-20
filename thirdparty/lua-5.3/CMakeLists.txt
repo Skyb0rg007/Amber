@@ -49,21 +49,25 @@ set(LUA_SOURCES
     src/lutf8lib.c)
 
 # Dynamic library
-add_library(lualib SHARED
-    ${LUA_SOURCES})
+add_library(lualib SHARED ${LUA_SOURCES})
 target_include_directories(lualib
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>)
+    PRIVATE src/
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(lualib
     PRIVATE c_std_90)
+target_link_libraries(lualib 
+    PRIVATE ${CMAKE_DL_LIBS})
 add_library(lua::lualib ALIAS lualib)
 
 # Static library
-add_library(lualib-static STATIC
-    ${LUA_SOURCES})
+add_library(lualib-static STATIC ${LUA_SOURCES})
 target_include_directories(lualib-static
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>)
+    PRIVATE src/
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(lualib-static
     PRIVATE c_std_90)
+target_link_libraries(lualib-static 
+    PRIVATE ${CMAKE_DL_LIBS})
 add_library(lua::lualib-static ALIAS lualib-static)
 
 # Do we need to link to libm?
@@ -74,6 +78,7 @@ if(HAVE_LIBM)
 endif()
 
 # Lua interpreter
+# Link to the shared lib to avoid needing to re-export symbols
 add_executable(lua
     src/lua.c)
 target_link_libraries(lua
@@ -81,72 +86,55 @@ target_link_libraries(lua
 add_executable(lua::lua ALIAS lua)
 
 # Lua compiler
+# Link statically - it's required
 add_executable(luac
     src/luac.c)
 target_link_libraries(luac
     PRIVATE lualib-static)
 add_executable(lua::luac ALIAS luac)
 
-# Readline support(?)
+# Readline support
 if(READLINE_FOUND)
-    target_compile_definitions(lualib PUBLIC LUA_USE_READLINE)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_READLINE)
     target_link_libraries(lua PRIVATE readline::readline)
+    target_compile_definitions(lua PRIVATE LUA_USE_READLINE)
 endif()
 
 # Enable extra assertions for debug builds
-target_compile_definitions(lualib        PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
-target_compile_definitions(lualib-static PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
+target_compile_definitions(lualib
+    PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
+target_compile_definitions(lualib-static
+    PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
 
 # System-config
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_libraries(lualib PRIVATE ${CMAKE_DL_LIBS})
     target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_libraries(lualib-static PRIVATE ${CMAKE_DL_LIBS})
-    target_link_options(lua PRIVATE "LINKER:-E")
-    target_link_options(luac PRIVATE "LINKER:-E")
 elseif(APPLE)
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_libraries(lualib PRIVATE ${CMAKE_DL_LIBS})
     target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_libraries(lualib-static PRIVATE ${CMAKE_DL_LIBS})
 elseif(WIN32)
     target_compile_definitions(lualib PUBLIC LUA_USE_WINDOWS)
     target_compile_definitions(lualib PRIVATE LUA_BUILD_AS_DLL)
     target_compile_definitions(lualib-static PUBLIC LUA_USE_WINDOWS)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     target_compile_definitions(lualib PUBLIC LUA_USE POSIX LUA_USE_DLOPEN _REENTRANT)
-    target_link_libraries(lualib PRIVATE ${CMAKE_DL_LIBS})
     target_compile_definitions(lualib-static PUBLIC LUA_USE POSIX LUA_USE_DLOPEN _REENTRANT)
-    target_link_libraries(lualib-static PRIVATE ${CMAKE_DL_LIBS})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_compile_options(lualib PRIVATE -O2)
-    target_link_libraries(lualib PRIVATE ${CMAKE_DL_LIBS})
     target_link_options(lualib PRIVATE -brtl -bexpall)
     target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_compile_options(lualib-static PRIVATE -O2)
-    target_link_libraries(lualib-static PRIVATE ${CMAKE_DL_LIBS})
     target_link_options(lualib-static PRIVATE -brtl -bexpall)
 elseif(UNIX AND CMAKE_SYSTEM_NAME MATCHES "*BSD*")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
     target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_options(lua PRIVATE "LINKER:-E")
-    target_link_options(luac PRIVATE "LINKER:-E")
 endif()
-
-enable_warnings(lua "-Wall -Wextra /W3")
-enable_warnings(luac "-Wall -Wextra /W3")
-enable_warnings(lualib "-Wall -Wextra /W3")
-enable_warnings(lualib-static "-Wall -Wextra /W3")
 
 install(TARGETS lualib lualib-static
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES src/lua.h src/luaconf.h src/lualib.h src/lauxlib.h lua.hpp
+install(DIRECTORY include
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development)
 install(TARGETS lua luac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Development)

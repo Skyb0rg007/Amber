@@ -1,27 +1,23 @@
 let s:path = expand('<sfile>:p:h') . '/'
 
 function! AddToInclude(dir)
-    if a:dir[0] != '/'
-        let a:true_dir = s:path . a:dir
-    else
-        let a:true_dir = a:dir
-    endif
-    let g:ale_c_gcc_options .= ' -I' . a:true_dir
-    let &path .= ',' . a:true_dir
+    let l:true_dir = s:path . a:dir
+    let g:ale_c_gcc_options .= ' -I' . l:true_dir
+    let &path .= ',' . l:true_dir
 endfunction
 
+" We are using standard c99 - don't highlight mistakes
 let c_gnu = 1
 let c_no_c11 = 1
 
-let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/'
-let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline'
+" The default path - this is local to my machine
+let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/,/usr/include/SDL2/'
+let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline -I/usr/include/SDL2/'
 
-" External Deps
-call AddToInclude('/usr/include/SDL2/')
 " Internal Deps
 call AddToInclude('thirdparty/cglm/include/')
 call AddToInclude('thirdparty/glad/include/')
-call AddToInclude('thirdparty/lua-5.3/src/')
+call AddToInclude('thirdparty/lua-5.3/include/')
 call AddToInclude('thirdparty/nuklear/include/')
 call AddToInclude('thirdparty/sqlite3/include/')
 call AddToInclude('thirdparty/stb/include/')
