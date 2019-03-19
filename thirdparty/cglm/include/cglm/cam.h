@@ -420,12 +420,12 @@ glm_look_anyup(vec3 eye, vec3 dir, mat4 dest) {
 CGLM_INLINE
 void
 glm_persp_decomp(mat4 proj,
-                 float * __restrict nearVal,
-                 float * __restrict farVal,
-                 float * __restrict top,
-                 float * __restrict bottom,
-                 float * __restrict left,
-                 float * __restrict right) {
+                 float * CGLM_RESTRICT nearVal,
+                 float * CGLM_RESTRICT farVal,
+                 float * CGLM_RESTRICT top,
+                 float * CGLM_RESTRICT bottom,
+                 float * CGLM_RESTRICT left,
+                 float * CGLM_RESTRICT right) {
   float m00, m11, m20, m21, m22, m32, n, f;
   float n_m11, n_m00;
 
@@ -475,8 +475,8 @@ glm_persp_decompv(mat4 proj, float dest[6]) {
 CGLM_INLINE
 void
 glm_persp_decomp_x(mat4 proj,
-                   float * __restrict left,
-                   float * __restrict right) {
+                   float * CGLM_RESTRICT left,
+                   float * CGLM_RESTRICT right) {
   float nearVal, m20, m00;
 
   m00 = proj[0][0];
@@ -498,8 +498,8 @@ glm_persp_decomp_x(mat4 proj,
 CGLM_INLINE
 void
 glm_persp_decomp_y(mat4 proj,
-                   float * __restrict top,
-                   float * __restrict bottom) {
+                   float * CGLM_RESTRICT top,
+                   float * CGLM_RESTRICT bottom) {
   float nearVal, m21, m11;
 
   m21 = proj[2][1];
@@ -521,8 +521,8 @@ glm_persp_decomp_y(mat4 proj,
 CGLM_INLINE
 void
 glm_persp_decomp_z(mat4 proj,
-                   float * __restrict nearVal,
-                   float * __restrict farVal) {
+                   float * CGLM_RESTRICT nearVal,
+                   float * CGLM_RESTRICT farVal) {
   float m32, m22;
 
   m32 = proj[3][2];
@@ -540,7 +540,7 @@ glm_persp_decomp_z(mat4 proj,
  */
 CGLM_INLINE
 void
-glm_persp_decomp_far(mat4 proj, float * __restrict farVal) {
+glm_persp_decomp_far(mat4 proj, float * CGLM_RESTRICT farVal) {
   *farVal = proj[3][2] / (proj[2][2] + 1.0f);
 }
 
@@ -552,7 +552,7 @@ glm_persp_decomp_far(mat4 proj, float * __restrict farVal) {
  */
 CGLM_INLINE
 void
-glm_persp_decomp_near(mat4 proj, float * __restrict nearVal) {
+glm_persp_decomp_near(mat4 proj, float * CGLM_RESTRICT nearVal) {
   *nearVal = proj[3][2] / (proj[2][2] - 1.0f);
 }
 

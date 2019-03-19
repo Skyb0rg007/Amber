@@ -21,11 +21,11 @@
 #    define CGLM_EXPORT __declspec(dllimport)
 #  endif
 #  define CGLM_INLINE __forceinline
-#  define CGLM_RESTRICT __restrict
+#  define CGLM_RESTRICT CGLM_RESTRICT
 #elif defined(__GNUC__)
 #  define CGLM_INLINE static __inline__ __attribute__((__always_inline__))
 #  define CGLM_EXPORT __attribute__((__visibility__("default")))
-#  define CGLM_RESTRICT __restrict
+#  define CGLM_RESTRICT CGLM_RESTRICT
 #else
 #  define CGLM_EXPORT extern
 #  if __STDC_VERSION__ >= 199901L

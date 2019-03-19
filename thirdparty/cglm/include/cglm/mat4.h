@@ -21,7 +21,7 @@
    CGLM_INLINE void  glm_mat4_ucopy(mat4 mat, mat4 dest);
    CGLM_INLINE void  glm_mat4_copy(mat4 mat, mat4 dest);
    CGLM_INLINE void  glm_mat4_identity(mat4 mat);
-   CGLM_INLINE void  glm_mat4_identity_array(mat4 * restrict mat, size_t count);
+   CGLM_INLINE void  glm_mat4_identity_array(mat4 * CGLM_RESTRICT mat, size_t count);
    CGLM_INLINE void  glm_mat4_pick3(mat4 mat, mat3 dest);
    CGLM_INLINE void  glm_mat4_pick3t(mat4 mat, mat3 dest);
    CGLM_INLINE void  glm_mat4_ins3(mat3 mat, mat4 dest);
@@ -159,7 +159,7 @@ glm_mat4_identity(mat4 mat) {
  */
 CGLM_INLINE
 void
-glm_mat4_identity_array(mat4 * __restrict mat, size_t count) {
+glm_mat4_identity_array(mat4 * CGLM_RESTRICT mat, size_t count) {
   CGLM_ALIGN_MAT mat4 t = GLM_MAT4_IDENTITY_INIT;
   size_t i;
 
@@ -310,7 +310,7 @@ glm_mat4_mul(mat4 m1, mat4 m2, mat4 dest) {
  */
 CGLM_INLINE
 void
-glm_mat4_mulN(mat4 * __restrict matrices[], uint32_t len, mat4 dest) {
+glm_mat4_mulN(mat4 * CGLM_RESTRICT matrices[], uint32_t len, mat4 dest) {
   uint32_t i;
 
 #ifdef DEBUG

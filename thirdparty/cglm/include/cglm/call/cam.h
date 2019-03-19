@@ -88,12 +88,12 @@ glmc_look_anyup(vec3 eye, vec3 dir, mat4 dest);
 CGLM_EXPORT
 void
 glmc_persp_decomp(mat4 proj,
-                  float * __restrict nearVal,
-                  float * __restrict farVal,
-                  float * __restrict top,
-                  float * __restrict bottom,
-                  float * __restrict left,
-                  float * __restrict right);
+                  float * CGLM_RESTRICT nearVal,
+                  float * CGLM_RESTRICT farVal,
+                  float * CGLM_RESTRICT top,
+                  float * CGLM_RESTRICT bottom,
+                  float * CGLM_RESTRICT left,
+                  float * CGLM_RESTRICT right);
 
 CGLM_EXPORT
 void
@@ -102,28 +102,28 @@ glmc_persp_decompv(mat4 proj, float dest[6]);
 CGLM_EXPORT
 void
 glmc_persp_decomp_x(mat4 proj,
-                    float * __restrict left,
-                    float * __restrict right);
+                    float * CGLM_RESTRICT left,
+                    float * CGLM_RESTRICT right);
 
 CGLM_EXPORT
 void
 glmc_persp_decomp_y(mat4 proj,
-                    float * __restrict top,
-                    float * __restrict bottom);
+                    float * CGLM_RESTRICT top,
+                    float * CGLM_RESTRICT bottom);
 
 CGLM_EXPORT
 void
 glmc_persp_decomp_z(mat4 proj,
-                    float * __restrict nearVal,
-                    float * __restrict farVal);
+                    float * CGLM_RESTRICT nearVal,
+                    float * CGLM_RESTRICT farVal);
 
 CGLM_EXPORT
 void
-glmc_persp_decomp_far(mat4 proj, float * __restrict farVal);
+glmc_persp_decomp_far(mat4 proj, float * CGLM_RESTRICT farVal);
 
 CGLM_EXPORT
 void
-glmc_persp_decomp_near(mat4 proj, float * __restrict nearVal);
+glmc_persp_decomp_near(mat4 proj, float * CGLM_RESTRICT nearVal);
 
 CGLM_EXPORT
 float

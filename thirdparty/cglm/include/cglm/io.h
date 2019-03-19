@@ -26,7 +26,7 @@
 CGLM_INLINE
 void
 glm_mat4_print(mat4              matrix,
-               FILE * __restrict ostream) {
+               FILE * CGLM_RESTRICT ostream) {
   int i;
   int j;
 
@@ -56,7 +56,7 @@ glm_mat4_print(mat4              matrix,
 CGLM_INLINE
 void
 glm_mat3_print(mat3              matrix,
-               FILE * __restrict ostream) {
+               FILE * CGLM_RESTRICT ostream) {
   int i;
   int j;
 
@@ -86,7 +86,7 @@ glm_mat3_print(mat3              matrix,
 CGLM_INLINE
 void
 glm_vec4_print(vec4              vec,
-               FILE * __restrict ostream) {
+               FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 4
@@ -108,7 +108,7 @@ glm_vec4_print(vec4              vec,
 CGLM_INLINE
 void
 glm_vec3_print(vec3              vec,
-               FILE * __restrict ostream) {
+               FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 3
@@ -131,7 +131,7 @@ glm_vec3_print(vec3              vec,
 CGLM_INLINE
 void
 glm_vec2_print(vec2              vec,
-               FILE * __restrict ostream) {
+               FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 2
@@ -153,7 +153,7 @@ glm_vec2_print(vec2              vec,
 CGLM_INLINE
 void
 glm_ivec3_print(ivec3             vec,
-                FILE * __restrict ostream) {
+                FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 3
@@ -176,7 +176,7 @@ glm_ivec3_print(ivec3             vec,
 CGLM_INLINE
 void
 glm_uvec3_print(uvec3             vec,
-                FILE * __restrict ostream) {
+                FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 3
@@ -198,7 +198,7 @@ glm_uvec3_print(uvec3             vec,
 CGLM_INLINE
 void
 glm_versor_print(versor            vec,
-                 FILE * __restrict ostream) {
+                 FILE * CGLM_RESTRICT ostream) {
   int i;
 
 #define m 4
@@ -220,8 +220,8 @@ glm_versor_print(versor            vec,
 CGLM_INLINE
 void
 glm_aabb_print(vec3                    bbox[2],
-               const char * __restrict tag,
-               FILE       * __restrict ostream) {
+               const char * CGLM_RESTRICT tag,
+               FILE       * CGLM_RESTRICT ostream) {
   int i, j;
 
 #define m 3

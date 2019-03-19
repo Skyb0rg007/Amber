@@ -113,7 +113,7 @@ glm_quat_identity(versor q) {
  */
 CGLM_INLINE
 void
-glm_quat_identity_array(versor * __restrict q, size_t count) {
+glm_quat_identity_array(versor * CGLM_RESTRICT q, size_t count) {
   CGLM_ALIGN(16) versor v = GLM_QUAT_IDENTITY_INIT;
   size_t i;
 
