@@ -21,12 +21,12 @@ char *AB_strdup(const char *str)
 #if defined(AB_NEED_VASPRINTF)
 int AB_vasprintf(char **strp, const char *fmt, va_list args)
 {
-    int size = 0;
+    size_t size = 0;
     va_list temp;
 
     AB_VA_COPY(temp, args); /* requires c99 */
 
-    size = vsnprintf(NULL, 0, fmt, temp);
+    size = (size_t)vsnprintf(NULL, 0, fmt, temp);
 
     va_end(temp);
 
@@ -37,8 +37,7 @@ int AB_vasprintf(char **strp, const char *fmt, va_list args)
     if (*strp == NULL)
         return -1;
 
-    size = vsnprintf(*strp, size, fmt, args);
-    return size;
+    return vsnprintf(*strp, size, fmt, args);
 }
 #endif
 
@@ -95,7 +94,7 @@ char *AB_strtok_r(char *str, const char *delim, char **saveptr)
 }
 #endif
 
-#if defined(AB_NEED_GETLINE) || 1
+#if defined(AB_NEED_GETLINE)
 #include <stdlib.h>
 long AB_getline(char **lineptr, size_t *n, FILE *stream)
 {
@@ -126,7 +125,7 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream)
             return -1;
         }
 
-        *ptr++ = c;
+        *ptr++ = (char)c;
         if (c == '\n') {
             *ptr = '\0';
             return ptr - *lineptr;

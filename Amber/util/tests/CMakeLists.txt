@@ -1,10 +1,4 @@
 
-# Testing the real thing
-add_amber_test(Amber.util.ring
-    SOURCES ring-test.c
-    LINK_LIBRARIES Amber::util SDL2::SDL2
-    COMPILE_FEATURES c_std_99)
-
 # Example of a small program
 add_amber_test(Amber.util.minimal-race
     SOURCES minimal-ring-race.c
@@ -17,11 +11,6 @@ add_amber_test(Amber.util.minimal-race-stdatomic
     LINK_LIBRARIES SDL2::SDL2
     COMPILE_FEATURES c_std_11
     SANITIZER thread)
-
-add_amber_test(Amber.util.hashtable-test
-    SOURCES hashtable-test.c
-    LINK_LIBRARIES SDL2::SDL2 Amber::util 
-    COMPILE_FEATURES c_std_99)
 
 add_amber_test(Amber.util.vector-test
     SOURCES vector-test.c
@@ -49,17 +38,12 @@ add_amber_test(Amber.util.vector-test
 # endif()
 # add_test(Amber.util.noise-test noise-test)
 
-add_amber_test(Amber.util.mocking
-    SOURCES mocking-test.c
-    LINK_LIBRARIES Amber::util
-    COMPILE_FEATURES c_std_99)
-
 add_amber_test(Amber.util.linux-hashtable
     SOURCES linux-hashtable-test.c
     LINK_LIBRARIES Amber::util
     COMPILE_FEATURES c_std_99)
 
-add_amber_test(Amber.util.linux-hashtable-concurrent
-    SOURCES linux-hashtable-concurrent.c
+add_amber_test(Amber.util.vector-new-test
+    SOURCES vector-new-test.c
     LINK_LIBRARIES Amber::util SDL2::SDL2
-    COMPILE_FEATURES c_std_99)
+    COMPILE_FEATURES c_std_90)

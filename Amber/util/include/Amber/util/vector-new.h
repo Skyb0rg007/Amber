@@ -1,5 +1,23 @@
 /* @file vector.h
  * @brief Generic resizable vector
+ *
+ * Design: Each macro is a statement, not an expression
+ * ie. you cannot write @code if (AB_VEC_DESTROY(vec)) {} @endcode
+ * All macros may evaluate their arguments multiple times
+ *
+ * Each function that can allocate memory has a *_SAFE form which takes
+ * an additional int* variable as the last argument.
+ * In the case of a memory allocation error, the variable is set to 
+ * 1, otherwise it is set to 0. A NULL argument is not accepted.
+ *
+ * The non-safe variants call the AB_VEC_ABORT() routine on failure instead,
+ * which aborts the program. Use the safe variants for library code, but if
+ * memory failure means program failure, the non-safe is also good.
+ *
+ * Note: I use the term 'function' to mean statement-macro.
+ * Only AB_VEC_AT() is an expression.
+ *
+ * TODO: *_A functions for custom allocators / deallocators
  */
 #ifndef AMBER_UTIL_VECTOR_H
 #define AMBER_UTIL_VECTOR_H
@@ -9,95 +27,221 @@
 #include <string.h>
 #include <stdlib.h>
 
-#if defined(__DOXYGEN__)
+/***************************************************************************
+ *
+ * Non-function macros
+ *
+ **************************************************************************/
 
 /** @brief Vector type that holds elements of type @c type
  * @param type the type of elements contained in the vector
  */
-#define AB_vec(type)
+#define AB_vec(type)                                                                       \
+    struct { type *elems; unsigned num, capacity; }
 
 /** @brief Initializer for the vector */
-#define AB_VEC_INITIALIZER
+#define AB_VEC_INITIALIZER                                                                 \
+    { NULL, 0, 0 }
+
+/***************************************************************************
+ *
+ * Non-allocating functions
+ *
+ * If these functions fail, it's your fault. AB_ASSERT() is liberally used.
+ *
+ **************************************************************************/
 
 /** @brief Initialize a vector */
-void AB_vec_init(AB_vec *vec);
+#define AB_VEC_INIT(vec) do {                                                              \
+    AB_ASSERT((vec) != NULL);                                                              \
+    (vec)->elems = NULL;                                                                   \
+    (vec)->num = (vec)->capacity = 0;                                                      \
+} while (0)
 
 /** @brief Destroy a vector */
-void AB_vec_destroy(AB_vec *vec);
+#define AB_VEC_DESTROY(vec) do {                                                           \
+    AB_ASSERT((vec) != NULL);                                                              \
+    free((vec)->elems);                                                                    \
+} while (0)
 
-/** @brief Add to the vector
- * @param vec the vector of type @c type
- * @param elem the item to push onto the vector
- * @return 0 on success, 1 on error
+/** @brief Destroy a vector with a custom de-allocator
+ * @param free_fn void free_f(void *ptr, size_t size)
  */
-int AB_vec_push(AB_vec *vec, type elem);
+#define AB_VEC_DESTROY_A(vec, free_fn) do {                                                \
+    AB_ASSERT((vec) != NULL);                                                              \
+    free_fn((vec)->elems, (vec)->num * sizeof(*(vec)->elems));                             \
+} while (0)
 
 /** @brief Remove the last item from the vector
  * @param vec the vector of type @c type
  * @param elem_ptr where to pop the element into
- * @return 0 on success, 1 on error
  * @note @c elem_ptr must be of type 'type *', cast NULL if not using value
  */
-int AB_vec_pop(AB_vec *vec, type *elem_ptr);
+#define AB_VEC_POP(vec, elem_ptr) do {                                                     \
+    AB_VEC_ASSERT((vec) != NULL);                                                          \
+    AB_VEC_ASSERT((vec)->num > 0);                                                         \
+    if ((vec)->num > 0) {                                                                  \
+        (vec)->num--;                                                                      \
+        if ((elem_ptr) != NULL) {                                                          \
+            *(elem_ptr) = (vec)->elems[(vec)->num];                                        \
+        }                                                                                  \
+    }                                                                                      \
+} while (0)
 
-/** @brief Add an item to the end of the vector, returning a pointer to it 
- * @param vec the vector of type @c type
- * @return a pointer to the new element, or NULL on error
+/** @brief Return the element at position @p idx
+ * @param vec The vector to index
+ * @param idx The index of the element
+ * @return The value at index @p idx as an lvalue
+ * @note This returns an lvalue, so you can take the address of the return value
+ * @hideinitializer
  */
-type *AB_vec_pushp(AB_vec *vec);
+#define AB_VEC_AT(vec, idx)                                                                \
+    (AB_ASSERT_EXPR((vec) != NULL),                                                        \
+     AB_ASSERT_EXPR((idx) < (vec)->num),                                                   \
+     (vec)->elems[(idx)])
 
-#else /* __DOXYGEN__ */
+/** @brief Return the number of elements in a vector
+ * @param vec The vector
+ * @return The number of elements in the vector
+ * @warning This macro evaluates @p vec multiple times
+ * @hideinitializer
+ */
+#define AB_VEC_NUM(vec)                                                                    \
+    (AB_ASSERT_EXPR((vec) != NULL),                                                        \
+     (vec)->num)
 
-struct AB_vector_generic {
-    unsigned num, capacity;
-    void *elems;
-};
+/** @brief Return the number of allocated slots currently in a vector
+ * @param vec The vector
+ * @return The number of allocated slots in the vector
+ * @warning This macro evaluates @p vec multiple times
+ * @hideinitializer
+ */
+#define AB_VEC_CAPACITY(vec)                                                               \
+    (AB_ASSERT_EXPR((vec) != NULL),                                                        \
+     (vec)->capacity)
 
-#define AB_vec(type) \
-    struct { unsigned num, capacity; type *elems }
+/***************************************************************************
+ *
+ * Allocating functions
+ *
+ * Each function takes an expression 'on_fail', which is run if failure occurs
+ * You can use the no-op macro AB_VEC_ONFAIL() to document what this does.
+ *
+ * Normal usage:
+ *
+ * void my_func(void)
+ * {
+ *         AB_vec(int) my_vec = AB_VEC_INITIALIZER;
+ *         int i;
+ *         for (i = 0; i < 20; i++) {
+ *                 AB_VEC_PUSH(my_vec, i, AB_VEC_ONFAIL(goto cleanup));
+ *         }
+ *         printf("Num: %\n", AB_VEC_NUM(my_vec));
+ * cleanup:
+ *         AB_VEC_DESTROY(my_vec);
+ * }
+ *
+ **************************************************************************/
 
-#define AB_VEC_INITIALIZER { 0, 0, NULL }
+/** @brief Document the on_fail argument for the following macros */
+#define AB_VEC_ONFAIL(X) X
+/** @brief Abort the program, showing a basic message regarding allocation */
+#define AB_VEC_ABORT()                                                         \
+    AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_CRITICAL,                  \
+            "[AB_vec]: Failed to allocate memory, aborting...");               \
+    abort()
 
-static inline void AB_vec_init_generic(struct AB_vector_generic *vec) {
-    vec->num = vec->capacity = 0; vec->elems = 0;
+/** @brief Add to the vector
+ * @param vec the vector of type @c type
+ * @param elem the item to push onto the vector
+ */
+#define AB_VEC_PUSH(vec, elem, on_fail) do {                                               \
+    AB_ASSERT((vec) != NULL);                                                              \
+    if ((vec)->num == (vec)->capacity) {                                                   \
+        AB_VEC_RESIZE((vec),                                                               \
+                AB_vec_internal_next_capacity((vec)->capacity),                            \
+                on_fail);                                                                  \
+    }                                                                                      \
+    (vec)->elems[(vec)->num++] = (elem);                                                   \
+} while (0)
+
+/** @brief Add an item to the end of the vector, loading a pointer to it
+ * @param vec the vector of type @c type
+ * @param elemptr pointer to @c type*, loaded with the location of the new slot
+ */
+#define AB_VEC_PUSHP(vec, elemptr, on_fail) do {                                           \
+    AB_ASSERT((vec) != NULL);                                                              \
+    if ((vec)->num == (vec)->capacity) {                                                   \
+        AB_VEC_RESIZE((vec),                                                               \
+                AB_vec_internal_next_capacity((vec)->capacity),                            \
+                on_fail);                                                                  \
+    }                                                                                      \
+    *(elemptr) = &(vec)->elems[(vec)->num++];                                              \
+} while (0)
+
+/** @brief Resize a vector
+ * @param vec The vector to resize
+ * @param newsize The new size to make the vector
+ * @return 0 on success, 1 on error
+ * @warning This macro evaluates @p vec and @p newsize multiple times
+ * @hideinitializer
+ */
+#define AB_VEC_RESIZE(vec, newsize, on_fail) do {                                          \
+    AB_ASSERT((vec) != NULL);                                                              \
+    if ((vec)->capacity < AB_vec_internal_roundup((newsize))) {                            \
+        if (!AB_vec_internal_safe_realloc(                                                 \
+                    (void **)&(vec)->elems,                                                \
+                    AB_vec_internal_roundup((newsize)) * (unsigned)sizeof(*(vec)->elems))) \
+            on_fail;                                                                       \
+    } else if ((vec)->capacity > AB_vec_internal_roundup((newsize))) {                     \
+        if (!AB_vec_internal_safe_realloc(                                                 \
+                    (void **)&(vec)->elems,                                                \
+                    AB_vec_internal_roundup((newsize)) * (unsigned)sizeof(*(vec)->elems))) \
+            on_fail;                                                                       \
+    }                                                                                      \
+} while (0)
+
+
+/* Unsafe versions */
+#define AB_VEC_PUSH_(vec, elem)      AB_VEC_PUSH(vec, elem, AB_VEC_ABORT())
+#define AB_VEC_PUSHP_(vec, elemptr)  AB_VEC_PUSHP(vec, elemptr, AB_VEC_ABORT())
+#define AB_VEC_RESIZE_(vec, newsize) AB_VEC_RESIZE(vec, newsize, AB_VEC_ABORT())
+
+/***************************************************************************
+ *
+ * Internal functions
+ *
+ * These should not be used by normal programs, and are only used from
+ * the above macros.
+ *
+ **************************************************************************/
+/** @cond false */
+/* Determine the next capacity to allocate a vector */
+static AB_INLINE unsigned AB_vec_internal_next_capacity(unsigned x) {
+    return x == 0 ? 2 : x << 1;
 }
-#define AB_vec_init(vec) \
-    AB_vec_init_generic((struct AB_vector_generic *)(vec))
 
-static inline void AB_vec_destroy_generic(struct AB_vector_generic *vec) {
-    free(vec->elems);
-    AB_vec_init(vec);
-}
-#define AB_vec_destroy(vec) \
-    AB_vec_destroy_generic((struct AB_vector_generic *)(vec))
-
-#define AB_vec_push(vec, elem) \
-    ((vec)->num == (vec)->capacity ? \
-        (AB_vec_resize((vec), AB_vec_internal_next_capacity((vec)->capacity)) ? \
-            1 : \
-            ((vec)->elems[(vec)->num++] = (elem), 0)) : \
-        ((vec)->elems[(vec)->num++] = (elem), 0))
-
-#define AB_vec_pop(vec, elem_ptr) \
-    ((vec)->num == 0 ? \
-        1 : \
-        ((elem_ptr) == NULL ? \
-            (--(vec)->num, 0) : \
-            (*(elem_ptr) = (vec)->elems[--(vec)->num], 0)))
-
-#define AB_vec_internal_next_capacity(cap) \
-    ((cap) ? (cap) << 1 : 2)
-
-#define AB_vec_pushp(vec) \
-    ((vec)->num == (vec)->capacity ? \
-        (AB_vec_resize((vec), AB_vec_internal_next_capacity((vec)->capacity)) == 0 ? \
-            &(vec)->elems[(vec)->num++] : \
-            NULL) : \
-        &(vec)->elems[(vec)->num++])
-
-static inline int AB_vec_resize_generic(struct AB_vector_generic *vec, unsigned cap) {
-
+/* Find the next power of 2
+ * TODO: make more efficient
+ */
+static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
+    unsigned power = 2;
+    if (x <= 1)
+        return 2;
+    x--;
+    while ((x >>= 1) != 0)
+        power <<= 1;
+    return power;
 }
 
-#endif /* __DOXYGEN__ */
-#endif /* AMBER_UTIL_VECTOR_H */
+/* Reallocate the pointer *ptr, returning 1 on error */
+static AB_INLINE AB_bool AB_vec_internal_safe_realloc(void **ptr, unsigned size) {
+    void *tmp = realloc(*ptr, size);
+    if (tmp == NULL)
+        return AB_FALSE;
+    *ptr = tmp;
+    return AB_TRUE;
+}
+/** @endcond */
+
+#endif

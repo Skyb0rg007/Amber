@@ -48,11 +48,11 @@ static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node);
 
 /* Predicates */
 /** @brief Determine if a AB_hlist_node has been inserted into a list */
-static AB_INLINE int AB_hlist_unhashed(const struct AB_hlist_node *node);
+static AB_INLINE AB_bool AB_hlist_unhashed(const struct AB_hlist_node *node);
 /** @brief Determine if the AB_hlist_head is an empty list */
-static AB_INLINE int AB_hlist_empty(const struct AB_hlist_head *node);
+static AB_INLINE AB_bool AB_hlist_empty(const struct AB_hlist_head *node);
 /** @brief Determine if the AB_hlist_head only contains a single item */
-static AB_INLINE int
+static AB_INLINE AB_bool
 AB_hlist_is_singlular_node(struct AB_hlist_node *node, struct AB_hlist_head *head);
 
 /* Operations */
@@ -76,7 +76,7 @@ static AB_INLINE void AB_hlist_move_list(struct AB_hlist_head *src, struct AB_hl
  */
 static AB_INLINE void AB_hlist_add_fake(struct AB_hlist_node *node);
 /** @brief Determine if a node is a fake */
-static AB_INLINE int AB_hlist_fake(struct AB_hlist_node *node);
+static AB_INLINE AB_bool AB_hlist_fake(struct AB_hlist_node *node);
 
 /* Iteration */
 /** @brief Iterate over an AB_hlist_head
@@ -164,11 +164,11 @@ static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node) {
 #undef AB_hlist_entry
 #define AB_hlist_entry(ptr, type, member) container_of(ptr, type, member)
 
-static AB_INLINE int AB_hlist_unhashed(const struct AB_hlist_node *node) {
+static AB_INLINE AB_bool AB_hlist_unhashed(const struct AB_hlist_node *node) {
     return node->pprev == NULL;
 }
 
-static AB_INLINE int AB_hlist_empty(const struct AB_hlist_head *node)
+static AB_INLINE AB_bool AB_hlist_empty(const struct AB_hlist_head *node)
 {
     return node->first == NULL;
 }
@@ -218,11 +218,11 @@ static AB_INLINE void AB_hlist_add_fake(struct AB_hlist_node *node) {
     node->pprev = &node->next;
 }
 
-static AB_INLINE int AB_hlist_fake(struct AB_hlist_node *node) {
+static AB_INLINE AB_bool AB_hlist_fake(struct AB_hlist_node *node) {
     return node->pprev == &node->next;
 }
 
-static AB_INLINE int AB_hlist_is_singlular_node(
+static AB_INLINE AB_bool AB_hlist_is_singlular_node(
         struct AB_hlist_node *node, struct AB_hlist_head *head) {
     return !node->next && node->pprev == &head->first;
 }

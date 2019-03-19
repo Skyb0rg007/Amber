@@ -21,14 +21,14 @@ struct ring {
     char _pad2[CACHESIZE - sizeof(unsigned)];
 };
 
-static unsigned ring_size(struct ring *ring)
+/* static unsigned ring_size(struct ring *ring)
 {
     unsigned consumer = (unsigned)SDL_AtomicGet(&ring->c_head);
     unsigned producer = (unsigned)SDL_AtomicGet(&ring->p_head);
     unsigned mask = ring->mask;
 
     return (producer - consumer) & mask;
-}
+} */
 
 static bool ring_enqueue(struct ring *ring, int32_t *buf, int32_t entry)
 {
@@ -104,7 +104,8 @@ static int32_t ring_buffer[1 << 20];
 /* Threads */
 static int producer(void *data) {
 
-    for (int i = 0; i < 20; i++) {
+    int i;
+    for (i = 0; i < 20; i++) {
         bool ret = ring_enqueue(&ring, ring_buffer, (int32_t)i);
         assert(ret);
     }

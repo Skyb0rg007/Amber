@@ -21,7 +21,7 @@
 #else
 static AB_INLINE void AB_VEC_ASSERT(int cond, const char *msg) {
     if (!cond) {
-        AB_LOG_ERROR("%s", msg);
+        AB_QUICK_LOG("%s", msg);
         exit(1);
     }
 }

@@ -1,9 +1,6 @@
 #include <Amber/util/common.h>
 #include <Amber/util/hashtable.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdio.h>
-#include <cmocka.h>
+#include <Amber/cmocka/AB_cmocka.h>
 
 struct person {
     char *name;
@@ -15,9 +12,10 @@ static AB_HASHTABLE_DECLARE(my_ht, 4) = AB_HASHTABLE_INITIALIZER;
 
 static void insert_delete(void **data)
 {
+    unsigned i;
     (void)data;
 
-    for (int i = 0; i < 20; i++) {
+    for (i = 0; i < 20; i++) {
         struct person *person = test_malloc(sizeof *person);
         AB_ASPRINTF(&person->name, "Person #%d", i);
         person->id = i;

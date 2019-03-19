@@ -11,11 +11,18 @@
  */
 #include <Amber/util/AB_compiler_detection.h>
 
+/** @brief Baseline definitions */
+/* Use GNU-specific functions/macros */
+#define __USE_GNU
+#define _GNU_SOURCE
+/* Disable warnings for CRT functions */
+#define _CRT_SECURE_NO_WARNINGS
+
 /** @def AB_INLINE
  * @brief Specifier for inline functions
  * @hideinitializer
  */
-/* c99 - inline */
+/* C99 - inline */
 #if __STDC_VERSION__ >= 199901L
 # define AB_INLINE inline
 /* gcc/clang/MSVC - __inline */
@@ -55,6 +62,32 @@
 # define AB_CACHELINE_SIZE 64
 #endif
 
+/* C99 Headers */
+#cmakedefine AB_STDBOOL_H
+#ifdef AB_STDBOOL_H
+# include <stdbool.h>
+typedef bool AB_bool;
+# define AB_FALSE false
+# define AB_TRUE  true
+#else
+typedef enum {
+    AB_FALSE = 0,
+    AB_TRUE  = 1
+} AB_bool;
+#endif
+#cmakedefine AB_STDINT_H
+#ifdef AB_STDINT_H
+# include <stdint.h>
+#else
+# error "Could not find stdint.h!"
+#endif
+#cmakedefine AB_INTTYPES_H
+#ifdef AB_INTTYPES_H
+# include <inttypes.h>
+#else
+# error "Could not find inttypes.h!"
+#endif
+
 #if __DOXYGEN__
 /** @brief Dynamically duplicate a string
  * @param str The string to duplicate
@@ -67,9 +100,6 @@ char *AB_STRDUP(const char *str);
 #cmakedefine AB_HAS__STRDUP
 #if defined(AB_HAS_STRDUP)
 /* glibc - strdup */
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <string.h>
 # define AB_STRDUP(str) strdup(str)
 #elif defined(AB_HAS__STRDUP)
@@ -97,15 +127,12 @@ int AB_ASPRINTF(char **strp, const char *fmt, ...);
 #cmakedefine AB_HAS_ASPRINTF
 #if defined(AB_HAS_ASPRINTF)
 /* glibc - asprintf */
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <stdio.h>
-# define AB_ASPRINTF(...) asprintf(__VA_ARGS__)
+# define AB_ASPRINTF asprintf
 #else
 /* Fallback - own implementation */
 int AB_asprintf(char **strp, const char *fmt, ...);
-# define AB_ASPRINTF(...) AB_asprintf(__VA_ARGS__)
+# define AB_ASPRINTF AB_asprintf
 # define AB_NEED_ASPRINTF
 #endif /* AB_HAS_ASPRINTF */
 #endif /* __DOXYGEN__ */
@@ -124,17 +151,14 @@ int AB_VASPRINTF(char **strp, const char *fmt, va_list ap);
 #cmakedefine AB_HAS_VASPRINTF
 #if defined(AB_HAS_VASPRINTF)
 /* glibc - vasprintf */
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <stdarg.h>
 # include <stdio.h>
-# define AB_VASPRINTF(...) vasprintf(__VA_ARGS__)
+# define AB_VASPRINTF vasprintf
 #else
 /* Fallback - own implementation */
 # include <stdarg.h>
 int AB_vasprintf(char **strp, const char *fmt, va_list va);
-# define AB_VASPRINTF(...) AB_vasprintf(__VA_ARGS__)
+# define AB_VASPRINTF AB_vasprintf
 # define AB_NEED_VASPRINTF
 #endif /* AB_HAS_VASPRINTF */
 #endif /* __DOXYGEN__ */
@@ -152,9 +176,6 @@ char *AB_STRTOK_R(char *str, const char *delim, char **saveptr);
 #cmakedefine AB_HAS_STRTOK_R
 #if defined(AB_HAS_STRTOK_R)
 /* POSIX - strtok_r */
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <string.h>
 # define AB_STRTOK_R(str, delim, ctx) strtok_r(str, delim, ctx)
 #elif defined(AB_HAS_STRTOK_S)
@@ -205,10 +226,10 @@ int AB_PRINTF(const char *fmt, ...);
 #if defined(AB_HAS__PRINTF_P)
 /* Windows has a separate function for positional printf */
 # include <stdio.h>
-# define AB_PRINTF(...) _printf_p(__VA_ARGS__)
+# define AB_PRINTF _printf_p
 #elif defined(AB_PRINTF_POSITIONAL)
 # include <stdio.h>
-# define AB_PRINTF(...) printf(__VA_ARGS__)
+# define AB_PRINTF printf
 #else
 # error "No positional printf!"
 #endif /* AB_PRINTF_POSITIONAL */
@@ -229,9 +250,6 @@ long AB_GETLINE(char **lineptr, size_t *n, FILE *stream);
 #cmakedefine AB_HAS_GETLINE
 #if defined(AB_HAS_GETLINE)
 /* Posix returns a 'ssize_t', cast to long because ssize_t isn't portable */
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <stdio.h>
 # define AB_GETLINE(lineptr, n, stream) (long)getline(lineptr, n, stream)
 #else
@@ -263,9 +281,6 @@ int AB_PCLOSE(FILE *stream);
 #cmakedefine AB_HAS_POPEN
 #cmakedefine AB_HAS__POPEN
 #if defined(AB_HAS_POPEN)
-# ifndef _GNU_SOURCE
-#  define _GNU_SOURCE
-# endif
 # include <stdio.h>
 # define AB_POPEN(cmd, mode) popen(cmd, mode)
 # define AB_PCLOSE(fd)       pclose(fp)

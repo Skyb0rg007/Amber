@@ -11,10 +11,11 @@ let c_gnu = 1
 let c_no_c11 = 1
 
 " The default path - this is local to my machine
-let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/,/usr/include/SDL2/'
-let ale_c_gcc_options = '-Wall -std=c99 -pedantic -Wvla -Winline -I/usr/include/SDL2/'
+let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/,/usr/include/SDL2/,/usr/local/include/'
+let ale_c_gcc_options = '-Wall -std=c90 -Wvla -Winline -I/usr/include/SDL2/ -I/usr/local/include'
 
 " Internal Deps
+call AddToInclude('thirdparty/cmocka/include/')
 call AddToInclude('thirdparty/cglm/include/')
 call AddToInclude('thirdparty/glad/include/')
 call AddToInclude('thirdparty/lua-5.3/include/')
@@ -28,12 +29,13 @@ call AddToInclude('Amber/graphics/include/')
 call AddToInclude('Amber/scripting/include/')
 call AddToInclude('Amber/ui/include/')
 call AddToInclude('Amber/util/include/')
-call AddToInclude('build/util/include/')
+call AddToInclude('_build/util/include/')
 
 augroup project
     autocmd!
-    autocmd BufRead,BufNewFile *.h set filetype=c.doxygen
-    autocmd BufRead,BufNewFile *.c set filetype=c.doxygen
+    " Was annoying due to how syntax highlighting works
+    autocmd BufRead,BufNewFile *.h set filetype=c
+    autocmd BufRead,BufNewFile *.c set filetype=c
 
     autocmd BufRead,BufNewFile *.h.in ALEDisableBuffer
     autocmd BufRead,BufNewFile *.h.in set filetype=c.doxygen

@@ -1,21 +1,23 @@
 #include <Amber/util/vector.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <assert.h>
 
 int main(void)
 {
     AB_vec(int) my_vec = AB_VEC_INITIALIZER;
+    int i;
 
-    for (int i = 0; i < 20; i++) {
+    for (i = 0; i < 20; i++) {
         int ret = AB_vec_push(&my_vec, i);
         assert(ret == 0);
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (i = 0; i < 20; i++) {
         printf("%d -> %d\n", i, AB_vec_at(&my_vec, i));
     }
 
-    for (int i = 0; i < 20; i++) {
+    for (i = 0; i < 20; i++) {
         AB_vec_insert(&my_vec, 20 + (size_t)i, 2);
         int *a = AB_vec_pushp(&my_vec);
         *a = i * 2;

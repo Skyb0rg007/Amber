@@ -1,6 +1,7 @@
 #ifndef AMBER_UTIL_RBTREE_H
 #define AMBER_UTIL_RBTREE_H
 
+#include <Amber/util/common.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,7 +18,7 @@ struct AB_rb_root {
 #define AB_RB_ROOT_INITIALIZER { NULL }
 
 #define AB_rb_parent(r) \
-    ((struct AB_rb_node *)((r)->parent_color & ~3))
+    ((struct AB_rb_node *)((r)->parent_color & ~3u))
 
 /* container_of */
 #define AB_rb_entry(ptr, type, member) \
@@ -46,7 +47,7 @@ struct AB_rb_node *AB_rb_next_postorder(const struct AB_rb_root *root);
 extern void AB_rb_replace_node(struct AB_rb_node *victim,
         struct AB_rb_node *new, struct AB_rb_root *root);
 
-static inline void AB_rb_link_node(struct AB_rb_node *node,
+static AB_INLINE void AB_rb_link_node(struct AB_rb_node *node,
         struct AB_rb_node *parent, struct AB_rb_node **rb_link)
 {
 	node->parent_color = (uintptr_t)parent;

@@ -45,7 +45,7 @@ function(add_amber_test target_name)
     endif()
 
     # Link with cmocka
-    list(APPEND add_amber_test_LINK_LIBRARIES cmocka)
+    list(APPEND add_amber_test_LINK_LIBRARIES cmocka::cmocka)
 
     if(DEFINED add_amber_test_COMPILE_FEATURES)
         target_compile_features("${target_name}"

@@ -1,6 +1,5 @@
 #include <Amber/util/ring.h>
 #include <SDL_atomic.h>
-#include <stdbool.h>
 #include <string.h>
 
 unsigned AB_ring_size(struct AB_ring *ring)
@@ -14,9 +13,9 @@ unsigned AB_ring_size(struct AB_ring *ring)
 /******************************
  * Single-producer, single-consumer
  ******************************/
-bool AB_ring_enqueue_sp(struct AB_ring *ring,
-        void *restrict buffer,
-        const void *restrict entry,
+AB_bool AB_ring_enqueue_sp(struct AB_ring *ring,
+        void *AB_RESTRICT buffer,
+        const void *AB_RESTRICT entry,
         unsigned entry_size, unsigned *size)
 {
     const unsigned mask = ring->mask;
@@ -30,19 +29,19 @@ bool AB_ring_enqueue_sp(struct AB_ring *ring,
 
     /* Buffer is full */
     if ((delta & mask) == (consumer & mask))
-        return false;
+        return AB_FALSE;
 
     buffer = (char *)buffer + entry_size * (producer & mask);
     memcpy(buffer, entry, entry_size);
 
     SDL_AtomicSet(&ring->p_tail, (int)delta);
 
-    return true;
+    return AB_TRUE;
 }
 
-bool AB_ring_dequeue_sc(struct AB_ring *ring,
-        const void *restrict buffer,
-        void *restrict entry,
+AB_bool AB_ring_dequeue_sc(struct AB_ring *ring,
+        const void *AB_RESTRICT buffer,
+        void *AB_RESTRICT entry,
         unsigned entry_size)
 {
     const unsigned mask = ring->mask;
@@ -52,26 +51,26 @@ bool AB_ring_dequeue_sc(struct AB_ring *ring,
 
     /* Buffer is empty */
     if (consumer == producer)
-        return false;
+        return AB_FALSE;
 
     buffer = (const char *)buffer + entry_size * (consumer & mask);
     memcpy(entry, buffer, entry_size);
 
     SDL_AtomicSet(&ring->c_head, (int)(consumer + 1));
 
-    return true;
+    return AB_TRUE;
 }
 
 /***********************************
  * mpmc
  **********************************/
-bool AB_ring_enqueue_mp(struct AB_ring *ring,
+AB_bool AB_ring_enqueue_mp(struct AB_ring *ring,
         void *buffer,
         const void *entry,
         unsigned entry_size,
         unsigned *size)
 {
-    int ret = true;
+    int ret = AB_TRUE;
     const unsigned mask = ring->mask;
 
     unsigned producer = (unsigned)SDL_AtomicGet(&ring->p_head);
@@ -97,7 +96,7 @@ bool AB_ring_enqueue_mp(struct AB_ring *ring,
             
             if (producer == new_producer) {
                 /* They weren't out of sync, buffer is full */
-                ret = false;
+                ret = AB_FALSE;
                 goto leave;
             } else {
                 /* They were out of sync, update and try again */
@@ -121,7 +120,7 @@ leave:
     return ret;
 }
 
-bool AB_ring_dequeue_mc(struct AB_ring *ring,
+AB_bool AB_ring_dequeue_mc(struct AB_ring *ring,
         const void *buffer,
         void *data,
         unsigned entry_size)
@@ -132,14 +131,15 @@ bool AB_ring_dequeue_mc(struct AB_ring *ring,
     unsigned producer;
 
     do {
+        const void *target;
         consumer = (unsigned)SDL_AtomicGet(&ring->c_head);
         producer = (unsigned)SDL_AtomicGet(&ring->p_tail);
 
         /* Check if buffer is empty */
         if (producer == consumer)
-            return false;
+            return AB_FALSE;
 
-        const void *target = (const char *)buffer + entry_size * (consumer & mask);
+        target = (const char *)buffer + entry_size * (consumer & mask);
         memcpy(data, target, entry_size);
 
         /* Keep trying to swing c_head from previous spot to allow
@@ -147,10 +147,10 @@ bool AB_ring_dequeue_mc(struct AB_ring *ring,
          */
     } while (!SDL_AtomicCAS(&ring->c_head, (int)consumer, (int)(consumer + 1)));
 
-    return true;
+    return AB_TRUE;
 }
 
-bool AB_ring_trydequeue_mc(struct AB_ring *ring,
+AB_bool AB_ring_trydequeue_mc(struct AB_ring *ring,
         const void *buffer,
         void *data,
         unsigned entry_size)
@@ -161,7 +161,7 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
     unsigned producer = (unsigned)SDL_AtomicGet(&ring->p_tail);
 
     if (consumer == producer)
-        return false;
+        return AB_FALSE;
 
     buffer = (const char *)buffer + entry_size * (consumer & mask);
     memcpy(data, buffer, entry_size);
