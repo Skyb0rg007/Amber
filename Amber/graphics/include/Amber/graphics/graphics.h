@@ -6,10 +6,10 @@
 
 #define AB_GRAPHICS_SYSTEM_ID 0
 
-int graphics_system_init(struct AB_ECS_system *self);
-int graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self);
-int graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *self);
-int graphics_system_message_handler(struct AB_ECS_world *world, 
+AB_errno_t graphics_system_init(struct AB_ECS_system *self);
+AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self);
+void graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *self);
+AB_errno_t graphics_system_message_handler(struct AB_ECS_world *world, 
         void *message, struct AB_ECS_system *self);
 
 struct graphics_msg {

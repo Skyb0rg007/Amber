@@ -8,8 +8,11 @@
 #if defined(AB_NEED_STRDUP)
 char *AB_strdup(const char *str)
 {
-    size_t len = strlen(str) + 1;
-    void *copy = malloc(len);
+    size_t len;
+    void *copy;
+
+    len = strlen(str) + 1;
+    copy = malloc(len);
     if (copy == NULL)
         return NULL;
 
@@ -19,16 +22,17 @@ char *AB_strdup(const char *str)
 #endif
 
 #if defined(AB_NEED_VASPRINTF)
-int AB_vasprintf(char **strp, const char *fmt, va_list args)
+int AB_vasprintf(char **strp, const char *fmt, va_list ap)
 {
-    size_t size = 0;
-    va_list temp;
+    size_t size;
 
-    AB_VA_COPY(temp, args); /* requires c99 */
+    {
+        va_list tmp;
 
-    size = (size_t)vsnprintf(NULL, 0, fmt, temp);
-
-    va_end(temp);
+        AB_VA_COPY(tmp, ap); /* requires C99 or compiler support */
+        size = (size_t)vsnprintf(NULL, 0, fmt, tmp);
+        va_end(tmp);
+    }
 
     if (size < 0)
         return -1;
@@ -37,20 +41,20 @@ int AB_vasprintf(char **strp, const char *fmt, va_list args)
     if (*strp == NULL)
         return -1;
 
-    return vsnprintf(*strp, size, fmt, args);
+    return vsnprintf(*strp, size, fmt, ap);
 }
 #endif
 
 #if defined(AB_NEED_ASPRINTF)
 int AB_asprintf(char **strp, const char *fmt, ...)
 {
-    va_list va;
+    va_list ap;
     int ret;
 
-    va_start(va, fmt);
-    ret = AB_vasprintf(strp, fmt, va);
+    va_start(ap, fmt);
+    ret = AB_vasprintf(strp, fmt, ap);
 
-    va_end(va);
+    va_end(ap);
     return ret;
 }
 #endif
@@ -149,10 +153,10 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream)
 #endif
 
 #if defined(AB_NEED_VSNPRINTF)
-int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list args)
+int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list ap)
 {
     char *buf = NULL;
-    int res = AB_VASPRINTF(&buf, fmt, args);
+    int res = AB_VASPRINTF(&buf, fmt, ap);
 
     if (buf == NULL)
         return -1;
@@ -179,13 +183,13 @@ int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list args)
 #if defined(AB_NEED_SNPRINTF)
 int AB_snprintf(char *out, size_t n, const char *fmt, ...)
 {
-    va_list args;
+    va_list ap;
     int ret;
 
-    va_start(args, fmt);
-    ret = AB_VSNPRINTF(out, n, fmt, args);
+    va_start(ap, fmt);
+    ret = AB_VSNPRINTF(out, n, fmt, ap);
 
-    va_end(args);
+    va_end(ap);
     return ret;
 }
 #endif

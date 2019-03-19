@@ -123,7 +123,7 @@ char *AB_strdup(const char *str);
 #if defined(AB_HAS_VSNPRINTF)
 # define AB_VSNPRINTF vsnprintf
 #else
-int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list args);
+int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list ap);
 # define AB_VSNPRINTF AB_vsnprintf
 # define AB_NEED_VSNPRINTF
 #endif
@@ -175,7 +175,7 @@ int AB_VASPRINTF(char **strp, const char *fmt, va_list ap);
 # define AB_VASPRINTF vasprintf
 #else
 /* Fallback - own implementation */
-int AB_vasprintf(char **strp, const char *fmt, va_list va);
+int AB_vasprintf(char **strp, const char *fmt, va_list ap);
 # define AB_VASPRINTF AB_vasprintf
 # define AB_NEED_VASPRINTF
 #endif /* AB_HAS_VASPRINTF */

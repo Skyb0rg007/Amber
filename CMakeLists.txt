@@ -60,7 +60,7 @@ endif()
 
 ## External dependencies (not in source tree)
 set(OpenGL_GL_PREFERENCE "LEGACY") # For Linux OpenGL
-#            Dep      Vsn
+#            Dep      Vsn                       Imported Target
 find_package(OpenGL   3.3    MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2     2.0.8  MODULE REQUIRED) # SDL2::SDL2
 find_package(Sodium   1.0.17 MODULE REQUIRED) # sodium::sodium

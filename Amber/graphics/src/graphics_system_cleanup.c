@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 
-int graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *self)
+void graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *self)
 {
     (void)world;
     struct graphics_data *data = self->userdata;
@@ -18,6 +18,4 @@ int graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *se
     /* This calls dlclose(), which prevents leak analysis */
     SDL_Quit();
 #endif
-
-    return 0;
 }

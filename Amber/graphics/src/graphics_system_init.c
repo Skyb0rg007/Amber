@@ -7,7 +7,7 @@
 #include <SDL.h>
 #include <glad/glad.h>
 
-int graphics_system_init(struct AB_ECS_system *self)
+AB_errno_t graphics_system_init(struct AB_ECS_system *self)
 {
     int status;
 

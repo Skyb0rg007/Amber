@@ -15,11 +15,11 @@
  */
 struct AB_ring {
     SDL_atomic_t c_head; /**< Where to dequeue from */
-    char pad1[AB_CACHELINE_SIZE - sizeof(unsigned)]; /**< padding */
+    char pad1[AB_CACHELINE_SIZE - sizeof(SDL_atomic_t)]; /**< padding */
 
     SDL_atomic_t p_tail; /**< Where to enqueue from */
     SDL_atomic_t p_head; /**< mpmc - synchronize writers */
-    char pad2[AB_CACHELINE_SIZE - sizeof(unsigned) * 2]; /**< padding */
+    char pad2[AB_CACHELINE_SIZE - sizeof(SDL_atomic_t) * 2]; /**< padding */
 
     unsigned mask; /**< The ring buffer size - 1, used as bitmask */
 };

@@ -90,7 +90,8 @@ enum {
 /** @brief Log categories */
 enum {
     AB_LOG_CATEGORY_GENERAL = SDL_LOG_CATEGORY_APPLICATION,
-    AB_LOG_CATEGORY_UTIL = SDL_LOG_CATEGORY_CUSTOM
+    AB_LOG_CATEGORY_UTIL = SDL_LOG_CATEGORY_CUSTOM,
+    AB_LOG_CATEGORY_MAX
 };
 
 /** @brief Log a message */
@@ -99,22 +100,10 @@ enum {
 #define AB_LOGV SDL_LogMessageV
 
 /** @brief Quick and dirty logging: for tests + quickly debugging, not prod */
-static AB_INLINE void AB_QUICK_LOG(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    AB_LOGV(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_INFO, fmt, args);
-    va_end(args);
-}
+void AB_QUICK_LOG(const char *fmt, ...);
 
 /** @brief The assert expression function */
-static AB_INLINE void AB_assert_expr_func(
-        int cond, const char *str, const char *file, int line) {
-    if (!cond) {
-        AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_CRITICAL,
-                "[%s:%d] Assertion \"%s\" failed!", file, line, str);
-        abort();
-    }
-}
+void AB_assert_expr_func(int cond, const char *str, const char *file, int line);
 
 /** @brief General assertion */
 #define AB_ASSERT(X)          SDL_assert(X)
@@ -140,11 +129,23 @@ static AB_INLINE void AB_assert_expr_func(
  * - AB_LOG_PRIORITY_ERROR
  * - AB_LOG_PRIORITY_CRITICAL
  */
-#define AB_LOG_SETLEVEL(X) SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, X)
+#define AB_LOG_SETLEVEL(cat, lvl) SDL_LogSetPriority(cat, lvl)
 
 /** @brief Compile-time assertion *expression*
  * Evaluates to 0 at runtime 
  */
 #define AB_STATIC_ASSERT(cond) (sizeof(char[1 - 2 * !(cond)]) * 0)
+
+/************************************************
+ * Error handling
+ ************************************************/
+typedef enum {
+    AB_OK = 0,
+    AB_ENOMEM, /* Out of memory */
+    AB_EXIT /* User decided to exit */
+} AB_errno_t;
+
+/** @brief Get a string representation of an error code */
+const char *AB_strerror(AB_errno_t err);
 
 #endif /* AMBER_UTIL_COMMON_H */

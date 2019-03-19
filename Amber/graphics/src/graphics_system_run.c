@@ -7,7 +7,7 @@
 
 #include <time.h>
 
-int graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
+AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
 {
     struct graphics_data *data = self->userdata;
 
@@ -20,7 +20,7 @@ int graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT
                 || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_q)) {
-            return 1;
+            return AB_EXIT;
         }
 
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_o) {
@@ -55,5 +55,5 @@ int graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
 
     SDL_GL_SwapWindow(data->win);
 
-    return 0;
+    return AB_OK;
 }

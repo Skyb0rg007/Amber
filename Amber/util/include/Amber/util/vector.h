@@ -4,20 +4,19 @@
  * Design: Each macro is a statement, not an expression
  * ie. you cannot write @code if (AB_VEC_DESTROY(vec)) {} @endcode
  * All macros may evaluate their arguments multiple times
+ * No macros return anything (except AB_VEC_AT())
  *
- * Each function that can allocate memory has a *_SAFE form which takes
- * an additional int* variable as the last argument.
- * In the case of a memory allocation error, the variable is set to 
- * 1, otherwise it is set to 0. A NULL argument is not accepted.
+ * Each unsafe function takes a statement 'on_fail', which is run if failure occurs
+ * You can use the no-op macro AB_VEC_ONFAIL() to document what this does.
  *
  * The non-safe variants call the AB_VEC_ABORT() routine on failure instead,
  * which aborts the program. Use the safe variants for library code, but if
  * memory failure means program failure, the non-safe is also good.
  *
  * Note: I use the term 'function' to mean statement-macro.
- * Only AB_VEC_AT() is an expression.
+ * Only AB_VEC_AT() is an expression. (An lvalue, ie. you can assign to it)
  *
- * TODO: *_A functions for custom allocators / deallocators
+ * TODO: functions for custom allocators / deallocators
  */
 #ifndef AMBER_UTIL_VECTOR_H
 #define AMBER_UTIL_VECTOR_H
@@ -124,7 +123,7 @@
  *
  * Allocating functions
  *
- * Each function takes an expression 'on_fail', which is run if failure occurs
+ * Each function takes a statement 'on_fail', which is run if failure occurs
  * You can use the no-op macro AB_VEC_ONFAIL() to document what this does.
  *
  * Normal usage:
@@ -134,9 +133,9 @@
  *         AB_vec(int) my_vec = AB_VEC_INITIALIZER;
  *         int i;
  *         for (i = 0; i < 20; i++) {
- *                 AB_VEC_PUSH(my_vec, i, AB_VEC_ONFAIL(goto cleanup));
+ *                 AB_VEC_PUSH(&my_vec, i, AB_VEC_ONFAIL(goto cleanup));
  *         }
- *         printf("Num: %\n", AB_VEC_NUM(my_vec));
+ *         printf("Num: %\n", AB_VEC_NUM(&my_vec));
  * cleanup:
  *         AB_VEC_DESTROY(my_vec);
  * }
@@ -149,7 +148,7 @@
 #define AB_VEC_ABORT()                                                         \
     AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_CRITICAL,                  \
             "[AB_vec]: Failed to allocate memory, aborting...");               \
-    exit(12)
+    abort()
 
 /** @brief Add to the vector
  * @param vec the vector of type @c type
@@ -200,9 +199,11 @@
 } while (0)
 
 
-/* Unsafe versions */
+/** @brief Push an element, aborting if memory allocation fails */
 #define AB_VEC_PUSH_(vec, elem)      AB_VEC_PUSH(vec, elem, AB_VEC_ABORT())
+/** @brief Push an element pointer, aborting if memory allocation fails */
 #define AB_VEC_PUSHP_(vec, elemptr)  AB_VEC_PUSHP(vec, elemptr, AB_VEC_ABORT())
+/** @brief Resize a vector, aborting if memory allocation fails */
 #define AB_VEC_RESIZE_(vec, newsize) AB_VEC_RESIZE(vec, newsize, AB_VEC_ABORT())
 
 /***************************************************************************

@@ -14,49 +14,49 @@
 struct AB_ECS_world;
 
 /** @brief Initialize a worldstate */
-int AB_ECS_init_world(struct AB_ECS_world *world);
+void AB_ECS_init_world(struct AB_ECS_world *world);
 /** @brief Run a worldstate for one tick */
-int AB_ECS_run_world(struct AB_ECS_world *world);
+AB_errno_t AB_ECS_run_world(struct AB_ECS_world *world);
 /** @brief Free a worldstate */
-int AB_ECS_destroy_world(struct AB_ECS_world *world);
+void AB_ECS_destroy_world(struct AB_ECS_world *world);
 
 /** @brief Representation of an ECS system */
 struct AB_ECS_system;
 /** @brief Information needed to add an ECS system */
 struct AB_ECS_system_info {
-    int (*init)(struct AB_ECS_system *self); 
+    AB_errno_t (*init)(struct AB_ECS_system *self); 
     /**< Called when the system is initialized */
-    int (*run)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
+    AB_errno_t (*run)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
     /**< Called each tick */
-    int (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
+    void (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
     /**< Called when the system is closed */
-    int (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_system *self); 
+    AB_errno_t (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_system *self); 
     /**< Called when the system is sent an synchronous message */
     size_t message_size; /**< The size of a message */
 };
 
 /* Index = order inserted */
 /** @brief Add a default system to the world */
-int AB_ECS_add_system(struct AB_ECS_world *world,
+AB_errno_t AB_ECS_add_system(struct AB_ECS_world *world,
         const struct AB_ECS_system_info *info);
 
 /** @brief Representation of an ECS component */
 struct AB_ECS_component_manager;
 /** Information needed to add an ECS component */
 struct AB_ECS_component_manager_info {
-    int (*ondelete)(void *elem, struct AB_ECS_component_manager *self); 
+    void (*ondelete)(void *elem, struct AB_ECS_component_manager *self); 
     /**< Called when a component is removed */
-    int (*oncreate)(void *elem, struct AB_ECS_component_manager *self); 
+    AB_errno_t (*oncreate)(void *elem, struct AB_ECS_component_manager *self); 
     /**< Called when a component is added */
-    int (*init)(struct AB_ECS_component_manager *self); 
+    AB_errno_t (*init)(struct AB_ECS_component_manager *self); 
     /**< Called on startup */
-    int (*destroy)(struct AB_ECS_component_manager *self); 
+    void (*destroy)(struct AB_ECS_component_manager *self); 
     /**< Called on cleanup */
     size_t elem_size; /**< The size of an element */
 };
 
 /** @brief Add a component manager to the world */
-int AB_ECS_add_component(struct AB_ECS_world *world, 
+AB_errno_t AB_ECS_add_component(struct AB_ECS_world *world, 
         const struct AB_ECS_component_manager_info *info);
 
 
@@ -74,11 +74,11 @@ struct AB_ECS_system_inbox {
 };
 
 struct AB_ECS_system {
-    int (*run)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
+    AB_errno_t (*run)(struct AB_ECS_world *world, struct AB_ECS_system *self); 
     /**< Called on each tick */
-    int (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_system *self);
+    void (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_system *self);
     /**< Called on system cleanup */
-    int (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_system *self);
+    AB_errno_t (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_system *self);
     /**< Called to handle sychronous messages */
     void *userdata;
     /**< Arbitrary user information */
@@ -87,11 +87,11 @@ struct AB_ECS_system {
 
 struct AB_ECS_runtime_system {
     struct AB_hlist_node node; /**< Enable hashing */
-    int (*run)(struct AB_ECS_world *world, struct AB_ECS_runtime_system *self);
+    AB_errno_t (*run)(struct AB_ECS_world *world, struct AB_ECS_runtime_system *self);
     /**< Called on each tick */
-    int (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_runtime_system *self);
+    void (*cleanup)(struct AB_ECS_world *world, struct AB_ECS_runtime_system *self);
     /**< Called on system cleanup */
-    int (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_runtime_system *self);
+    AB_errno_t (*message_handler)(struct AB_ECS_world *world, void *message, struct AB_ECS_runtime_system *self);
     /**< Called to handle synchronous messages */
     void *userdata;
     /**< Arbitrary user information */
@@ -99,11 +99,11 @@ struct AB_ECS_runtime_system {
 };
 
 struct AB_ECS_component_manager {
-    int (*ondelete)(void *elem, struct AB_ECS_component_manager *self);
+    void (*ondelete)(void *elem, struct AB_ECS_component_manager *self);
     /**< Called on component deletion */
-    int (*oncreate)(void *elem, struct AB_ECS_component_manager *self);
+    AB_errno_t (*oncreate)(void *elem, struct AB_ECS_component_manager *self);
     /**< Called on component creation */
-    int (*destroy)(struct AB_ECS_component_manager *self);
+    void (*destroy)(struct AB_ECS_component_manager *self);
     /**< Called on component_manager cleanup */
     void *userdata;
     /**< Arbitrary user information */

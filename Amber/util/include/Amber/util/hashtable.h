@@ -28,7 +28,7 @@
 
 /* Predicates */
 /** @brief Determine if a node has been hashed */
-static AB_INLINE int AB_hash_hashed(struct AB_hlist_node *node);
+static AB_INLINE AB_bool AB_hash_hashed(struct AB_hlist_node *node);
 /** @brief Determine if a hashtable is empty */
 #define AB_hash_empty(ht)
 
@@ -127,7 +127,7 @@ static AB_INLINE void AB_hash_init_internal(struct AB_hlist_head *ht, unsigned s
 #define AB_hash_add(ht, node, hash) \
     AB_hlist_add_head(node, &(ht)[(hash) % AB_HASH_SIZE(ht)])
 
-static AB_INLINE int AB_hash_hashed(struct AB_hlist_node *node) {
+static AB_INLINE AB_bool AB_hash_hashed(struct AB_hlist_node *node) {
     return !AB_hlist_unhashed(node);
 }
 

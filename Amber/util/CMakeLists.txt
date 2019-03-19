@@ -69,6 +69,7 @@ add_library(util
     include/Amber/util/common.h
     include/Amber/util/ring.h
     include/Amber/util/vector.h
+    src/common.c
     src/ring.c
     src/compat.c
     )

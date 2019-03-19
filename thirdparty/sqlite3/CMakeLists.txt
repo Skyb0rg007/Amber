@@ -43,7 +43,7 @@ add_library(sqlite3::sqlite3 ALIAS sqlite3)
 
 # Ensure things are properly dllimported/dllexported
 get_target_property(sqlite_lib sqlite3 TYPE)
-if(WIN32 AND sqlite_lib STREQUAL "STATIC_LIBRARY")
+if(WIN32 AND sqlite_lib STREQUAL "SHARED_LIBRARY")
     target_compile_definitions(sqlite3
         PRIVATE "SQLITE_API=__declspec(dllexport)"
         INTERFACE "SQLITE_API=__declspec(dllimport)")
