@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
     struct AB_config cfg;
     int err = AB_load_config(&cfg, argv[1]);
     if (err) {
-        AB_LOG_ERROR("Failed!");
+        AB_QUICK_LOG("Failed!");
     } else {
-        AB_LOG_INFO("resource_dir = %s", cfg.resource_dir);
+        AB_QUICK_LOG("resource_dir = %s", cfg.resource_dir);
         free(cfg.resource_dir);
     }
 

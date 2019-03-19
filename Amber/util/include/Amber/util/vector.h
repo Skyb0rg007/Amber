@@ -149,7 +149,7 @@
 #define AB_VEC_ABORT()                                                         \
     AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_CRITICAL,                  \
             "[AB_vec]: Failed to allocate memory, aborting...");               \
-    abort()
+    exit(12)
 
 /** @brief Add to the vector
  * @param vec the vector of type @c type
@@ -191,13 +191,11 @@
     if ((vec)->capacity < AB_vec_internal_roundup((newsize))) {                            \
         if (!AB_vec_internal_safe_realloc(                                                 \
                     (void **)&(vec)->elems,                                                \
-                    AB_vec_internal_roundup((newsize)) * (unsigned)sizeof(*(vec)->elems))) \
+                    AB_vec_internal_roundup((newsize)) * (unsigned)sizeof(*(vec)->elems))) { \
             on_fail;                                                                       \
-    } else if ((vec)->capacity > AB_vec_internal_roundup((newsize))) {                     \
-        if (!AB_vec_internal_safe_realloc(                                                 \
-                    (void **)&(vec)->elems,                                                \
-                    AB_vec_internal_roundup((newsize)) * (unsigned)sizeof(*(vec)->elems))) \
-            on_fail;                                                                       \
+       } else { \
+           (vec)->capacity = AB_vec_internal_roundup((newsize)); \
+       }                                                                                   \
     }                                                                                      \
 } while (0)
 
@@ -217,6 +215,7 @@
  **************************************************************************/
 /** @cond false */
 /* Determine the next capacity to allocate a vector */
+AB_ATTR_CONST
 static AB_INLINE unsigned AB_vec_internal_next_capacity(unsigned x) {
     return x == 0 ? 2 : x << 1;
 }
@@ -224,6 +223,7 @@ static AB_INLINE unsigned AB_vec_internal_next_capacity(unsigned x) {
 /* Find the next power of 2
  * TODO: make more efficient
  */
+AB_ATTR_CONST
 static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
     unsigned power = 2;
     if (x <= 1)

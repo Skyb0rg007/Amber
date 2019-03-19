@@ -14,7 +14,10 @@ int graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *se
     SDL_free(data->base_path);
     SDL_free(data->pref_path);
     free(data);
+#ifdef NDEBUG
+    /* This calls dlclose(), which prevents leak analysis */
     SDL_Quit();
+#endif
 
     return 0;
 }

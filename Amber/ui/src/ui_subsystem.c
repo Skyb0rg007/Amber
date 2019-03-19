@@ -7,6 +7,7 @@ struct ui_data {
 
 int ui_subsystem_init(struct AB_ECS_system *self)
 {
+    
     return 0;
 }
 

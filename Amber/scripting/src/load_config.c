@@ -18,13 +18,13 @@ int AB_load_config(struct AB_config *cfg, const char *file)
     luaL_openlibs(L);
 
     /* Run the config file */
-    luaL_dofile(L, file);
+    ret = luaL_dofile(L, file);
 
     lua_getglobal(L, "resource_dir");
     if (lua_isstring(L, -1)) {
         cfg->resource_dir = strdup(lua_tostring(L, -1));
     } else {
-        AB_LOG_ERROR("Expected string, got %s", luaL_typename(L, -1));
+        AB_QUICK_LOG("Expected string, got %s", luaL_typename(L, -1));
         goto cleanup;
         ret = 1;
     }

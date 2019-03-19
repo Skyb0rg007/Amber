@@ -42,7 +42,7 @@
 #  endif
 #endif
 
-static inline
+CGLM_INLINE
 __m128
 glmm_vhadds(__m128 v) {
 #if defined(__SSE3__)
@@ -62,13 +62,13 @@ glmm_vhadds(__m128 v) {
 #endif
 }
 
-static inline
+CGLM_INLINE
 float
 glmm_hadd(__m128 v) {
   return _mm_cvtss_f32(glmm_vhadds(v));
 }
 
-static inline
+CGLM_INLINE
 __m128
 glmm_vdots(__m128 a, __m128 b) {
 #if (defined(__SSE4_1__) || defined(__SSE4_2__)) && defined(CGLM_SSE4_DOT)
@@ -83,7 +83,7 @@ glmm_vdots(__m128 a, __m128 b) {
 #endif
 }
 
-static inline
+CGLM_INLINE
 __m128
 glmm_vdot(__m128 a, __m128 b) {
 #if (defined(__SSE4_1__) || defined(__SSE4_2__)) && defined(CGLM_SSE4_DOT)
@@ -101,19 +101,19 @@ glmm_vdot(__m128 a, __m128 b) {
 #endif
 }
 
-static inline
+CGLM_INLINE
 float
 glmm_dot(__m128 a, __m128 b) {
   return _mm_cvtss_f32(glmm_vdots(a, b));
 }
 
-static inline
+CGLM_INLINE
 float
 glmm_norm(__m128 a) {
   return _mm_cvtss_f32(_mm_sqrt_ss(glmm_vhadds(_mm_mul_ps(a, a))));
 }
 
-static inline
+CGLM_INLINE
 __m128
 glmm_load3(float v[3]) {
   __m128i xy;
@@ -125,7 +125,7 @@ glmm_load3(float v[3]) {
   return _mm_movelh_ps(_mm_castsi128_ps(xy), z);
 }
 
-static inline
+CGLM_INLINE
 void
 glmm_store3(__m128 vx, float v[3]) {
   _mm_storel_pi((__m64 *)&v[0], vx);

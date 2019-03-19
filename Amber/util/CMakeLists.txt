@@ -25,18 +25,20 @@ file(WRITE
 set(CMAKE_REQUIRED_QUIET FALSE)
 set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE") 
 set(CMAKE_REQUIRED_INCLUDES  "")
-check_symbol_exists("asprintf"   "stdio.h"   AB_HAS_ASPRINTF)  # glibc
-check_symbol_exists("vasprintf"  "stdio.h"   AB_HAS_VASPRINTF) # glibc
-check_symbol_exists("strdup"     "string.h"  AB_HAS_STRDUP)    # Glibc
-check_symbol_exists("_strdup"    "string.h"  AB_HAS__STRDUP)   # Windows
-check_symbol_exists("strtok_r"   "string.h"  AB_HAS_STRTOK_R)  # Posix
-check_symbol_exists("strtok_s"   "string.h"  AB_HAS_STRTOK_S)  # Windows
-check_symbol_exists("__va_copy"  "stdarg.h"  AB_HAS___VA_COPY) # compat
-check_symbol_exists("va_copy"    "stdarg.h"  AB_HAS_VA_COPY)   # C99
-check_symbol_exists("_printf_p"  "stdio.h"   AB_HAS__PRINTF_P) # Windows
-check_symbol_exists("getline"    "stdio.h"   AB_HAS_GETLINE)   # Posix
-check_symbol_exists("popen"      "stdio.h"   AB_HAS_POPEN)     # Posix
-check_symbol_exists("_popen"      "stdio.h"  AB_HAS__POPEN)    # Windows
+check_symbol_exists("vsnprintf"  "stdio.h;stdarg.h"  AB_HAS_VSNPRINTF) # C99
+check_symbol_exists("snprintf"   "stdio.h"           AB_HAS_SNPRINTF)  # C99
+check_symbol_exists("asprintf"   "stdio.h"           AB_HAS_ASPRINTF)  # glibc
+check_symbol_exists("vasprintf"  "stdio.h;stdarg.h"  AB_HAS_VASPRINTF) # glibc
+check_symbol_exists("strdup"     "string.h"          AB_HAS_STRDUP)    # Glibc
+check_symbol_exists("_strdup"    "string.h"          AB_HAS__STRDUP)   # Windows
+check_symbol_exists("strtok_r"   "string.h"          AB_HAS_STRTOK_R)  # Posix
+check_symbol_exists("strtok_s"   "string.h"          AB_HAS_STRTOK_S)  # Windows
+check_symbol_exists("__va_copy"  "stdarg.h"          AB_HAS___VA_COPY) # compat
+check_symbol_exists("va_copy"    "stdarg.h"          AB_HAS_VA_COPY)   # C99
+check_symbol_exists("_printf_p"  "stdio.h"           AB_HAS__PRINTF_P) # Windows
+check_symbol_exists("getline"    "stdio.h"           AB_HAS_GETLINE)   # Posix
+check_symbol_exists("popen"      "stdio.h"           AB_HAS_POPEN)     # Posix
+check_symbol_exists("_popen"      "stdio.h"          AB_HAS__POPEN)    # Windows
 
 if(NOT AB_HAS__PRINTF_P)
     try_run(test_ran test_compiled

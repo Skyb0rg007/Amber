@@ -18,6 +18,12 @@
 /* Disable warnings for CRT functions */
 #define _CRT_SECURE_NO_WARNINGS
 
+/* Standard headers for the following */
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <stddef.h>
+
 /** @def AB_INLINE
  * @brief Specifier for inline functions
  * @hideinitializer
@@ -100,11 +106,9 @@ char *AB_STRDUP(const char *str);
 #cmakedefine AB_HAS__STRDUP
 #if defined(AB_HAS_STRDUP)
 /* glibc - strdup */
-# include <string.h>
 # define AB_STRDUP(str) strdup(str)
 #elif defined(AB_HAS__STRDUP)
 /* Windows - _strdup */
-# include <string.h>
 # define AB_STRDUP(str) _strdup(str)
 #else
 /* Fallback - own implementation */
@@ -113,6 +117,24 @@ char *AB_strdup(const char *str);
 # define AB_NEED_STRDUP
 #endif /* AB_HAS_STRDUP */
 #endif /* __DOXYGEN__ */
+
+/** @brief Format a string with a designated length */
+#cmakedefine AB_HAS_VSNPRINTF
+#if defined(AB_HAS_VSNPRINTF)
+# define AB_VSNPRINTF vsnprintf
+#else
+int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list args);
+# define AB_VSNPRINTF AB_vsnprintf
+# define AB_NEED_VSNPRINTF
+#endif
+#cmakedefine AB_HAS_SNPRINTF
+#if defined(AB_HAS_SNPRINTF)
+# define AB_SNPRINTF snprintf
+#else
+int AB_snprintf(char *out, size_t n, const char *fmt, ...);
+# define AB_NEED_SNPRINTF
+# define AB_SNPRINTF AB_snprintf
+#endif
 
 #if __DOXYGEN__
 /** @brief Dynamically create a formatted string
@@ -127,7 +149,6 @@ int AB_ASPRINTF(char **strp, const char *fmt, ...);
 #cmakedefine AB_HAS_ASPRINTF
 #if defined(AB_HAS_ASPRINTF)
 /* glibc - asprintf */
-# include <stdio.h>
 # define AB_ASPRINTF asprintf
 #else
 /* Fallback - own implementation */
@@ -151,12 +172,9 @@ int AB_VASPRINTF(char **strp, const char *fmt, va_list ap);
 #cmakedefine AB_HAS_VASPRINTF
 #if defined(AB_HAS_VASPRINTF)
 /* glibc - vasprintf */
-# include <stdarg.h>
-# include <stdio.h>
 # define AB_VASPRINTF vasprintf
 #else
 /* Fallback - own implementation */
-# include <stdarg.h>
 int AB_vasprintf(char **strp, const char *fmt, va_list va);
 # define AB_VASPRINTF AB_vasprintf
 # define AB_NEED_VASPRINTF
@@ -176,11 +194,9 @@ char *AB_STRTOK_R(char *str, const char *delim, char **saveptr);
 #cmakedefine AB_HAS_STRTOK_R
 #if defined(AB_HAS_STRTOK_R)
 /* POSIX - strtok_r */
-# include <string.h>
 # define AB_STRTOK_R(str, delim, ctx) strtok_r(str, delim, ctx)
 #elif defined(AB_HAS_STRTOK_S)
 /* Windows - strtok_s */
-# include <string.h>
 # define AB_STRTOK_R(str, delim, ctx) strtok_s(str, delim, ctx)
 #else
 /* Fallback - own implementation */
@@ -203,10 +219,8 @@ void AB_VA_COPY(va_list dest, va_list src);
 #cmakedefine AB_HAS_VA_COPY
 #cmakedefine AB_HAS___VA_COPY
 #if defined(AB_HAS_VA_COPY)
-# include <stdarg.h>
 # define AB_VA_COPY(dest, src) va_copy(dest, src)
 #elif defined(AB_HAS___VA_COPY)
-# include <stdarg.h>
 # define AB_VA_COPY(dest, src) __va_copy(dest, src)
 #else
 /* Assume we can just do pointer assignment */
@@ -225,10 +239,8 @@ int AB_PRINTF(const char *fmt, ...);
 #cmakedefine AB_HAS__PRINTF_P
 #if defined(AB_HAS__PRINTF_P)
 /* Windows has a separate function for positional printf */
-# include <stdio.h>
 # define AB_PRINTF _printf_p
 #elif defined(AB_PRINTF_POSITIONAL)
-# include <stdio.h>
 # define AB_PRINTF printf
 #else
 # error "No positional printf!"
@@ -250,12 +262,9 @@ long AB_GETLINE(char **lineptr, size_t *n, FILE *stream);
 #cmakedefine AB_HAS_GETLINE
 #if defined(AB_HAS_GETLINE)
 /* Posix returns a 'ssize_t', cast to long because ssize_t isn't portable */
-# include <stdio.h>
 # define AB_GETLINE(lineptr, n, stream) (long)getline(lineptr, n, stream)
 #else
 /* Fallback - own implementation */
-# include <stdio.h>
-# include <stddef.h>
 long AB_getline(char **lineptr, size_t *n, FILE *stream);
 # define AB_GETLINE(lineptr, n, stream) AB_getline(lineptr, n, stream)
 # define AB_NEED_GETLINE
@@ -281,11 +290,9 @@ int AB_PCLOSE(FILE *stream);
 #cmakedefine AB_HAS_POPEN
 #cmakedefine AB_HAS__POPEN
 #if defined(AB_HAS_POPEN)
-# include <stdio.h>
 # define AB_POPEN(cmd, mode) popen(cmd, mode)
 # define AB_PCLOSE(fd)       pclose(fp)
 #elif defined(AB_HAS__POPEN)
-# include <stdio.h>
 # define AB_POPEN(cmd, mode) _popen(cmd, mode)
 # define AB_PCLOSE(fd)       _pclose(fp)
 #else

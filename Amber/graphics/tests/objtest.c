@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <stddef.h>
-#include <cmocka.h>
 #include <Amber/util/common.h>
+#include <Amber/cmocka/AB_cmocka.h>
 #include <Amber/graphics/objloader.h>
 
 int main(int argc, char *argv[])
@@ -20,7 +16,7 @@ int main(int argc, char *argv[])
 
     printf("info: { .name = %s, #vertices = %u, #tex_coords = %u, #normals = %u }\n",
             info.name,
-            AB_vec_size(&info.vertices), AB_vec_size(&info.tex_coords), AB_vec_size(&info.normals));
+            AB_VEC_NUM(&info.vertices), AB_VEC_NUM(&info.tex_coords), AB_VEC_NUM(&info.normals));
     /* for (unsigned i = 0; i < AB_vec_size(&info.vertices); i++) */
         /* glm_vec3_print(AB_vec_at(&info.vertices, i), stdout); */
     /* for (unsigned i = 0; i < AB_vec_size(&info.tex_coords); i++) */
@@ -28,9 +24,9 @@ int main(int argc, char *argv[])
     /* for (unsigned i = 0; i < AB_vec_size(&info.normals); i++) */
         /* glm_vec3_print(AB_vec_at(&info.normals, i), stdout); */
 
-    AB_vec_destroy(&info.vertices);
-    AB_vec_destroy(&info.normals);
-    AB_vec_destroy(&info.tex_coords);
+    AB_VEC_DESTROY(&info.vertices);
+    AB_VEC_DESTROY(&info.normals);
+    AB_VEC_DESTROY(&info.tex_coords);
     free(info.name);
 
     if (infile != stdin)

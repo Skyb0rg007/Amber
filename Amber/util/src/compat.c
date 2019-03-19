@@ -147,3 +147,45 @@ long AB_getline(char **lineptr, size_t *n, FILE *stream)
     }
 }
 #endif
+
+#if defined(AB_NEED_VSNPRINTF)
+int AB_vsnprintf(char *out, size_t n, const char *fmt, va_list args)
+{
+    char *buf = NULL;
+    int res = AB_VASPRINTF(&buf, fmt, args);
+
+    if (buf == NULL)
+        return -1;
+    if (res < 0) {
+        free(buf);
+        return -1;
+    }
+
+    res = strlen(buf);
+    if (n > 0) {
+        if ((long)n > res) {
+            memcpy(out, buf, res+1);
+        } else {
+            memcpy(out, buf, res-1);
+            out[n-1] = '\0';
+        }
+    }
+
+    free(buf);
+    return res;
+}
+#endif
+
+#if defined(AB_NEED_SNPRINTF)
+int AB_snprintf(char *out, size_t n, const char *fmt, ...)
+{
+    va_list args;
+    int ret;
+
+    va_start(args, fmt);
+    ret = AB_VSNPRINTF(out, n, fmt, args);
+
+    va_end(args);
+    return ret;
+}
+#endif
