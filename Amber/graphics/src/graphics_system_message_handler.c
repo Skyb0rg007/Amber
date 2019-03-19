@@ -8,7 +8,7 @@ int graphics_system_message_handler(struct AB_ECS_world *world,
 {
     (void)world; (void)self;
     struct graphics_msg *msg = message;
-    AB_LOG_INFO("Got sync message { .a = %d }", msg->a);
+    AB_QUICK_LOG("Got sync message { .a = %d }", msg->a);
     return 0;
 }
 

@@ -7,8 +7,8 @@
 
 int AB_ECS_init_world(struct AB_ECS_world *world)
 {
-    AB_vec_init(&world->default_systems);
-    AB_vec_init(&world->component_managers);
+    AB_VEC_INIT(&world->default_systems);
+    AB_VEC_INIT(&world->component_managers);
     AB_hash_init(world->runtime_systems);
     return 0;
 }
@@ -25,18 +25,18 @@ int AB_ECS_destroy_world(struct AB_ECS_world *world)
     }
 
     int i, n;
-    n = AB_vec_size(&world->default_systems);
+    n = AB_VEC_NUM(&world->default_systems);
     for (i = 0; i < n; i++) {
-        struct AB_ECS_system *sys = &AB_vec_at(&world->default_systems, i);
+        struct AB_ECS_system *sys = &AB_VEC_AT(&world->default_systems, i);
         sys->cleanup(world, sys);
         free(sys->inbox.elems);
     }
-    AB_vec_destroy(&world->default_systems);
+    AB_VEC_DESTROY(&world->default_systems);
 
-    n = AB_vec_size(&world->component_managers);
+    n = AB_VEC_NUM(&world->component_managers);
     for (i = 0; i < n; i++) {
         struct AB_ECS_component_manager *comp =
-            &AB_vec_at(&world->component_managers, i);
+            &AB_VEC_AT(&world->component_managers, i);
 
         char *end = (char *)comp->elems + comp->elem_size * comp->num_elems;
         char *elem;
@@ -45,7 +45,7 @@ int AB_ECS_destroy_world(struct AB_ECS_world *world)
         }
         comp->destroy(comp);
     }
-    AB_vec_destroy(&world->component_managers);
+    AB_VEC_DESTROY(&world->component_managers);
 
     return 0;
 }
@@ -54,9 +54,9 @@ int AB_ECS_run_world(struct AB_ECS_world *world)
 {
     int ret = 0;
     int i, n;
-    n = AB_vec_size(&world->default_systems);
+    n = AB_VEC_NUM(&world->default_systems);
     for (i = 0; i < n; i++) {
-        struct AB_ECS_system *sys = &AB_vec_at(&world->default_systems, i);
+        struct AB_ECS_system *sys = &AB_VEC_AT(&world->default_systems, i);
         ret = sys->run(world, sys);
         if (ret)
             goto end;
@@ -80,7 +80,8 @@ end:
 int AB_ECS_add_system(struct AB_ECS_world *world,
         const struct AB_ECS_system_info *info)
 {
-    struct AB_ECS_system *sys = AB_vec_pushp(&world->default_systems);
+    struct AB_ECS_system *sys;
+    AB_VEC_PUSHP_(&world->default_systems, &sys);
     sys->run             = info->run;
     sys->cleanup         = info->cleanup;
     sys->message_handler = info->message_handler;
@@ -100,7 +101,8 @@ int AB_ECS_add_system(struct AB_ECS_world *world,
 int AB_ECS_add_component(struct AB_ECS_world *world, 
         const struct AB_ECS_component_manager_info *info)
 {
-    struct AB_ECS_component_manager *comp = AB_vec_pushp(&world->component_managers);
+    struct AB_ECS_component_manager *comp;
+    AB_VEC_PUSHP_(&world->component_managers, &comp);
     comp->ondelete = info->ondelete;
     comp->oncreate = info->oncreate;
     comp->destroy = info->destroy;

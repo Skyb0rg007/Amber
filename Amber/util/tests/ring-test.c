@@ -1,3 +1,4 @@
+#include <Amber/util/common.h>
 #include <Amber/util/ring.h>
 #include <SDL.h>
 #include <stdio.h>
@@ -45,7 +46,8 @@ int main(void)
 
 static int producer(void *data)
 {
-    for (int i = 0; i < 2000; i++) {
+    int i;
+    for (i = 0; i < 2000; i++) {
         int64_t entry = i;
         unsigned size;
         bool res = AB_RING_ENQUEUE_MPMC(int64_t, &ring, rb, &entry, &size);

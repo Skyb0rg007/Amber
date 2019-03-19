@@ -142,31 +142,31 @@ AB_bool AB_ring_trydequeue_mc(struct AB_ring *ring,
  * @param type the type of data in the ring-buffer
  * @hideinitializer
  */
-#define AB_RING_PROTOTYPE(name, type)                                       \
-    static AB_INLINE AB_bool AB_ring_enqueue_spsc_##name(struct AB_ring *ring,    \
-            type *buf, type *entry, unsigned *sz)                           \
-    {                                                                       \
-        AB_ring_enqueue_sp(ring, buf, entry, sizeof(type), sz);             \
-    }                                                                       \
-    static AB_INLINE AB_bool AB_ring_dequeue_spsc_##name(struct AB_ring *ring,    \
-            type *buf, type *entry)                                         \
-    {                                                                       \
-        AB_ring_dequeue_sc(ring, buf, entry, sizeof(type));                 \
-    }                                                                       \
-    static AB_INLINE AB_bool AB_ring_enqueue_mpmc_##name(struct AB_ring *ring,    \
-            type *buf, type *entry, unsigned *sz)                           \
-    {                                                                       \
-        AB_ring_enqueue_mp(ring, buf, entry, sizeof(type), sz);             \
-    }                                                                       \
-    static AB_INLINE AB_bool AB_ring_dequeue_mpmc_##name(struct AB_ring *ring,    \
-            type *buf, type *entry)                                         \
-    {                                                                       \
-        AB_ring_dequeue_mc(ring, buf, entry, sizeof(type));                 \
-    }                                                                       \
-    static AB_INLINE AB_bool AB_ring_trydequeue_mpmc_##name(struct AB_ring *ring, \
-            type *buf, type *entry)                                         \
-    {                                                                       \
-        AB_ring_trydequeue_mc(ring, buf, entry, sizeof(type));              \
+#define AB_RING_PROTOTYPE(name, type)                                         \
+    static AB_INLINE AB_bool AB_ring_enqueue_spsc_##name(                     \
+            struct AB_ring *ring, type *buf, type *entry, unsigned *sz)       \
+    {                                                                         \
+        return AB_ring_enqueue_sp(ring, buf, entry, sizeof(type), sz);        \
+    }                                                                         \
+    static AB_INLINE AB_bool AB_ring_dequeue_spsc_##name(                     \
+            struct AB_ring *ring, type *buf, type *entry)                     \
+    {                                                                         \
+        return AB_ring_dequeue_sc(ring, buf, entry, sizeof(type));            \
+    }                                                                         \
+    static AB_INLINE AB_bool AB_ring_enqueue_mpmc_##name(                     \
+            struct AB_ring *ring, type *buf, type *entry, unsigned *sz)       \
+    {                                                                         \
+        return AB_ring_enqueue_mp(ring, buf, entry, sizeof(type), sz);        \
+    }                                                                         \
+    static AB_INLINE AB_bool AB_ring_dequeue_mpmc_##name(                     \
+            struct AB_ring *ring, type *buf, type *entry)                     \
+    {                                                                         \
+        return AB_ring_dequeue_mc(ring, buf, entry, sizeof(type));            \
+    }                                                                         \
+    static AB_INLINE AB_bool AB_ring_trydequeue_mpmc_##name(                  \
+            struct AB_ring *ring,  type *buf, type *entry)                    \
+    {                                                                         \
+        return AB_ring_trydequeue_mc(ring, buf, entry, sizeof(type));         \
     }
 
 /** @cond false */

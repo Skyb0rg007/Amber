@@ -1,40 +1,51 @@
+#include <Amber/util/common.h>
+
+static AB_INLINE
+void *my_failing_realloc(void *ptr, size_t newsize) {
+    static int counter = 10;
+    counter--;
+    if (counter <= 0) {
+        AB_QUICK_LOG("Failing realloc!");
+        return NULL;
+    } else {
+        return realloc(ptr, newsize);
+    }
+}
+
+#define realloc my_failing_realloc
 #include <Amber/util/vector.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
+#undef realloc
 
-int main(void)
+#include <Amber/cmocka/AB_cmocka.h>
+
+static int num_trials = 20;
+
+static void on_fail_test(void **data)
 {
-    AB_vec(int) my_vec = AB_VEC_INITIALIZER;
     int i;
+    AB_vec(int) my_vec = AB_VEC_INITIALIZER;
 
-    for (i = 0; i < 20; i++) {
-        int ret = AB_vec_push(&my_vec, i);
-        assert(ret == 0);
+    (void)data;
+
+    for (i = 0; i < num_trials; i++) {
+        AB_VEC_PUSH(&my_vec, i,
+                AB_VEC_ONFAIL(AB_QUICK_LOG("Error!"); goto cleanup));
     }
 
-    for (i = 0; i < 20; i++) {
-        printf("%d -> %d\n", i, AB_vec_at(&my_vec, i));
-    }
+    printf("Num: %u\n", AB_VEC_NUM(&my_vec));
 
-    for (i = 0; i < 20; i++) {
-        AB_vec_insert(&my_vec, 20 + (size_t)i, 2);
-        int *a = AB_vec_pushp(&my_vec);
-        *a = i * 2;
-    }
+cleanup:
+    AB_VEC_DESTROY(&my_vec);
+}
 
-    printf("vec: { .size = %u, .capacity = %u }\n",
-            AB_vec_size(&my_vec), AB_vec_capacity(&my_vec));
+int main(int argc, char *argv[])
+{
+    const struct CMUnitTest vector_tests[] = {
+        cmocka_unit_test(on_fail_test)
+    };
 
-    while (AB_vec_size(&my_vec) > 0) {
-        int val;
-        AB_vec_pop(&my_vec, &val);
-        printf("pop -> %d\n", val);
-    }
+    if (argc > 1)
+        num_trials = atoi(argv[1]);
 
-    AB_vec(unsigned) another_vec = AB_VEC_INITIALIZER;
-    AB_vec_copy(&another_vec, &my_vec);
-
-    AB_vec_destroy(&my_vec);
-    AB_vec_destroy(&another_vec);
+    return cmocka_run_group_tests(vector_tests, NULL, NULL);
 }

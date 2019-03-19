@@ -8,6 +8,7 @@ target_compile_features(ECS
     PRIVATE c_std_99)
 target_link_libraries(ECS
     PUBLIC Amber::util)
+enable_warnings(ECS "-Wall -Wextra -pedantic")
 
 add_library(Amber::ECS ALIAS ECS)
 
