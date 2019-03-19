@@ -21,19 +21,20 @@
 #    define CGLM_EXPORT __declspec(dllimport)
 #  endif
 #  define CGLM_INLINE __forceinline
-#  define CGLM_RESTRICT CGLM_RESTRICT
+#  define CGLM_RESTRICT __restrict
 #elif defined(__GNUC__)
 #  define CGLM_INLINE static __inline__ __attribute__((__always_inline__))
 #  define CGLM_EXPORT __attribute__((__visibility__("default")))
-#  define CGLM_RESTRICT CGLM_RESTRICT
+#  define CGLM_RESTRICT __restrict
 #else
 #  define CGLM_EXPORT extern
 #  if __STDC_VERSION__ >= 199901L
 #    define CGLM_INLINE static inline
+#    define CGLM_RESTRICT restrict
 #  else
 #    define CGLM_INLINE static
+#    define CGLM_RESTRICT
 #  endif
-#  define CGLM_RESTRICT 
 #endif
 
 #define glm__memcpy(type, dest, src, size)                                    \
