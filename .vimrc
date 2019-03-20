@@ -29,6 +29,7 @@ call AddToInclude('Amber/graphics/include/')
 call AddToInclude('Amber/scripting/include/')
 call AddToInclude('Amber/ui/include/')
 call AddToInclude('Amber/util/include/')
+call AddToInclude('Amber/render/include/')
 call AddToInclude('_build/util/include/')
 
 augroup project

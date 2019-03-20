@@ -1,6 +1,7 @@
 include(CheckSymbolExists)
 include(CheckFunctionExists)
 include(WriteCompilerDetectionHeader)
+include(CheckIncludeFile)
 
 # Detect the compiler being used
 write_compiler_detection_header(

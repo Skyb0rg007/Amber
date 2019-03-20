@@ -7,15 +7,10 @@
 
 #include <time.h>
 
-AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
+static AB_errno_t handle_messages(struct AB_ECS_world *world,
+        struct graphics_data *data)
 {
-    struct graphics_data *data = self->userdata;
-
     struct graphics_msg msg;
-    AB_ECS_foreach_message(&msg, self) {
-        AB_QUICK_LOG("Got async message { .a = %d }", msg.a);
-    }
-
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT
@@ -48,10 +43,24 @@ AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system 
             glViewport(0, 0, w, h);
         }
     }
+}
+
+AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)
+{
+    AB_errno_t err;
+    struct graphics_data *data = self->userdata;
+    struct graphics_msg msg;
+
+    AB_ECS_foreach_message(&msg, self) {
+        AB_QUICK_LOG("Got async message { .a = %d }", msg.a);
+    }
+
+    err = handle_messages(world, data);
+    if (err)
+        return err;
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
     SDL_GL_SwapWindow(data->win);
 

@@ -26,16 +26,22 @@ include(EnableWarnings)            # enable_warnings()
 ##
 #############################################################################
 
+option(AB_RPATH_SUPPORT "Enable rpath support for MacOS and Linux" ON)
 option(AB_GETTEXT_SUPPORT "Enable i18n through GNU gettext" OFF) # TODO
 option(AB_ENABLE_ASAN "Enable asan on tests" OFF)
 option(AB_BUILD_DOCUMENTATION "Build the library documentation" OFF)
 set(AB_CACHELINE_SIZE 64 CACHE STRING "The size of L1 cache")
+set(OpenGL_GL_PREFERENCE "LEGACY") # For Linux OpenGL
+
+#############################################################################
 
 ## Rpath support
-if(UNIX AND NOT APPLE)
-    set(CMAKE_INSTALL_RPATH "\$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/")
-elseif(APPLE)
-    set(CMAKE_INSTALL_RPATH "@rpath/../${CMAKE_INSTALL_LIBDIR}")
+if(AB_RPATH_SUPPORT)
+    if(UNIX AND NOT APPLE)
+        set(CMAKE_INSTALL_RPATH "\$ORIGIN/../${CMAKE_INSTALL_LIBDIR}/")
+    elseif(APPLE)
+        set(CMAKE_INSTALL_RPATH "@rpath/../${CMAKE_INSTALL_LIBDIR}")
+    endif()
 endif()
 
 ## Address Sanitizer support for Debug builds
@@ -59,10 +65,10 @@ endif()
 #############################################################################
 
 ## External dependencies (not in source tree)
-set(OpenGL_GL_PREFERENCE "LEGACY") # For Linux OpenGL
 #            Dep      Vsn                       Imported Target
 find_package(OpenGL   3.3    MODULE REQUIRED) # OpenGL::GL
 find_package(SDL2     2.0.8  MODULE REQUIRED) # SDL2::SDL2
+find_package(SDL2_net 2.0.8  MODULE REQUIRED) # SDL2::SDL2_net
 find_package(Sodium   1.0.17 MODULE REQUIRED) # sodium::sodium
 find_package(ZLIB     1.2    MODULE REQUIRED) # ZLIB::ZLIB
 find_package(Freetype 2.9.1  MODULE REQUIRED) # Freetype::Freetype
@@ -88,6 +94,7 @@ add_subdirectory(thirdparty/cglm/   )  # cglm::cglm
 add_subdirectory(thirdparty/lua-5.3/)  # lua::lua,luac,lualib,lualib-static
 add_subdirectory(thirdparty/ldoc/   )  # ldoc_add_docs()
 add_subdirectory(thirdparty/lpeg/   )  # lpeg::lpeg
+add_subdirectory(thirdparty/dirent/ )  # dirent::dirent
 
 #############################################################################
 ##
