@@ -57,5 +57,10 @@ LUALIB_API void (luaL_openlibs) (lua_State *L);
 #define lua_assert(x)	((void)0)
 #endif
 
+/* Amber addition */
+LUAMOD_API int (luaopen_sandbox_base) (lua_State *L);
+LUAMOD_API int (luaopen_sandbox_os) (lua_State *L);
+LUALIB_API void (luaL_open_sandbox_libs) (lua_State *L);
+
 
 #endif

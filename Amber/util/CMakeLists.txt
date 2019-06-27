@@ -39,7 +39,7 @@ check_symbol_exists("va_copy"    "stdarg.h"          AB_HAS_VA_COPY)   # C99
 check_symbol_exists("_printf_p"  "stdio.h"           AB_HAS__PRINTF_P) # Windows
 check_symbol_exists("getline"    "stdio.h"           AB_HAS_GETLINE)   # Posix
 check_symbol_exists("popen"      "stdio.h"           AB_HAS_POPEN)     # Posix
-check_symbol_exists("_popen"      "stdio.h"          AB_HAS__POPEN)    # Windows
+check_symbol_exists("_popen"     "stdio.h"           AB_HAS__POPEN)    # Windows
 
 if(NOT AB_HAS__PRINTF_P)
     try_run(test_ran test_compiled
@@ -80,7 +80,7 @@ target_include_directories(util
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/>)
 target_compile_features(util
-    PRIVATE c_std_90)
+    PRIVATE c_std_99)
 enable_warnings(util "-Wall -Wextra -pedantic")
 
 add_library(Amber::util ALIAS util)

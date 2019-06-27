@@ -24,6 +24,13 @@ const char *AB_strerror(AB_errno_t err)
         return "No error";
     case AB_ENOMEM:
         return "Out of memory";
+    case AB_EACCESS:
+        return "Unable to access the file";
+    case AB_EXIT:
+        return "User decided to exit";
+    case AB_ESDL:
+    case AB_ERRMSG:
+        return SDL_GetError();
     default:
         return "Unknown error code";
     }

@@ -8,6 +8,7 @@
 #include <Amber/util/compat.h>
 #include <SDL_assert.h>
 #include <SDL_log.h>
+#include <SDL_error.h>
 #include <stdlib.h>
 
 /************************************************
@@ -130,6 +131,7 @@ void AB_assert_expr_func(int cond, const char *str, const char *file, int line);
  * - AB_LOG_PRIORITY_CRITICAL
  */
 #define AB_LOG_SETLEVEL(cat, lvl) SDL_LogSetPriority(cat, lvl)
+#define AB_LOG_GETLEVEL(cat)      SDL_LogGetPriority(cat)
 
 /** @brief Compile-time assertion *expression*
  * Evaluates to 0 at runtime 
@@ -141,10 +143,16 @@ void AB_assert_expr_func(int cond, const char *str, const char *file, int line);
  ************************************************/
 typedef enum {
     AB_OK = 0,
-    AB_ENOMEM, /* Out of memory */
-    AB_EXIT /* User decided to exit */
+    AB_ENOMEM,  /* Out of memory */
+    AB_EACCESS, /* Cannot access file */
+    AB_EXIT,    /* User decided to exit */
+    AB_ESDL,    /* SDL-based error */
+    AB_ERRMSG   /* Error with message set */
 } AB_errno_t;
 
+/** @brief Set the current error message
+ * You should return AB_ERRMSG after doing this */
+#define AB_seterr SDL_SetError
 /** @brief Get a string representation of an error code */
 const char *AB_strerror(AB_errno_t err);
 

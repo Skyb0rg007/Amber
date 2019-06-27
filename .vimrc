@@ -24,6 +24,7 @@ call AddToInclude('thirdparty/sqlite3/include/')
 call AddToInclude('thirdparty/stb/include/')
 " Amber modules
 call AddToInclude('Amber/driver/include/')
+call AddToInclude('Amber/config/include/')
 call AddToInclude('Amber/ECS/include/')
 call AddToInclude('Amber/graphics/include/')
 call AddToInclude('Amber/scripting/include/')

@@ -496,3 +496,48 @@ LUAMOD_API int luaopen_base (lua_State *L) {
   return 1;
 }
 
+/* Amber addition */
+static const luaL_Reg sandbox_base_funcs[] = {
+  {"assert", luaB_assert},
+  /* {"collectgarbage", luaB_collectgarbage}, */
+  /* {"dofile", luaB_dofile}, */
+  {"error", luaB_error},
+  /* {"getmetatable", luaB_getmetatable}, */
+  {"ipairs", luaB_ipairs},
+  /* {"loadfile", luaB_loadfile}, */
+  /* {"load", luaB_load}, */
+/* #if defined(LUA_COMPAT_LOADSTRING) */
+  /* {"loadstring", luaB_load}, */
+/* #endif */
+  {"next", luaB_next},
+  {"pairs", luaB_pairs},
+  {"pcall", luaB_pcall},
+  /* {"print", luaB_print}, */
+  /* {"rawequal", luaB_rawequal}, */
+  /* {"rawlen", luaB_rawlen}, */
+  /* {"rawget", luaB_rawget}, */
+  /* {"rawset", luaB_rawset}, */
+  {"select", luaB_select},
+  /* {"setmetatable", luaB_setmetatable}, */
+  {"tonumber", luaB_tonumber},
+  {"tostring", luaB_tostring},
+  {"type", luaB_type},
+  {"xpcall", luaB_xpcall},
+  /* placeholders */
+  {"_G", NULL},
+  {"_VERSION", NULL},
+  {NULL, NULL}
+};
+
+LUAMOD_API int luaopen_sandbox_base (lua_State *L) {
+  /* open lib into global table */
+  lua_pushglobaltable(L);
+  luaL_setfuncs(L, sandbox_base_funcs, 0);
+  /* set global _G */
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -2, "_G");
+  /* set global _VERSION */
+  lua_pushliteral(L, LUA_VERSION);
+  lua_setfield(L, -2, "_VERSION");
+  return 1;
+}

@@ -13,6 +13,8 @@ project(Amber
 
 ## Use custom CMake modules for finding packages
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+## Don't use C extensions
+set(CMAKE_C_EXTENSIONS OFF)
 
 include(GNUInstallDirs)            # ${CMAKE_INSTALL_*}
 include(CMakePackageConfigHelpers) # write_basic_package_version_file()
@@ -117,6 +119,7 @@ endif()
 #############################################################################
 
 add_subdirectory(Amber/util/      util/     )  # Amber::util
+add_subdirectory(Amber/config/    config/   )  # Amber::config
 add_subdirectory(Amber/ECS/       ECS/      )  # Amber::ECS
 add_subdirectory(Amber/graphics/  graphics/ )  # Amber::graphics
 add_subdirectory(Amber/scripting/ scripting/)  # Amber::scripting
