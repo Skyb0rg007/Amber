@@ -217,7 +217,7 @@
 /** @cond false */
 /* Determine the next capacity to allocate a vector */
 AB_ATTR_CONST
-static AB_INLINE unsigned AB_vec_internal_next_capacity(unsigned x) {
+static inline unsigned AB_vec_internal_next_capacity(unsigned x) {
     return x == 0 ? 2 : x << 1;
 }
 
@@ -225,7 +225,7 @@ static AB_INLINE unsigned AB_vec_internal_next_capacity(unsigned x) {
  * TODO: make more efficient
  */
 AB_ATTR_CONST
-static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
+static inline unsigned AB_vec_internal_roundup(unsigned x) {
     unsigned power = 2;
     if (x <= 1)
         return 2;
@@ -236,12 +236,12 @@ static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
 }
 
 /* Reallocate the pointer *ptr, returning 1 on error */
-static AB_INLINE AB_bool AB_vec_internal_safe_realloc(void **ptr, unsigned size) {
+static inline bool AB_vec_internal_safe_realloc(void **ptr, unsigned size) {
     void *tmp = realloc(*ptr, size);
     if (tmp == NULL)
-        return AB_FALSE;
+        return false;
     *ptr = tmp;
-    return AB_TRUE;
+    return true;
 }
 /** @endcond */
 

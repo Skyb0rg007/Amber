@@ -1,0 +1,15 @@
+
+#ifndef AMBER_COMPAT_STRING_H
+#define AMBER_COMPAT_STRING_H
+
+#cmakedefine HAS_STRDUP
+#cmakedefine HAS__STRDUP
+#if defined(HAS_STRDUP) && !defined(_GNU_SOURCE)
+# define _GNU_SOURCE
+#elif defined(HAS__STRDUP)
+# define strdup _strdup
+#endif
+
+#include <string.h>
+
+#endif /* AMBER_COMPAT_STRING_H */

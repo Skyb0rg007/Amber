@@ -7,19 +7,21 @@
 #ifndef AMBER_UTIL_RING_H
 #define AMBER_UTIL_RING_H
 
+#include <Amber/compat/atomic.h>
 #include <Amber/util/common.h>
-#include <SDL_atomic.h>
+
+#define AB_CACHELINE_SIZE 64
 
 /** @brief The ring buffer tracker.
  * @note Don't access these fields directly
  */
 struct AB_ring {
-    SDL_atomic_t c_head; /**< Where to dequeue from */
-    char pad1[AB_CACHELINE_SIZE - sizeof(SDL_atomic_t)]; /**< padding */
+    atomic_int c_head; /**< Where to dequeue from */
+    char pad1[AB_CACHELINE_SIZE - sizeof(atomic_int)]; /**< padding */
 
-    SDL_atomic_t p_tail; /**< Where to enqueue from */
-    SDL_atomic_t p_head; /**< mpmc - synchronize writers */
-    char pad2[AB_CACHELINE_SIZE - sizeof(SDL_atomic_t) * 2]; /**< padding */
+    atomic_int p_tail; /**< Where to enqueue from */
+    atomic_int p_head; /**< mpmc - synchronize writers */
+    char pad2[AB_CACHELINE_SIZE - sizeof(atomic_int) * 2]; /**< padding */
 
     unsigned mask; /**< The ring buffer size - 1, used as bitmask */
 };
@@ -34,7 +36,7 @@ if ((producer - consumer) < mask) {
     p_head = producer + 1
 } else {
     producer = p_head
-    no change -> return AB_FALSE
+    no change -> return false
 }
 target = buf[producer]
 while (p_tail != producer)
@@ -52,21 +54,21 @@ do {
 #endif
 
 /** @brief Determine the ring buffer capacity */
-static AB_INLINE unsigned AB_ring_capacity(const struct AB_ring *ring)
+static inline unsigned AB_ring_capacity(const struct AB_ring *ring)
 {
     return ring->mask + 1;
 }
 
 /** @brief Initialize a ring buffer object */
-static AB_INLINE void AB_ring_init(struct AB_ring *ring, unsigned size)
+static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
 {
     AB_ASSERT(size >= 2);
     AB_ASSERT((size & (size - 1)) == 0); /* size is a power of 2 */
 
     ring->mask = size - 1;
-    SDL_AtomicSet(&ring->p_tail, 0);
-    SDL_AtomicSet(&ring->p_head, 0);
-    SDL_AtomicSet(&ring->c_head, 0);
+    atomic_init(&ring->p_tail, 0);
+    atomic_init(&ring->p_head, 0);
+    atomic_init(&ring->c_head, 0);
 }
 
 /** @brief Determine the number of elements in the ring buffer 
@@ -81,22 +83,22 @@ unsigned AB_ring_size(struct AB_ring *ring);
  * @param[in] entry The entry to enqueue
  * @param entry_size The size of the entry
  * @param[out] size The number of elements in the ring buffer
- * @return AB_TRUE on success, AB_FALSE on error (max size reached)
+ * @return true on success, false on error (max size reached)
  */
-AB_bool AB_ring_enqueue_sp(struct AB_ring *ring,
-        void *AB_RESTRICT buffer,
-        const void *AB_RESTRICT entry,
+bool AB_ring_enqueue_sp(struct AB_ring *ring,
+        void *restrict buffer,
+        const void *restrict entry,
         unsigned entry_size, unsigned *size);
 /** @brief Single consumer - dequeue an item
  * @param ring The ring object
  * @param buffer The ring buffer
  * @param[out] entry The entry to dequeue into
  * @param entry_size The size of the entry
- * @return AB_TRUE on success, AB_FALSE on error (size == 0)
+ * @return true on success, false on error (size == 0)
  */
-AB_bool AB_ring_dequeue_sc(struct AB_ring *ring,
-        const void *AB_RESTRICT buffer,
-        void *AB_RESTRICT entry,
+bool AB_ring_dequeue_sc(struct AB_ring *ring,
+        const void *restrict buffer,
+        void *restrict entry,
         unsigned entry_size);
 
 /* Multiple producer / multiple consumer */
@@ -106,9 +108,9 @@ AB_bool AB_ring_dequeue_sc(struct AB_ring *ring,
  * @param[in] entry The entry to enqueue
  * @param entry_size The size of the entry
  * @param[out] size Optional - number of items enqueued
- * @return AB_TRUE on success, AB_FALSE on error
+ * @return true on success, false on error
  */
-AB_bool AB_ring_enqueue_mp(struct AB_ring *ring,
+bool AB_ring_enqueue_mp(struct AB_ring *ring,
         void *buffer,
         const void *entry,
         unsigned entry_size,
@@ -118,9 +120,9 @@ AB_bool AB_ring_enqueue_mp(struct AB_ring *ring,
  * @param buffer The ring buffer
  * @param[out] entry The entry to enqueue
  * @param entry_size The size of the entry
- * @return AB_TRUE on success, AB_FALSE on error
+ * @return true on success, false on error
  */
-AB_bool AB_ring_dequeue_mc(struct AB_ring *ring,
+bool AB_ring_dequeue_mc(struct AB_ring *ring,
         const void *buffer,
         void *data,
         unsigned entry_size);
@@ -130,9 +132,9 @@ AB_bool AB_ring_dequeue_mc(struct AB_ring *ring,
  * @param buffer The ring buffer
  * @param[out] entry The entry to dequeue into
  * @param entry_size The entry size
- * @return AB_TRUE on dequeue, AB_FALSE on error / not dequeue
+ * @return true on dequeue, false on error / not dequeue
  */
-AB_bool AB_ring_trydequeue_mc(struct AB_ring *ring,
+bool AB_ring_trydequeue_mc(struct AB_ring *ring,
         const void *buffer,
         void *entry,
         unsigned entry_size);
@@ -143,27 +145,27 @@ AB_bool AB_ring_trydequeue_mc(struct AB_ring *ring,
  * @hideinitializer
  */
 #define AB_RING_PROTOTYPE(name, type)                                         \
-    static AB_INLINE AB_bool AB_ring_enqueue_spsc_##name(                     \
+    static inline bool AB_ring_enqueue_spsc_##name(                     \
             struct AB_ring *ring, type *buf, type *entry, unsigned *sz)       \
     {                                                                         \
         return AB_ring_enqueue_sp(ring, buf, entry, sizeof(type), sz);        \
     }                                                                         \
-    static AB_INLINE AB_bool AB_ring_dequeue_spsc_##name(                     \
+    static inline bool AB_ring_dequeue_spsc_##name(                     \
             struct AB_ring *ring, type *buf, type *entry)                     \
     {                                                                         \
         return AB_ring_dequeue_sc(ring, buf, entry, sizeof(type));            \
     }                                                                         \
-    static AB_INLINE AB_bool AB_ring_enqueue_mpmc_##name(                     \
+    static inline bool AB_ring_enqueue_mpmc_##name(                     \
             struct AB_ring *ring, type *buf, type *entry, unsigned *sz)       \
     {                                                                         \
         return AB_ring_enqueue_mp(ring, buf, entry, sizeof(type), sz);        \
     }                                                                         \
-    static AB_INLINE AB_bool AB_ring_dequeue_mpmc_##name(                     \
+    static inline bool AB_ring_dequeue_mpmc_##name(                     \
             struct AB_ring *ring, type *buf, type *entry)                     \
     {                                                                         \
         return AB_ring_dequeue_mc(ring, buf, entry, sizeof(type));            \
     }                                                                         \
-    static AB_INLINE AB_bool AB_ring_trydequeue_mpmc_##name(                  \
+    static inline bool AB_ring_trydequeue_mpmc_##name(                  \
             struct AB_ring *ring,  type *buf, type *entry)                    \
     {                                                                         \
         return AB_ring_trydequeue_mc(ring, buf, entry, sizeof(type));         \

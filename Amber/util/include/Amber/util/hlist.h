@@ -21,9 +21,9 @@ struct AB_hlist_node;
 /** @brief Initializer for a struct AB_hlist_head */
 #define AB_HLIST_HEAD_INITIALIZER { NULL }
 /** @brief Initialize a struct AB_hlist_head */
-static AB_INLINE void AB_hlist_head_init(struct AB_hlist_head *head);
+static inline void AB_hlist_head_init(struct AB_hlist_head *head);
 /** @brief Initialize a struct AB_hlist_node */
-static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node);
+static inline void AB_hlist_node_init(struct AB_hlist_node *node);
 
 /** @brief Access an entry from an AB_hlist_node 
  * @param ptr Pointer to the AB_hlist_node
@@ -48,24 +48,24 @@ static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node);
 
 /* Predicates */
 /** @brief Determine if a AB_hlist_node has been inserted into a list */
-static AB_INLINE AB_bool AB_hlist_unhashed(const struct AB_hlist_node *node);
+static inline bool AB_hlist_unhashed(const struct AB_hlist_node *node);
 /** @brief Determine if the AB_hlist_head is an empty list */
-static AB_INLINE AB_bool AB_hlist_empty(const struct AB_hlist_head *node);
+static inline bool AB_hlist_empty(const struct AB_hlist_head *node);
 /** @brief Determine if the AB_hlist_head only contains a single item */
-static AB_INLINE AB_bool
+static inline bool
 AB_hlist_is_singlular_node(struct AB_hlist_node *node, struct AB_hlist_head *head);
 
 /* Operations */
 /** @brief Remove a node from its list */
-static AB_INLINE void AB_hlist_del(struct AB_hlist_node *node);
+static inline void AB_hlist_del(struct AB_hlist_node *node);
 /** @brief Add a node to the head of a list */
-static AB_INLINE void AB_hlist_add_head(struct AB_hlist_node *node, struct AB_hlist_head *head);
+static inline void AB_hlist_add_head(struct AB_hlist_node *node, struct AB_hlist_head *head);
 /** @brief Insert a node in front of another node */
-static AB_INLINE void AB_hlist_add_before(struct AB_hlist_node *node, struct AB_hlist_node *next);
+static inline void AB_hlist_add_before(struct AB_hlist_node *node, struct AB_hlist_node *next);
 /** @brief Insert a node behind another node */
-static AB_INLINE void AB_hlist_add_behind(struct AB_hlist_node *node, struct AB_hlist_node *prev);
+static inline void AB_hlist_add_behind(struct AB_hlist_node *node, struct AB_hlist_node *prev);
 /** @brief Transfer the entire list from one head to another */
-static AB_INLINE void AB_hlist_move_list(struct AB_hlist_head *src, struct AB_hlist_head *dest);
+static inline void AB_hlist_move_list(struct AB_hlist_head *src, struct AB_hlist_head *dest);
 
 /* Fakes */
 /** @brief Create a fake list containing only the one node 
@@ -74,9 +74,9 @@ static AB_INLINE void AB_hlist_move_list(struct AB_hlist_head *src, struct AB_hl
  * Fakes provide the ability to make insertions and deletions without a parent
  * AB_hlist_head.
  */
-static AB_INLINE void AB_hlist_add_fake(struct AB_hlist_node *node);
+static inline void AB_hlist_add_fake(struct AB_hlist_node *node);
 /** @brief Determine if a node is a fake */
-static AB_INLINE AB_bool AB_hlist_fake(struct AB_hlist_node *node);
+static inline bool AB_hlist_fake(struct AB_hlist_node *node);
 
 /* Iteration */
 /** @brief Iterate over an AB_hlist_head
@@ -149,10 +149,10 @@ struct AB_hlist_node {
     struct AB_hlist_node *next, **pprev;
 };
 
-static AB_INLINE void AB_hlist_head_init(struct AB_hlist_head *head) {
+static inline void AB_hlist_head_init(struct AB_hlist_head *head) {
     head->first = NULL;
 }
-static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node) {
+static inline void AB_hlist_node_init(struct AB_hlist_node *node) {
     node->next  = NULL;
     node->pprev = NULL;
 }
@@ -164,16 +164,16 @@ static AB_INLINE void AB_hlist_node_init(struct AB_hlist_node *node) {
 #undef AB_hlist_entry
 #define AB_hlist_entry(ptr, type, member) container_of(ptr, type, member)
 
-static AB_INLINE AB_bool AB_hlist_unhashed(const struct AB_hlist_node *node) {
+static inline bool AB_hlist_unhashed(const struct AB_hlist_node *node) {
     return node->pprev == NULL;
 }
 
-static AB_INLINE AB_bool AB_hlist_empty(const struct AB_hlist_head *node)
+static inline bool AB_hlist_empty(const struct AB_hlist_head *node)
 {
     return node->first == NULL;
 }
 
-static AB_INLINE void AB_hlist_del(struct AB_hlist_node *node) {
+static inline void AB_hlist_del(struct AB_hlist_node *node) {
     struct AB_hlist_node *next = node->next;
     struct AB_hlist_node **pprev = node->pprev;
 
@@ -186,7 +186,7 @@ static AB_INLINE void AB_hlist_del(struct AB_hlist_node *node) {
     node->pprev = NULL;
 }
 
-static AB_INLINE void AB_hlist_add_head(
+static inline void AB_hlist_add_head(
         struct AB_hlist_node *node, struct AB_hlist_head *head) {
     struct AB_hlist_node *first = head->first;
     node->next = first;
@@ -196,7 +196,7 @@ static AB_INLINE void AB_hlist_add_head(
     node->pprev = &head->first;
 }
 
-static AB_INLINE void AB_hlist_add_before(
+static inline void AB_hlist_add_before(
         struct AB_hlist_node *node, struct AB_hlist_node *next) {
     node->pprev = next->pprev;
     node->next = next;
@@ -204,7 +204,7 @@ static AB_INLINE void AB_hlist_add_before(
     *(node->pprev) = node;
 }
 
-static AB_INLINE void AB_hlist_add_behind(
+static inline void AB_hlist_add_behind(
         struct AB_hlist_node *node, struct AB_hlist_node *prev) {
     node->next = prev;
     prev->next = node;
@@ -214,20 +214,20 @@ static AB_INLINE void AB_hlist_add_behind(
         node->next->pprev = &node->next;
 }
 
-static AB_INLINE void AB_hlist_add_fake(struct AB_hlist_node *node) {
+static inline void AB_hlist_add_fake(struct AB_hlist_node *node) {
     node->pprev = &node->next;
 }
 
-static AB_INLINE AB_bool AB_hlist_fake(struct AB_hlist_node *node) {
+static inline bool AB_hlist_fake(struct AB_hlist_node *node) {
     return node->pprev == &node->next;
 }
 
-static AB_INLINE AB_bool AB_hlist_is_singlular_node(
+static inline bool AB_hlist_is_singlular_node(
         struct AB_hlist_node *node, struct AB_hlist_head *head) {
     return !node->next && node->pprev == &head->first;
 }
 
-static AB_INLINE void AB_hlist_move_list(
+static inline void AB_hlist_move_list(
         struct AB_hlist_head *src, struct AB_hlist_head *dest) {
     dest->first = src->first;
     if (dest->first)

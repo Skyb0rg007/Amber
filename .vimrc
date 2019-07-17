@@ -11,8 +11,8 @@ let c_gnu = 1
 let c_no_c11 = 1
 
 " The default path - this is local to my machine
-let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/8/include/,/usr/include/SDL2/,/usr/local/include/'
-let ale_c_gcc_options = '-Wall -std=c90 -Wvla -Winline -I/usr/include/SDL2/ -I/usr/local/include'
+let &path = '.,/usr/include,/usr/lib/gcc/x86_64-redhat-linux/9/include/,/usr/include/SDL2/,/usr/local/include/'
+let ale_c_gcc_options = '-Wall -std=c99 -Wvla -Winline -I/usr/include/SDL2/ -I/usr/local/include'
 
 " Internal Deps
 call AddToInclude('thirdparty/cmocka/include/')
@@ -30,8 +30,11 @@ call AddToInclude('Amber/graphics/include/')
 call AddToInclude('Amber/scripting/include/')
 call AddToInclude('Amber/ui/include/')
 call AddToInclude('Amber/util/include/')
+call AddToInclude('Amber/compat/include/')
 call AddToInclude('Amber/render/include/')
 call AddToInclude('_build/util/include/')
+call AddToInclude('_build_native/util/include/')
+call AddToInclude('_build_native/compat/include/')
 
 augroup project
     autocmd!

@@ -1,0 +1,12 @@
+
+#ifndef AMBER_COMPAT_H
+#define AMBER_COMPAT_H
+
+#cmakedefine HAS_INTTYPES_H
+#ifdef HAS_INTTYPES_H
+# include <inttypes.h>
+#else
+# error "Unable to create inttypes.h compatibility"
+#endif
+
+#endif /* AMBER_COMPAT_H */

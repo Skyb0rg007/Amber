@@ -5,7 +5,7 @@
 #ifndef AB_VECTOR_AB_VECTOR_H
 #define AB_VECTOR_AB_VECTOR_H
 
-#include <Amber/util/common.h> /* AB_LOG_ERROR, AB_STATIC_ASSERT, AB_INLINE */
+#include <Amber/util/common.h> /* AB_LOG_ERROR, AB_STATIC_ASSERT, inline */
 #include <stddef.h> /* size_t */
 #include <stdlib.h> /* realloc, free */
 #include <string.h> /* memcpy */
@@ -19,7 +19,7 @@
 #if NDEBUG
 # define AB_VEC_ASSERT(cond, msg) (void)0 /* Ignore */
 #else
-static AB_INLINE void AB_VEC_ASSERT(int cond, const char *msg) {
+static inline void AB_VEC_ASSERT(int cond, const char *msg) {
     if (!cond) {
         AB_QUICK_LOG("%s", msg);
         exit(1);
@@ -112,7 +112,7 @@ static AB_INLINE void AB_VEC_ASSERT(int cond, const char *msg) {
         : &(vec)->elems[(vec)->num++])
 
 /** @cond false */
-static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
+static inline unsigned AB_vec_internal_roundup(unsigned x) {
     unsigned power = 2;
     if (x <= 1)
         return 2;
@@ -122,7 +122,7 @@ static AB_INLINE unsigned AB_vec_internal_roundup(unsigned x) {
     return power;
 }
 
-static AB_INLINE int AB_vec_internal_safe_realloc(void **ptr, unsigned size) {
+static inline int AB_vec_internal_safe_realloc(void **ptr, unsigned size) {
     void *tmp = realloc(*ptr, size);
     if (tmp == NULL)
         return 1;

@@ -9,8 +9,6 @@ project(lua
 include(GNUInstallDirs)
 include(CheckLibraryExists)
 
-find_package(Readline MODULE) # Optional readline support for the interpreter
-
 set(LUA_SOURCES
     # Core
     src/lapi.c
@@ -48,94 +46,49 @@ set(LUA_SOURCES
     src/ltablib.c
     src/lutf8lib.c)
 
-# Dynamic library
-add_library(lualib SHARED ${LUA_SOURCES})
+add_library(lualib
+    ${LUA_SOURCES})
 target_include_directories(lualib
     PRIVATE src/
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(lualib
-    PRIVATE c_std_90)
+    PUBLIC c_std_99) # Public since `long long` is used in headers
 target_link_libraries(lualib 
     PRIVATE ${CMAKE_DL_LIBS})
 add_library(lua::lualib ALIAS lualib)
-
-# Static library
-add_library(lualib-static STATIC ${LUA_SOURCES})
-target_include_directories(lualib-static
-    PRIVATE src/
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
-target_compile_features(lualib-static
-    PRIVATE c_std_90)
-target_link_libraries(lualib-static 
-    PRIVATE ${CMAKE_DL_LIBS})
-add_library(lua::lualib-static ALIAS lualib-static)
 
 # Do we need to link to libm?
 check_library_exists("m" "pow" "" HAVE_LIBM)
 if(HAVE_LIBM)
     target_link_libraries(lualib PRIVATE m)
-    target_link_libraries(lualib-static PRIVATE m)
-endif()
-
-# Lua interpreter
-# Link to the shared lib to avoid needing to re-export symbols
-add_executable(lua
-    src/lua.c)
-target_link_libraries(lua
-    PRIVATE lualib)
-add_executable(lua::lua ALIAS lua)
-
-# Lua compiler
-# Link statically - it's required
-add_executable(luac
-    src/luac.c)
-target_link_libraries(luac
-    PRIVATE lualib-static)
-add_executable(lua::luac ALIAS luac)
-
-# Readline support
-if(READLINE_FOUND)
-    target_link_libraries(lua PRIVATE readline::readline)
-    target_compile_definitions(lua PRIVATE LUA_USE_READLINE)
 endif()
 
 # Enable extra assertions for debug builds
 target_compile_definitions(lualib
     PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
-target_compile_definitions(lualib-static
-    PRIVATE $<$<CONFIG:Debug>:LUA_USE_APICHECK>)
 
-# System-config
+# System configuration
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
 elseif(APPLE)
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
 elseif(WIN32)
     target_compile_definitions(lualib PUBLIC LUA_USE_WINDOWS)
     target_compile_definitions(lualib PRIVATE LUA_BUILD_AS_DLL)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_WINDOWS)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
     target_compile_definitions(lualib PUBLIC LUA_USE POSIX LUA_USE_DLOPEN _REENTRANT)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE POSIX LUA_USE_DLOPEN _REENTRANT)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
     target_link_options(lualib PRIVATE -brtl -bexpall)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_link_options(lualib-static PRIVATE -brtl -bexpall)
-elseif(UNIX AND CMAKE_SYSTEM_NAME MATCHES "*BSD*")
+elseif(UNIX AND CMAKE_SYSTEM_NAME MATCHES "BSD")
     target_compile_definitions(lualib PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
-    target_compile_definitions(lualib-static PUBLIC LUA_USE_POSIX LUA_USE_DLOPEN)
 endif()
 
-install(TARGETS lualib lualib-static
+install(TARGETS lualib
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime NAMELINK_COMPONENT Development
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY include
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Development)
-install(TARGETS lua luac
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Development)
 

@@ -1,3 +1,4 @@
+#include <Amber/compat/stdio.h>
 #include <Amber/ECS/inbox.h>
 #include <Amber/graphics/graphics.h>
 #include "graphics_system.h"
@@ -20,7 +21,7 @@ static AB_errno_t handle_messages(struct AB_ECS_world *world,
 
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_o) {
             char *cmd;
-            AB_ASPRINTF(&cmd, "%s \"%s\" 1>/dev/null 2>&1",
+            asprintf(&cmd, "%s \"%s\" 1>/dev/null 2>&1",
                     "xdg-open", "http://google.com");
             system(cmd);
             free(cmd);

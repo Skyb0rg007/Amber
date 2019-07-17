@@ -5,7 +5,7 @@ project(lpeg
     HOMEPAGE_URL "http://www.inf.puc-rio.br/~roberto/lpeg/"
     LANGUAGES C)
 
-add_library(lpeg MODULE
+add_library(lpeg
     src/lpcap.h
     src/lpcode.h
     src/lpprint.h
@@ -18,10 +18,7 @@ add_library(lpeg MODULE
     src/lptree.c
     src/lpvm.c)
 target_compile_features(lpeg
-    PRIVATE c_std_90)
+    PRIVATE c_std_99)
 target_link_libraries(lpeg
     PRIVATE lua::lualib)
-set_target_properties(lpeg PROPERTIES
-    PREFIX ""
-    OUTPUT_NAME lpeg)
 add_library(lpeg::lpeg ALIAS lpeg)

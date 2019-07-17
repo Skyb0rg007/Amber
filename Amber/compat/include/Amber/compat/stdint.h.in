@@ -1,0 +1,12 @@
+
+#ifndef AMBER_COMPAT_STDINT_H
+#define AMBER_COMPAT_STDINT_H value
+
+#cmakedefine HAS_STDINT_H
+#ifdef HAS_STDINT_H
+# include <stdint.h>
+#else
+# error "Unable to create stdint.h compat header"
+#endif
+
+#endif /* AMBER_COMPAT_STDINT_H */

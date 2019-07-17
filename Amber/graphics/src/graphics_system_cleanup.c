@@ -11,8 +11,10 @@ void graphics_system_cleanup(struct AB_ECS_world *world, struct AB_ECS_system *s
 
     SDL_GL_DeleteContext(data->gl_ctx);
     SDL_DestroyWindow(data->win);
+#ifndef EMSCRIPTEN
     SDL_free(data->base_path);
     SDL_free(data->pref_path);
+#endif
     free(data);
 #ifdef NDEBUG
     /* This calls dlclose(), which prevents leak analysis */

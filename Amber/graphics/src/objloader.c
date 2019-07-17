@@ -1,3 +1,5 @@
+#include <Amber/compat/stdio.h>
+#include <Amber/compat/string.h>
 #include <Amber/util/common.h>
 #include <Amber/util/vector.h>
 #include <Amber/graphics/objloader.h>
@@ -34,7 +36,7 @@ int AB_load_obj(FILE *infile, struct AB_mesh_info *out)
     /* Parse the input line-by-line */
     char *line = NULL;
     size_t n = 0;
-    while (AB_GETLINE(&line, &n, infile) > 0) {
+    while (getline(&line, &n, infile) > 0) {
         float a, b, c;
         int ai, bi, ci, di, ei, fi, gi, hi, ii;
         if (sscanf(line, "v %f %f %f", &a, &b, &c) == 3) {
@@ -92,7 +94,7 @@ int AB_load_obj(FILE *infile, struct AB_mesh_info *out)
         } else if (strncmp(line, "o ", 2) == 0) {
             if (out->name)
                 free(out->name);
-            out->name = AB_STRDUP(line + 2);
+            out->name = strdup(line + 2);
         }
     }
     free(line);

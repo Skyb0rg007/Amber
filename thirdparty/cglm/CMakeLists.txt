@@ -5,6 +5,8 @@ project(cglm
     HOMEPAGE_URL "https://github.com/recp/cglm"
     LANGUAGES C)
 
+include(CheckLibraryExists)
+
 add_library(cglm
     src/affine.c
     src/bezier.c
@@ -12,7 +14,6 @@ add_library(cglm
     src/cam.c
     src/config.h
     src/curve.c
-    # src/dllmain.c # No clue why this is included - it does nothing
     src/ease.c
     src/euler.c
     src/frustum.c
@@ -27,7 +28,6 @@ add_library(cglm
     src/vec4.c)
 target_include_directories(cglm
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
-# cglm uses restrict and inline
 target_compile_features(cglm
     PUBLIC c_std_99)
 if(WIN32 AND $<TARGET_PROPERTY:cglm,TYPE> STREQUAL "SHARED_LIBRARY")

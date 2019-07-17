@@ -28,7 +28,7 @@
 
 /* Predicates */
 /** @brief Determine if a node has been hashed */
-static AB_INLINE AB_bool AB_hash_hashed(struct AB_hlist_node *node);
+static inline bool AB_hash_hashed(struct AB_hlist_node *node);
 /** @brief Determine if a hashtable is empty */
 #define AB_hash_empty(ht)
 
@@ -40,7 +40,7 @@ static AB_INLINE AB_bool AB_hash_hashed(struct AB_hlist_node *node);
  */
 #define AB_hash_add(ht, node, hash)
 /** @brief Delete a node from the hashtable */
-static AB_INLINE void AB_hash_del(struct AB_hlist_node *node);
+static inline void AB_hash_del(struct AB_hlist_node *node);
 
 /* Iteration */
 /* ht - hashtable (not a pointer!!)
@@ -101,12 +101,12 @@ static AB_INLINE void AB_hash_del(struct AB_hlist_node *node);
  * @return The string's hash value
  * @note This uses FNVa-1, which is not cryptographically secure
  */
-static AB_INLINE uint32_t AB_fnv_hash_str(const char *str);
+static inline uint32_t AB_fnv_hash_str(const char *str);
 
 /** @brief Hash a 32-bit value */
-static AB_INLINE uint32_t AB_hash32(uint32_t val);
+static inline uint32_t AB_hash32(uint32_t val);
 /** @brief Hash a 64-bit value */
-static AB_INLINE uint32_t AB_hash64(uint64_t val);
+static inline uint32_t AB_hash64(uint64_t val);
 
 /***************************
  * Implementation
@@ -116,7 +116,7 @@ static AB_INLINE uint32_t AB_hash64(uint64_t val);
 #define AB_HASH_SIZE(ht) AB_ARRAY_SIZE(ht)
 
 #undef AB_hash_init
-static AB_INLINE void AB_hash_init_internal(struct AB_hlist_head *ht, unsigned sz) {
+static inline void AB_hash_init_internal(struct AB_hlist_head *ht, unsigned sz) {
     unsigned i;
     for (i = 0; i < sz; i++)
         AB_hlist_head_init(ht + i);
@@ -127,12 +127,12 @@ static AB_INLINE void AB_hash_init_internal(struct AB_hlist_head *ht, unsigned s
 #define AB_hash_add(ht, node, hash) \
     AB_hlist_add_head(node, &(ht)[(hash) % AB_HASH_SIZE(ht)])
 
-static AB_INLINE AB_bool AB_hash_hashed(struct AB_hlist_node *node) {
+static inline bool AB_hash_hashed(struct AB_hlist_node *node) {
     return !AB_hlist_unhashed(node);
 }
 
 #undef AB_hash_empty
-static AB_INLINE int AB_hash_empty_internal(struct AB_hlist_head *ht, unsigned sz) {
+static inline int AB_hash_empty_internal(struct AB_hlist_head *ht, unsigned sz) {
     unsigned i;
     for (i = 0; i < sz; i++)
         if (!AB_hlist_empty(ht + i))
@@ -141,7 +141,7 @@ static AB_INLINE int AB_hash_empty_internal(struct AB_hlist_head *ht, unsigned s
 }
 #define AB_hash_empty(ht) AB_hash_empty_internal(ht, AB_HASH_SIZE(ht))
 
-static AB_INLINE void AB_hash_del(struct AB_hlist_node *node) {
+static inline void AB_hash_del(struct AB_hlist_node *node) {
     AB_hlist_del(node);
 }
 
@@ -167,7 +167,7 @@ static AB_INLINE void AB_hash_del(struct AB_hlist_node *node) {
 #define AB_hash_foreach_possible_safe(ht, obj, tmp, type, member, hash) \
     AB_hlist_foreach_entry_safe(obj, tmp, &(ht)[(hash) % AB_HASH_SIZE(ht)], type, member)
 
-static AB_INLINE uint32_t AB_fnv_hash_str(const char *str) {
+static inline uint32_t AB_fnv_hash_str(const char *str) {
     const uint32_t FNV_PRIME = 16777619u;
     const uint32_t FNV_OFFSET_BASIS = 2166136261u;
 
@@ -178,11 +178,11 @@ static AB_INLINE uint32_t AB_fnv_hash_str(const char *str) {
     }
     return hash;
 }
-static AB_INLINE uint32_t AB_hash32(uint32_t val) {
+static inline uint32_t AB_hash32(uint32_t val) {
     const uint32_t GOLDEN_RATIO_32 = 0x61C88647;
     return val * GOLDEN_RATIO_32;
 }
-static AB_INLINE uint32_t AB_hash64(uint64_t val) {
+static inline uint32_t AB_hash64(uint64_t val) {
     const uint64_t GOLDEN_RATIO_64 = 0x61C8864680B583EB;
     return val * GOLDEN_RATIO_64;
 }

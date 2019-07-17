@@ -18,7 +18,6 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 include(GNUInstallDirs)            # ${CMAKE_INSTALL_*}
 include(CMakePackageConfigHelpers) # write_basic_package_version_file()
-include(CheckIPOSupported)         # check_ipo_supported()
 include(AddAmberTest)              # add_amber_test()
 include(EnableWarnings)            # enable_warnings()
 
@@ -46,13 +45,14 @@ if(AB_RPATH_SUPPORT)
     endif()
 endif()
 
-## Address Sanitizer support for Debug builds
+## Address Sanitizer support
 if(AB_ENABLE_ASAN)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
 endif()
 
 ## Enable LTO for release builds
+include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_reason LANGUAGES C)
 if(ipo_supported)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
@@ -67,13 +67,27 @@ endif()
 #############################################################################
 
 ## External dependencies (not in source tree)
-#            Dep      Vsn                       Imported Target
-find_package(OpenGL   3.3    MODULE REQUIRED) # OpenGL::GL
-find_package(SDL2     2.0.8  MODULE REQUIRED) # SDL2::SDL2
-find_package(SDL2_net 2.0.8  MODULE REQUIRED) # SDL2::SDL2_net
-find_package(Sodium   1.0.17 MODULE REQUIRED) # sodium::sodium
-find_package(ZLIB     1.2    MODULE REQUIRED) # ZLIB::ZLIB
-find_package(Freetype 2.9.1  MODULE REQUIRED) # Freetype::Freetype
+if(EMSCRIPTEN) # Fake builtin deps
+    add_library(OpenGL::GL INTERFACE IMPORTED GLOBAL)
+    add_library(SDL2::SDL2 INTERFACE IMPORTED GLOBAL)
+    target_link_options(SDL2::SDL2 INTERFACE
+        "SHELL:-s USE_SDL=2")
+    add_library(SDL2::SDL2_net INTERFACE IMPORTED GLOBAL)
+    target_link_options(SDL2::SDL2_net INTERFACE
+        "SHELL:-s USE_SDL_NET=2")
+    add_library(ZLIB::ZLIB INTERFACE IMPORTED GLOBAL)
+    target_link_options(ZLIB::ZLIB INTERFACE
+        "SHELL:-s USE_ZLIB=1")
+    add_library(Freetype::Freetype INTERFACE IMPORTED GLOBAL)
+    target_link_options(Freetype::Freetype INTERFACE
+        "SHELL:-s USE_FREETYPE=1")
+else()
+    find_package(OpenGL   3.3    MODULE REQUIRED) # OpenGL::GL
+    find_package(SDL2     2.0.8  MODULE REQUIRED) # SDL2::SDL2
+    find_package(SDL2_net 2.0.8  MODULE REQUIRED) # SDL2::SDL2_net
+    find_package(ZLIB     1.2    MODULE REQUIRED) # ZLIB::ZLIB
+    find_package(Freetype 2.9.1  MODULE REQUIRED) # Freetype::Freetype
+endif()
 if(AB_GETTEXT_SUPPORT)
     # Runtime gettext package
     find_package(Intl MODULE REQUIRED) # gettext::intl
@@ -83,7 +97,11 @@ endif()
 if(AB_BUILD_DOCUMENTATION)
     find_package(Doxygen MODULE OPTIONAL_COMPONENTS dot) # doxygen_add_docs()
     if(NOT DOXYGEN_FOUND)
-        message(WARNING "Doxygen not found - can only build LDoc documentation")
+        message(WARNING "Doxygen not found - cannot build C documentation")
+    endif()
+    find_program(LDOC_EXE ldoc HINTS LDOC_DIR)
+    if(NOT LDOC_EXE)
+        message(WARNING "LDoc not found - cannot build Lua documentation")
     endif()
 endif()
 
@@ -91,12 +109,12 @@ endif()
 add_subdirectory(thirdparty/nuklear/)  # nk::nuklear
 add_subdirectory(thirdparty/glad/   )  # glad::glad
 add_subdirectory(thirdparty/stb/    )  # stb::stb_image
-add_subdirectory(thirdparty/sqlite3/)  # sqlite3::sqlite3
+# add_subdirectory(thirdparty/sqlite3/)  # sqlite3::sqlite3
 add_subdirectory(thirdparty/cglm/   )  # cglm::cglm
-add_subdirectory(thirdparty/lua-5.3/)  # lua::lua,luac,lualib,lualib-static
-add_subdirectory(thirdparty/ldoc/   )  # ldoc_add_docs()
+add_subdirectory(thirdparty/lua-5.3/)  # lua::lua,lualib
+# add_subdirectory(thirdparty/ldoc/   )  # ldoc_add_docs()
 add_subdirectory(thirdparty/lpeg/   )  # lpeg::lpeg
-add_subdirectory(thirdparty/dirent/ )  # dirent::dirent
+# add_subdirectory(thirdparty/dirent/ )  # dirent::dirent
 
 #############################################################################
 ##
@@ -118,11 +136,12 @@ endif()
 ##
 #############################################################################
 
+add_subdirectory(Amber/compat/    compat/   )  # Amber::util
 add_subdirectory(Amber/util/      util/     )  # Amber::util
-add_subdirectory(Amber/config/    config/   )  # Amber::config
+# add_subdirectory(Amber/config/    config/   )  # Amber::config
 add_subdirectory(Amber/ECS/       ECS/      )  # Amber::ECS
 add_subdirectory(Amber/graphics/  graphics/ )  # Amber::graphics
-add_subdirectory(Amber/scripting/ scripting/)  # Amber::scripting
+# add_subdirectory(Amber/scripting/ scripting/)  # Amber::scripting
 add_subdirectory(Amber/ui/        ui/       )  # Amber::ui
 add_subdirectory(Amber/driver/    driver/   )  # Amber::driver
 
@@ -134,11 +153,11 @@ add_subdirectory(Amber/driver/    driver/   )  # Amber::driver
 
 if(AB_BUILD_DOCUMENTATION)
 
-    ldoc_add_docs(ldoc
-        Amber/scripting/
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ldoc/"
-        COMMENT "Generating LDoc documentation")
+    # ldoc_add_docs(ldoc
+        # Amber/scripting/
+        # WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        # OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/ldoc/"
+        # COMMENT "Generating LDoc documentation")
 
     if(DOXYGEN_FOUND)
         set(DOXYGEN_GENERATE_HTML TRUE)
@@ -162,22 +181,22 @@ endif()
 ##
 #############################################################################
 
-install(EXPORT amber-targets
-    NAMESPACE Amber::
-    FILE Amber-targets.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/ COMPONENT Development)
-configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Amber-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Amber-config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/Amber-config-version.cmake
-    VERSION "${PROJECT_VERSION}"
-    COMPATIBILITY ExactVersion)
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/Amber-config-version.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/Amber-config.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/ COMPONENT Development)
+# install(EXPORT amber-targets
+    # NAMESPACE Amber::
+    # FILE Amber-targets.cmake
+    # DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/ COMPONENT Development)
+# configure_package_config_file(
+    # ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Amber-config.cmake.in
+    # ${CMAKE_CURRENT_BINARY_DIR}/Amber-config.cmake
+    # INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/)
+# write_basic_package_version_file(
+    # ${CMAKE_CURRENT_BINARY_DIR}/Amber-config-version.cmake
+    # VERSION "${PROJECT_VERSION}"
+    # COMPATIBILITY ExactVersion)
+# install(FILES
+    # ${CMAKE_CURRENT_BINARY_DIR}/Amber-config-version.cmake
+    # ${CMAKE_CURRENT_BINARY_DIR}/Amber-config.cmake
+    # DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Amber/ COMPONENT Development)
 
 #############################################################################
 ##

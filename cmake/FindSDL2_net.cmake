@@ -27,10 +27,6 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-if(NOT SDL2_NET_INCLUDE_DIR AND SDLNET_INCLUDE_DIR)
-  set(SDL2_NET_INCLUDE_DIR ${SDLNET_INCLUDE_DIR} CACHE PATH "directory cache
-entry initialized from old variable name")
-endif()
 find_path(SDL2_NET_INCLUDE_DIR SDL_net.h
   HINTS
     ENV SDLNETDIR
@@ -38,10 +34,6 @@ find_path(SDL2_NET_INCLUDE_DIR SDL_net.h
   PATH_SUFFIXES include/SDL2 include/SDL2.0 include
 )
 
-if(NOT SDL2_NET_LIBRARY AND SDLNET_LIBRARY)
-  set(SDL2_NET_LIBRARY ${SDLNET_LIBRARY} CACHE FILEPATH "file cache entry
-initialized from old variable name")
-endif()
 find_library(SDL2_NET_LIBRARY
   NAMES SDL2_net
   HINTS
@@ -67,18 +59,24 @@ if(SDL2_NET_INCLUDE_DIR AND EXISTS "${SDL2_NET_INCLUDE_DIR}/SDL2_net.h")
 endif()
 
 set(SDL2_NET_LIBRARIES ${SDL2_NET_LIBRARY})
-set(SDL2_NET_INCLUDE_DIRS ${SDL2_NET_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR}/SDL2)
+set(SDL2_NET_INCLUDE_DIRS ${SDL2_NET_INCLUDE_DIR})
 
 include(FindPackageHandleStandardArgs)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(SDL2_net
+find_package_handle_standard_args(SDL2_net
     REQUIRED_VARS SDL2_NET_LIBRARIES SDL2_NET_INCLUDE_DIRS
     VERSION_VAR SDL2_NET_VERSION_STRING)
 
 if(NOT TARGET SDL2::SDL2_net)
-    add_library(SDL2::SDL2_net UNKNOWN IMPORTED)
-    set_target_properties(SDL2::SDL2_net PROPERTIES
-        IMPORTED_LOCATION "${SDL2_NET_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${SDL2_NET_INCLUDE_DIR}"
-        VERSION "${SDL2_NET_VERSION_STRING}")
+    if(EMSCRIPTEN)
+        add_library(SDL2::SDL2_net UNKNOWN IMPORTED)
+        set_target_properties(SDL2::SDL2_net PROPERTIES
+            INTERFACE_LINK_OPTIONS "${SDL2_NET_LIBRARIES}")
+    else()
+        add_library(SDL2::SDL2_net UNKNOWN IMPORTED)
+        set_target_properties(SDL2::SDL2_net PROPERTIES
+            IMPORTED_LOCATION "${SDL2_NET_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${SDL2_NET_INCLUDE_DIR}"
+            VERSION "${SDL2_NET_VERSION_STRING}")
+    endif()
 endif()

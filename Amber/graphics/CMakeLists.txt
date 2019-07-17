@@ -6,7 +6,7 @@ target_include_directories(objloader
 target_compile_features(objloader
     PRIVATE c_std_99)
 target_link_libraries(objloader
-    PUBLIC Amber::util cglm::cglm)
+    PUBLIC Amber::util cglm::cglm Amber::compat)
 
 add_library(graphics
     src/graphics_system_init.c

@@ -7,6 +7,10 @@ target_include_directories(driver
     PRIVATE include/)
 target_compile_features(driver
     PRIVATE c_std_99)
+if(EMSCRIPTEN)
+    target_link_options(driver
+        PRIVATE "SHELL:-s ERROR_ON_UNDEFINED_SYMBOLS=0")
+endif()
 
 add_executable(Amber::driver ALIAS driver)
 

@@ -29,7 +29,7 @@ add_library(sqlite3
 target_include_directories(sqlite3
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(sqlite3
-    PRIVATE c_std_90)
+    PRIVATE c_std_99)
 set_target_properties(sqlite3 PROPERTIES
     SOVERSION "${PROJECT_VERSION}"
     VERSION "${PROJECT_VERSION}"

@@ -15,7 +15,7 @@
  * @param message The message to send
  * @param message_size The size of the message to send
  */
-static AB_INLINE void AB_ECS_send_message_async(struct AB_ECS_world *world, 
+static inline void AB_ECS_send_message_async(struct AB_ECS_world *world, 
         int system_id, const void *message, size_t message_size)
 {
     struct AB_ECS_system_inbox *inbox = 
@@ -31,7 +31,7 @@ static AB_INLINE void AB_ECS_send_message_async(struct AB_ECS_world *world,
  * @param message The message to send
  * @param message_size The size of the message to send
  */
-static AB_INLINE void AB_ECS_send_message_sync(struct AB_ECS_world *world, 
+static inline void AB_ECS_send_message_sync(struct AB_ECS_world *world, 
         int system_id, void *message, size_t message_size)
 {
     struct AB_ECS_system *sys = &AB_VEC_AT(&world->default_systems, system_id);

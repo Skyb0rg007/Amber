@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <Amber/util/common.h>
 #include <Amber/util/hashtable.h>
 #include <Amber/cmocka/AB_cmocka.h>
@@ -17,7 +18,7 @@ static void insert_delete(void **data)
 
     for (i = 0; i < 20; i++) {
         struct person *person = test_malloc(sizeof *person);
-        AB_ASPRINTF(&person->name, "Person #%d", i);
+        asprintf(&person->name, "Person #%d", i);
         person->id = i;
         AB_hlist_node_init(&person->node);
 

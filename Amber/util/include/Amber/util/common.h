@@ -5,11 +5,14 @@
 #ifndef AMBER_UTIL_COMMON_H
 #define AMBER_UTIL_COMMON_H
 
-#include <Amber/util/compat.h>
+#include <Amber/compat/stdbool.h>
+#include <Amber/compat/stdint.h>
+#include <Amber/compat/inttypes.h>
+#include <Amber/compat/compat.h>
+#include <stdlib.h>
 #include <SDL_assert.h>
 #include <SDL_log.h>
 #include <SDL_error.h>
-#include <stdlib.h>
 
 /************************************************
  * Convenience Macros
@@ -39,43 +42,6 @@
 #define AB_PI 3.14159265359
 
 /************************************************
- * Attribute Macros
- ************************************************/
-#if AB_COMPILER_IS_GNU || AB_COMPILER_IS_Clang || AB_COMPILER_IS_AppleClang
-
-# define AB_ATTR_ALWAYS_INLINE     __attribute__((__always_inline__))
-# define AB_ATTR_NEVER_INLINE      __attribute__((__noinline__))
-# define AB_ATTR_CONST             __attribute__((__const__))
-# define AB_ATTR_PURE              __attribute__((__pure__))
-# define AB_ATTR_DEPRECIATED       __attribute__((__depreciated__))
-# define AB_ATTR_NORETURN          __attribute__((__noreturn__))
-# define AB_ATTR_PRINTF(archetype, str_idx, first_checked) \
-    __attribute__((__format__(archetype, str_idx, first_checked)))
-
-#elif AB_COMPILER_IS_MSVC
-
-# define AB_ATTR_ALWAYS_INLINE     __forceinline
-# define AB_ATTR_NEVER_INLINE      __declspec(noinline)
-# define AB_ATTR_CONST             __declspec(noalias)
-# define AB_ATTR_PURE              __declspec(noalias)
-# define AB_ATTR_DEPRECIATED
-# define AB_ATTR_NORETURN          __declspec(noreturn)
-# define AB_ATTR_PRINTF(a, b, c)
-
-#else
-
-# define AB_ATTR_ALWAYS_INLINE     inline
-# define AB_ATTR_NEVER_INLINE 
-# define AB_ATTR_CONST
-# define AB_ATTR_PURE
-# define AB_ATTR_DEPRECIATED
-# define AB_ATTR_NORETURN
-# define AB_ATTR_PRINTF(a, b, c)
-
-#endif
-
-
-/************************************************
  * Logging and Assertion Macros
  ************************************************/
 /** @brief Log levels */
@@ -101,10 +67,11 @@ enum {
 #define AB_LOGV SDL_LogMessageV
 
 /** @brief Quick and dirty logging: for tests + quickly debugging, not prod */
-void AB_QUICK_LOG(const char *fmt, ...);
+#define AB_QUICK_LOG(...) AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_INFO, __VA_ARGS__)
 
 /** @brief The assert expression function */
-void AB_assert_expr_func(int cond, const char *str, const char *file, int line);
+#define AB_assert_expr_func(cond, str, file, line) \
+    (!(cond) ? (AB_LOG(AB_LOG_CATEGORY_GENERAL, AB_LOG_PRIORITY_CRITICAL, "%s[%d]: %s", __FILE__, __LINE__, #cond), abort(), 0) : 0)
 
 /** @brief General assertion */
 #define AB_ASSERT(X)          SDL_assert(X)

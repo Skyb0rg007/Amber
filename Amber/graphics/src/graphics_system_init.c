@@ -22,10 +22,12 @@ AB_errno_t graphics_system_init(struct AB_ECS_system *self)
     /* Hint SDL for the OpenGL context profile */
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#ifndef EMSCRIPTEN
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 
             SDL_GL_CONTEXT_DEBUG_FLAG 
             | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+#endif
 
     /* Create the SDL OpenGL window */
     data->win = SDL_CreateWindow(
@@ -40,8 +42,13 @@ AB_errno_t graphics_system_init(struct AB_ECS_system *self)
     AB_ASSERT(status != 0);
 
     /* Misc SDL2 stuff */
+#ifndef EMSCRIPTEN
     data->base_path = SDL_GetBasePath();
     data->pref_path = SDL_GetPrefPath(AMBER_ORG, AMBER_APP);
+#else
+    data->base_path = "<base>";
+    data->pref_path = "<pref>";
+#endif
 
     self->userdata = data;
     return AB_OK;

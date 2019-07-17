@@ -16,18 +16,18 @@ static struct {
 
 /***************************************************************************/
 
-static AB_bool is_dir(const char *path)
+static bool is_dir(const char *path)
 {
     DIR *d = opendir(path);
-    AB_bool ret = d != NULL;
+    bool ret = d != NULL;
     closedir(d);
     return ret;
 }
 
-static AB_bool is_file(const char *path)
+static bool is_file(const char *path)
 {
     FILE *f = fopen(path, "r");
-    AB_bool ret = f != NULL;
+    bool ret = f != NULL;
     fclose(f);
     return ret;
 }
@@ -38,7 +38,7 @@ static char *get_global_string(lua_State *L, const char *str)
     ret = lua_getglobal(L, str);
     if (ret == LUA_TSTRING) {
         const char *lval = lua_tostring(L, -1);
-        char *val = AB_STRDUP(lval);
+        char *val = strdup(lval);
         lua_pop(L, 1);
         return val;
     }

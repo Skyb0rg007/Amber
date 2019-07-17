@@ -1,6 +1,6 @@
 #include <Amber/util/common.h>
 
-static AB_INLINE
+static inline
 void *my_failing_realloc(void *ptr, size_t newsize) {
     static int counter = 10;
     counter--;

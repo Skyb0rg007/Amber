@@ -1,0 +1,20 @@
+
+#ifndef AMBER_COMPAT_STDIO_H
+#define AMBER_COMPAT_STDIO_H
+
+#cmakedefine HAS_GETLINE
+#cmakedefine HAS_ASPRINTF
+
+#if (defined(HAS_GETLINE) || defined(HAS_ASPRINTF)) && !defined(_GNU_SOURCE)
+# define _GNU_SOURCE
+#elif !defined(HAS_ASPRINTF)
+#include <Amber/compat/compat.h>
+#include <assert.h>
+static inline int asprintf(const char **strp, const char *fmt, ...) {
+    assert(0);
+}
+#endif
+
+#include <stdio.h>
+
+#endif /* AMBER_COMPAT_STDIO_H */

@@ -12,7 +12,7 @@ target_include_directories(glad
 target_link_libraries(glad
     PRIVATE OpenGL::GL ${CMAKE_DL_LIBS})
 target_compile_features(glad
-    PRIVATE c_std_90)
+    PRIVATE c_std_99)
 set_target_properties(glad PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION}

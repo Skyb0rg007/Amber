@@ -1,12 +1,11 @@
 #ifndef AB_CMOCKA_H
 #define AB_CMOCKA_H
 
-#include <Amber/util/common.h>
+#include <Amber/compat/compat.h> /* inline */
 #include <stdlib.h>
 #include <stddef.h>
 #include <setjmp.h>
-#define inline AB_INLINE
+#include <stdarg.h>
 #include <cmocka.h>
-#undef inline
 
 #endif /* AB_CMOCKA_H */

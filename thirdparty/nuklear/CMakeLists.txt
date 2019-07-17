@@ -12,7 +12,7 @@ add_library(nuklear
 target_include_directories(nuklear
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(nuklear
-    PRIVATE c_std_99) # vsnprintf
+    PRIVATE c_std_99)
 set_target_properties(nuklear PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION}

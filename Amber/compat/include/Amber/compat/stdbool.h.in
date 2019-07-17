@@ -1,0 +1,14 @@
+
+#ifndef AMBER_STDBOOL_H
+#define AMBER_STDBOOL_H value
+
+#cmakedefine HAS_STDBOOL_H
+#ifdef HAS_STDBOOL_H
+# include <stdbool.h>
+#else
+typedef int bool;
+# define true  1
+# define false 0
+#endif
+
+#endif /* AMBER_STDBOOL_H */
