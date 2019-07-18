@@ -9,7 +9,7 @@ function(enable_warnings target warnings)
 
     foreach(flag IN LISTS compiler_flags)
 
-        string(MAKE_C_IDENTIFIER "${target}_${flag}" varname)
+        string(MAKE_C_IDENTIFIER "${CMAKE_C_COMPILER}_${flag}" varname)
 
         check_c_compiler_flag("${flag}" "${varname}")
         if("${${varname}}")

@@ -15,7 +15,13 @@ add_library(graphics
     src/graphics_system_run.c
     )
 target_link_libraries(graphics
-    PRIVATE Amber::ECS Amber::util SDL2::SDL2 glad::glad OpenGL::GL)
+    PRIVATE Amber::ECS Amber::util SDL2::SDL2 OpenGL::GL)
+if(NOT EMSCRIPTEN)
+    target_link_libraries(graphics PRIVATE glad::glad)
+else()
+    target_link_options(graphics PUBLIC "SHELL:-s USE_SDL=2")
+    target_compile_options(graphics PUBLIC "SHELL:-s USE_SDL=2")
+endif()
 target_include_directories(graphics
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_compile_features(graphics

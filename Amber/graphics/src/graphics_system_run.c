@@ -4,7 +4,11 @@
 #include "graphics_system.h"
 
 #include <SDL.h>
-#include <glad/glad.h>
+#ifdef __EMSCRIPTEN__
+# include <GL/gl.h>
+#else
+# include <glad/glad.h>
+#endif
 
 #include <time.h>
 
@@ -20,11 +24,11 @@ static AB_errno_t handle_messages(struct AB_ECS_world *world,
         }
 
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_o) {
-            char *cmd;
-            asprintf(&cmd, "%s \"%s\" 1>/dev/null 2>&1",
-                    "xdg-open", "http://google.com");
-            system(cmd);
-            free(cmd);
+            // char *cmd;
+            // asprintf(&cmd, "%s \"%s\" 1>/dev/null 2>&1",
+                    // "xdg-open", "http://google.com");
+            // system(cmd);
+            // free(cmd);
             AB_QUICK_LOG("Finished opening up google!");
         }
 
@@ -44,6 +48,7 @@ static AB_errno_t handle_messages(struct AB_ECS_world *world,
             glViewport(0, 0, w, h);
         }
     }
+    return AB_OK;
 }
 
 AB_errno_t graphics_system_run(struct AB_ECS_world *world, struct AB_ECS_system *self)

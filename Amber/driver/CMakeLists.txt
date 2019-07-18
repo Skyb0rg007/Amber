@@ -9,7 +9,9 @@ target_compile_features(driver
     PRIVATE c_std_99)
 if(EMSCRIPTEN)
     target_link_options(driver
-        PRIVATE "SHELL:-s ERROR_ON_UNDEFINED_SYMBOLS=0")
+        PRIVATE "SHELL:-s ERROR_ON_UNDEFINED_SYMBOLS=0 --emrun")
+    set_target_properties(driver PROPERTIES
+        SUFFIX .html)
 endif()
 
 add_executable(Amber::driver ALIAS driver)

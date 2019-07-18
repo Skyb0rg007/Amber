@@ -16,12 +16,12 @@
  * @note Don't access these fields directly
  */
 struct AB_ring {
-    atomic_int c_head; /**< Where to dequeue from */
-    char pad1[AB_CACHELINE_SIZE - sizeof(atomic_int)]; /**< padding */
+    AB_atomic_uint c_head; /**< Where to dequeue from */
+    char pad1[AB_CACHELINE_SIZE - sizeof(AB_atomic_uint)]; /**< padding */
 
-    atomic_int p_tail; /**< Where to enqueue from */
-    atomic_int p_head; /**< mpmc - synchronize writers */
-    char pad2[AB_CACHELINE_SIZE - sizeof(atomic_int) * 2]; /**< padding */
+    AB_atomic_uint p_tail; /**< Where to enqueue from */
+    AB_atomic_uint p_head; /**< mpmc - synchronize writers */
+    char pad2[AB_CACHELINE_SIZE - sizeof(AB_atomic_uint) * 2]; /**< padding */
 
     unsigned mask; /**< The ring buffer size - 1, used as bitmask */
 };
@@ -66,9 +66,9 @@ static inline void AB_ring_init(struct AB_ring *ring, unsigned size)
     AB_ASSERT((size & (size - 1)) == 0); /* size is a power of 2 */
 
     ring->mask = size - 1;
-    atomic_init(&ring->p_tail, 0);
-    atomic_init(&ring->p_head, 0);
-    atomic_init(&ring->c_head, 0);
+    AB_atomic_init_uint(&ring->p_tail, 0);
+    AB_atomic_init_uint(&ring->p_head, 0);
+    AB_atomic_init_uint(&ring->c_head, 0);
 }
 
 /** @brief Determine the number of elements in the ring buffer 

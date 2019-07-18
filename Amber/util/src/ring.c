@@ -5,8 +5,8 @@
 
 unsigned AB_ring_size(struct AB_ring *ring)
 {
-    unsigned c = (unsigned)atomic_load(&ring->c_head);
-    unsigned p = (unsigned)atomic_load(&ring->p_head);
+    unsigned c = AB_atomic_load_uint(&ring->c_head);
+    unsigned p = AB_atomic_load_uint(&ring->p_head);
 
     return (p - c) & ring->mask;
 }
@@ -21,8 +21,8 @@ bool AB_ring_enqueue_sp(struct AB_ring *ring,
 {
     const unsigned mask = ring->mask;
 
-    unsigned consumer = (unsigned)atomic_load(&ring->c_head);
-    unsigned producer = (unsigned)atomic_load(&ring->p_tail);
+    unsigned consumer = AB_atomic_load_uint(&ring->c_head);
+    unsigned producer = AB_atomic_load_uint(&ring->p_tail);
     unsigned delta = producer + 1;
 
     if (size != NULL)
@@ -35,7 +35,7 @@ bool AB_ring_enqueue_sp(struct AB_ring *ring,
     buffer = (char *)buffer + entry_size * (producer & mask);
     memcpy(buffer, entry, entry_size);
 
-    atomic_store(&ring->p_tail, (int)delta);
+    AB_atomic_store_uint(&ring->p_tail, delta);
 
     return true;
 }
@@ -47,8 +47,8 @@ bool AB_ring_dequeue_sc(struct AB_ring *ring,
 {
     const unsigned mask = ring->mask;
 
-    unsigned consumer = (unsigned)atomic_load(&ring->c_head);
-    unsigned producer = (unsigned)atomic_load(&ring->p_tail);
+    unsigned consumer = AB_atomic_load_uint(&ring->c_head);
+    unsigned producer = AB_atomic_load_uint(&ring->p_tail);
 
     /* Buffer is empty */
     if (consumer == producer)
@@ -57,7 +57,7 @@ bool AB_ring_dequeue_sc(struct AB_ring *ring,
     buffer = (const char *)buffer + entry_size * (consumer & mask);
     memcpy(entry, buffer, entry_size);
 
-    atomic_store(&ring->c_head, (int)(consumer + 1));
+    AB_atomic_store_uint(&ring->c_head, (int)(consumer + 1));
 
     return true;
 }
@@ -74,22 +74,22 @@ bool AB_ring_enqueue_mp(struct AB_ring *ring,
     int ret = true;
     const unsigned mask = ring->mask;
 
-    unsigned producer = (unsigned)atomic_load(&ring->p_head);
+    unsigned producer = AB_atomic_load_uint(&ring->p_head);
     unsigned consumer, delta;
 
     for (;;) {
-        consumer = (unsigned)atomic_load(&ring->c_head);
+        consumer = AB_atomic_load_uint(&ring->c_head);
         delta = producer + 1;
 
         /* Check if buffer is full */
         if ((producer - consumer) < mask) {
             /* Swing p_head from producer to delta */
-            if (atomic_compare_exchange_weak(&ring->p_head, (int*)&producer, (int)delta))
+            if (AB_atomic_compare_exchange_weak_uint(&ring->p_head, &producer, (int)delta))
                 break;
         } else {
             /* Buffer is full, but see if consumer and producer were
              * out of sync */
-            unsigned new_producer = (unsigned)atomic_load(&ring->p_head);
+            unsigned new_producer = AB_atomic_load_uint(&ring->p_head);
             
             if (producer == new_producer) {
                 /* They weren't out of sync, buffer is full */
@@ -109,7 +109,7 @@ bool AB_ring_enqueue_mp(struct AB_ring *ring,
      * Must CAS to ensure sync with other producers
      */
     unsigned tmp_producer = producer;
-    while (!atomic_compare_exchange_weak(&ring->p_tail, (int*)&tmp_producer, (int)delta))
+    while (!AB_atomic_compare_exchange_weak_uint(&ring->p_tail, &tmp_producer, delta))
         tmp_producer = producer;
 
 leave:
@@ -126,11 +126,11 @@ bool AB_ring_dequeue_mc(struct AB_ring *ring,
     const unsigned mask = ring->mask;
 
     unsigned producer;
-    unsigned consumer = (unsigned)atomic_load(&ring->c_head);
+    unsigned consumer = AB_atomic_load_uint(&ring->c_head);
 
     do {
         const void *target;
-        producer = (unsigned)atomic_load(&ring->p_tail);
+        producer = AB_atomic_load_uint(&ring->p_tail);
 
         /* Check if buffer is empty */
         if (producer == consumer)
@@ -142,7 +142,7 @@ bool AB_ring_dequeue_mc(struct AB_ring *ring,
         /* Keep trying to swing c_head from previous spot to allow
          * writing to the previously-used space
          */
-    } while (!atomic_compare_exchange_weak(&ring->c_head, (int*)&consumer, (int)(consumer + 1)));
+    } while (!AB_atomic_compare_exchange_weak_uint(&ring->c_head, &consumer, (int)(consumer + 1)));
 
     return true;
 }
@@ -154,8 +154,8 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
 {
     const unsigned mask = ring->mask;
 
-    unsigned consumer = (unsigned)atomic_load(&ring->c_head);
-    unsigned producer = (unsigned)atomic_load(&ring->p_tail);
+    unsigned consumer = AB_atomic_load_uint(&ring->c_head);
+    unsigned producer = AB_atomic_load_uint(&ring->p_tail);
 
     if (consumer == producer)
         return false;
@@ -163,6 +163,5 @@ bool AB_ring_trydequeue_mc(struct AB_ring *ring,
     buffer = (const char *)buffer + entry_size * (consumer & mask);
     memcpy(data, buffer, entry_size);
 
-    bool b = atomic_compare_exchange_weak(&ring->c_head, (int*)&consumer, (int)(consumer + 1));
-    return b;
+    return AB_atomic_compare_exchange_weak_uint(&ring->c_head, &consumer, (int)(consumer + 1));
 }

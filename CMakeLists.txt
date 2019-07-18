@@ -107,13 +107,15 @@ endif()
 
 # Internal dependencies (in source tree)
 add_subdirectory(thirdparty/nuklear/)  # nk::nuklear
-add_subdirectory(thirdparty/glad/   )  # glad::glad
-add_subdirectory(thirdparty/stb/    )  # stb::stb_image
+if(NOT EMSCRIPTEN) # emscripten has builtin OpenGL support
+    add_subdirectory(thirdparty/glad/)  # glad::glad
+endif()
+add_subdirectory(thirdparty/stb/)  # stb::stb_image
 # add_subdirectory(thirdparty/sqlite3/)  # sqlite3::sqlite3
-add_subdirectory(thirdparty/cglm/   )  # cglm::cglm
+add_subdirectory(thirdparty/cglm/)  # cglm::cglm
 add_subdirectory(thirdparty/lua-5.3/)  # lua::lua,lualib
-# add_subdirectory(thirdparty/ldoc/   )  # ldoc_add_docs()
-add_subdirectory(thirdparty/lpeg/   )  # lpeg::lpeg
+# add_subdirectory(thirdparty/ldoc/)  # ldoc_add_docs()
+add_subdirectory(thirdparty/lpeg/)  # lpeg::lpeg
 # add_subdirectory(thirdparty/dirent/ )  # dirent::dirent
 
 #############################################################################

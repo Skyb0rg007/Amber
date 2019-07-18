@@ -3,35 +3,36 @@
 #define AMBER_COMPAT_ATOMIC_H
 
 #cmakedefine HAS_STDATOMIC_H
-#ifdef HAS_STDATOMIC_H
-# include <stdatomic.h>
+#if defined(HAS_STDATOMIC_H)
+/* Use stdatomic.h */
+# include <Amber/compat/atomic/c11_stdatomic.h>
+#elif defined(__GNUC__) 
+/* Use __atomic builtins */
+# include <Amber/compat/atomic/gnu_atomic_builtin.h>
 #else
-# include <Amber/compat/compat.h>
-# include <Amber/compat/stdbool.h>
-# include <SDL_atomic.h>
-
-typedef SDL_atomic_t atomic_int;
-static inline int atomic_load(atomic_int *n) {
-    return SDL_AtomicGet(n);
-}
-static inline void atomic_store(atomic_int *n, int val) {
-    SDL_AtomicSet(n, val);
-}
-static inline void atomic_init(atomic_int *n, int val) {
-    n->value = val;
-}
-static inline bool atomic_compare_exchange_weak(atomic_int *n, int *oldval, int newval) {
-    int old = SDL_AtomicGet(n);
-    if (old == *oldval) {
-        SDL_AtomicSet(n, newval);
-        return true;
-    } else {
-        *oldval = old;
-        return false;
-    }
-}
+/* Use SDL atomics */
+# include <Amber/compat/atomic/sdl_atomic.h>
 #endif
 
-
+/* API implemented in one of the above headers */
+/* typedef ?? AB_atomic_int;
+ * typedef ?? AB_atomic_uint;
+ */
+static inline
+int  AB_atomic_load_int(AB_atomic_int *obj);
+static inline
+unsigned AB_atomic_load_uint(AB_atomic_uint *obj);
+static inline
+void AB_atomic_store_int(AB_atomic_int *obj, int desired);
+static inline
+void AB_atomic_store_uint(AB_atomic_uint *obj, unsigned desired);
+static inline
+void AB_atomic_init_int(AB_atomic_int *obj, int desired);
+static inline
+void AB_atomic_init_uint(AB_atomic_uint *obj, unsigned desired);
+static inline
+bool AB_atomic_compare_exchange_weak_int(AB_atomic_int *obj, int *expected, int desired);
+static inline
+bool AB_atomic_compare_exchange_weak_uint(AB_atomic_uint *obj, unsigned *expected, unsigned desired);
 
 #endif /* AMBER_COMPAT_ATOMIC_H */
